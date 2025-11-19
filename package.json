@@ -1,0 +1,20 @@
+{
+  "name": "duan_cuahangvaycuoigradenhome",
+  "version": "1.0.0",
+  "description": "```\r wedding-dress/\r ├── assets/\r │   ├── css/\r │   │   ├── style.css          # CSS chính\r │   │   └── responsive.css     # CSS responsive\r │   ├── js/\r │   │   └── main.js           # JavaScript chính\r │   └── images/               # Thư mục hình ảnh\r ├── includes/\r │   ├── config.php            # Cấu hình database\r │   ├── header.php            # Header chung\r │   └── footer.php            # Footer chung\r ├── index.php                 # Trang chủ\r ├── products.php              # Danh sách váy cưới\r ├── product-detail.php        # Chi tiết váy cưới\r ├── booking.php               # Đặt lịch thử váy\r ├── contact.php               # Liên hệ\r ├── blog.php                  # Tin tức\r └── README.md\r ```",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/css/tailwind.output.css --minify",
+    "watch:css": "tailwindcss -i ./assets/css/tailwind.css -o ./assets/css/tailwind.output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17"
+  }
+}

@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix header overlay issue */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.main-content {
+    position: relative;
+    z-index: 10;
+}
+
+/* Ensure sections don't get covered by sticky header */
+section {
+    position: relative;
+    z-index: 1;
+}
