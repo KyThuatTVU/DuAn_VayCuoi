@@ -11,6 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
     <meta name="description" content="Cửa hàng váy cưới cao cấp - Cho thuê váy cưới đẹp, giá tốt tại TP.HCM">
+    <!-- Allow loading images from Google -->
+    <meta http-equiv="Content-Security-Policy" content="img-src 'self' https://lh3.googleusercontent.com https://lh4.googleusercontent.com https://lh5.googleusercontent.com https://lh6.googleusercontent.com data: blob:;">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
