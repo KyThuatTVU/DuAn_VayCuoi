@@ -83,16 +83,50 @@
         </div>
     </footer>
 
-    <!-- Chatbot Button -->
-    <button class="chatbot-toggle" title="Chat với chúng tôi">
-        <i class="icon-chat"></i>
-    </button>
+    <!-- Chatbot Widget -->
+    <?php include 'includes/chatbot-widget.php'; ?>
 
     <!-- Back to Top -->
-    <button class="back-to-top" title="Lên đầu trang">
-        <i class="icon-arrow-up"></i>
+    <button class="back-to-top" title="Lên đầu trang" style="left: 24px; right: auto; bottom: 200px;">
+        <i class="fas fa-arrow-up"></i>
     </button>
 
     <script src="assets/js/main.js"></script>
+    
+    <!-- Cart Update Script -->
+    <script>
+    // Update cart count on all pages from database
+    function updateCartCount() {
+        fetch('api/cart.php?action=count')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const cartBadge = document.querySelector('.cart-count');
+                if (cartBadge) {
+                    cartBadge.textContent = data.count;
+                    if (data.count > 0) {
+                        cartBadge.style.display = 'block';
+                    } else {
+                        cartBadge.style.display = 'none';
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            // Nếu lỗi (chưa đăng nhập), ẩn badge
+            const cartBadge = document.querySelector('.cart-count');
+            if (cartBadge) {
+                cartBadge.style.display = 'none';
+            }
+        });
+    }
+    
+    // Run on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+    } else {
+        updateCartCount();
+    }
+    </script>
 </body>
 </html>

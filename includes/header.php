@@ -26,6 +26,7 @@ if (session_status() === PHP_SESSION_NONE) {
             }
         }
     </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
@@ -148,7 +149,7 @@ if (session_status() === PHP_SESSION_NONE) {
                             <circle cx="20" cy="21" r="1"/>
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
                         </svg>
-                        <span class="badge">2</span>
+                        <span class="badge cart-count" style="display: none;">0</span>
                     </a>
                     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
                         <!-- User đã đăng nhập -->

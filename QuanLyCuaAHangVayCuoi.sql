@@ -303,3 +303,45 @@ SELECT * FROM tin_tuc_cuoi_hoi;
 
 -- 12. Xem các mã khuyến mãi
 SELECT * FROM khuyen_mai;
+
+-- ===================================================================
+-- BẢNG GIỎ HÀNG (CART)
+-- ===================================================================
+
+-- Bảng giỏ hàng
+CREATE TABLE gio_hang (
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   nguoi_dung_id BIGINT NOT NULL,
+   vay_id BIGINT NOT NULL,
+   so_luong INT DEFAULT 1,
+   ngay_thue DATE NULL COMMENT 'Ngày dự định thuê váy',
+   so_ngay_thue INT DEFAULT 1 COMMENT 'Số ngày thuê',
+   ghi_chu TEXT NULL,
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
+   FOREIGN KEY (vay_id) REFERENCES vay_cuoi(id) ON DELETE CASCADE,
+   UNIQUE KEY unique_user_dress (nguoi_dung_id, vay_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Index để tăng tốc truy vấn
+CREATE INDEX idx_user_cart ON gio_hang(nguoi_dung_id);
+CREATE INDEX idx_created ON gio_hang(created_at);
+
+-- 13. Xem giỏ hàng của người dùng
+SELECT 
+    gh.id,
+    gh.nguoi_dung_id,
+    nd.ho_ten,
+    vc.ma_vay,
+    vc.ten_vay,
+    vc.gia_thue,
+    gh.so_luong,
+    gh.ngay_thue,
+    gh.so_ngay_thue,
+    (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien,
+    gh.created_at
+FROM gio_hang gh
+JOIN nguoi_dung nd ON gh.nguoi_dung_id = nd.id
+JOIN vay_cuoi vc ON gh.vay_id = vc.id
+ORDER BY gh.created_at DESC;

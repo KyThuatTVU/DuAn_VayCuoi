@@ -87,8 +87,11 @@ require_once 'includes/header.php';
                                 <span class="price-label">/ ngày</span>
                             </div>
                             <div class="product-buttons">
+                                <button class="btn-add-cart" onclick="addToCart(<?php echo $i; ?>, 'Váy Cưới Cao Cấp <?php echo $i; ?>', <?php echo rand(3000000, 6000000); ?>)">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Thêm Giỏ Hàng
+                                </button>
                                 <a href="product-detail.php?id=<?php echo $i; ?>" class="btn btn-outline">Chi Tiết</a>
-                                <a href="booking.php?id=<?php echo $i; ?>" class="btn btn-primary">Đặt Lịch</a>
                             </div>
                         </div>
                     </div>
@@ -231,6 +234,196 @@ require_once 'includes/header.php';
     
     .sidebar {
         position: static;
+    }
+}
+
+/* Add to Cart Button */
+.btn-add-cart {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
+}
+
+.btn-add-cart i {
+    font-size: 16px;
+}
+
+.product-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.product-buttons .btn {
+    width: 100%;
+    text-align: center;
+}
+</style>
+
+<!-- Cart Notification -->
+<div id="cart-notification" style="display: none; position: fixed; top: 100px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 20px 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; animation: slideIn 0.3s ease;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <i class="fas fa-check-circle" style="font-size: 24px;"></i>
+        <div>
+            <div style="font-weight: bold; font-size: 16px;">Đã thêm vào giỏ hàng!</div>
+            <div style="font-size: 14px; opacity: 0.9; margin-top: 4px;" id="cart-product-name"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Shopping Cart Functions với Database
+function addToCart(productId, productName, price) {
+    // Gửi request đến API
+    fetch('api/cart.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            action: 'add',
+            vay_id: productId,
+            so_luong: 1,
+            so_ngay_thue: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Cập nhật số lượng giỏ hàng
+            updateCartCount();
+            // Hiển thị thông báo
+            showCartNotification(data.product_name || productName, 'success');
+        } else {
+            if (data.require_login) {
+                // Yêu cầu đăng nhập
+                showLoginModal();
+            } else {
+                // Hiển thị lỗi
+                showCartNotification(data.message, 'error');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showCartNotification('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+    });
+}
+
+function updateCartCount() {
+    // Lấy số lượng từ server
+    fetch('api/cart.php?action=count')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const cartBadge = document.querySelector('.cart-count');
+            if (cartBadge) {
+                cartBadge.textContent = data.count;
+                if (data.count > 0) {
+                    cartBadge.style.display = 'block';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function showCartNotification(message, type = 'success') {
+    const notification = document.getElementById('cart-notification');
+    const productNameEl = document.getElementById('cart-product-name');
+    
+    // Thay đổi màu sắc theo loại thông báo
+    if (type === 'error') {
+        notification.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+    } else {
+        notification.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+    }
+    
+    productNameEl.textContent = message;
+    notification.style.display = 'block';
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+            notification.style.display = 'none';
+            notification.style.animation = 'slideIn 0.3s ease';
+        }, 300);
+    }, 3000);
+}
+
+function showLoginModal() {
+    // Hiển thị modal yêu cầu đăng nhập
+    const modal = document.createElement('div');
+    modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+    modal.innerHTML = `
+        <div style="background: white; padding: 40px; border-radius: 20px; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <i class="fas fa-lock" style="font-size: 48px; color: #ec4899; margin-bottom: 20px;"></i>
+            <h3 style="font-size: 24px; margin-bottom: 15px; color: #1f2937;">Yêu Cầu Đăng Nhập</h3>
+            <p style="color: #6b7280; margin-bottom: 30px;">Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <a href="login.php" style="background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); color: white; padding: 12px 30px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    Đăng Nhập
+                </a>
+                <button onclick="this.closest('div').parentElement.remove()" style="background: #e5e7eb; color: #374151; padding: 12px 30px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Click outside to close
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// Update cart count on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartCount();
+});
+</script>
+
+<style>
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
     }
 }
 </style>
