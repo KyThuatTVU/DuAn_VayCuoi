@@ -1,102 +1,305 @@
 /* ===================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - MOBILE FIRST
    =================================== */
 
-/* Tablet */
-@media (max-width: 1024px) {
-    .products-grid,
-    .categories-grid {
-        grid-template-columns: repeat(3, 1fr);
+/* Mobile Menu Styles */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 400px;
+    height: 100vh;
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease;
+    z-index: 9999;
+    overflow-y: auto;
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 9998;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Mobile Menu Toggle Animation */
+.mobile-menu-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* ===================================
+   BREAKPOINTS
+   =================================== */
+
+/* Extra Small Devices (phones, less than 576px) */
+@media (max-width: 575.98px) {
+    /* Typography */
+    h1 { font-size: 2rem !important; }
+    h2 { font-size: 1.75rem !important; }
+    h3 { font-size: 1.5rem !important; }
+    h4 { font-size: 1.25rem !important; }
+    
+    /* Container padding */
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+    /* Grid adjustments */
+    .grid-cols-2 {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
     }
     
-    .footer-grid {
-        grid-template-columns: repeat(2, 1fr);
+    /* Button sizes */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Card padding */
+    .card, .bg-white {
+        padding: 1rem !important;
+    }
+    
+    /* Form inputs */
+    input, select, textarea {
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+    
+    /* Modal adjustments */
+    .modal-content {
+        margin: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Table responsive */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    /* Hide desktop elements */
+    .hide-mobile {
+        display: none !important;
     }
 }
 
-/* Mobile */
-@media (max-width: 768px) {
-    .top-bar-content {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
+/* Small Devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    h1 { font-size: 2.25rem !important; }
+    h2 { font-size: 2rem !important; }
+    
+    .container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* Medium Devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Show mobile menu toggle on tablets */
+    .mobile-menu-toggle {
+        display: flex !important;
     }
     
-    .main-nav {
+    /* Hide desktop nav on tablets */
+    nav.hidden.lg\\:flex {
+        display: none !important;
+    }
+}
+
+/* Large Devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+    /* Hide mobile menu */
+    .mobile-menu-toggle {
+        display: none !important;
+    }
+    
+    .mobile-menu,
+    .mobile-menu-overlay {
+        display: none !important;
+    }
+}
+
+/* ===================================
+   COMPONENT SPECIFIC RESPONSIVE
+   =================================== */
+
+/* Header Responsive */
+@media (max-width: 991.98px) {
+    .header .logo img {
+        height: 3rem;
+    }
+    
+    .top-bar {
         display: none;
     }
     
-    .mobile-menu-toggle {
-        display: flex;
-    }
-    
-    .hero-slider {
-        height: 400px;
-    }
-    
-    .slide-content h1 {
-        font-size: 32px;
-    }
-    
-    .products-grid,
-    .categories-grid,
-    .blog-grid,
-    .testimonials-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-    
-    .services-grid,
-    .footer-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .promo-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .promo-text h2 {
-        font-size: 28px;
-    }
-    
-    .section-header h2 {
-        font-size: 28px;
-    }
-    
-    .product-buttons {
-        flex-direction: column;
+    .header-actions > a,
+    .header-actions > button {
+        width: 2.5rem;
+        height: 2.5rem;
     }
 }
 
-@media (max-width: 480px) {
-    .products-grid,
-    .categories-grid,
-    .blog-grid,
-    .testimonials-grid {
-        grid-template-columns: 1fr;
+/* Product Grid Responsive */
+@media (max-width: 575.98px) {
+    .product-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .product-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Cart Page Responsive */
+@media (max-width: 767.98px) {
+    .cart-item {
+        flex-direction: column;
+        gap: 1rem;
     }
     
-    .header-actions {
-        gap: 10px;
+    .cart-item img {
+        width: 100%;
+        height: auto;
     }
     
-    .btn-icon {
-        font-size: 18px;
+    .cart-summary {
+        position: static;
+        margin-top: 2rem;
+    }
+}
+
+/* Checkout Page Responsive */
+@media (max-width: 1023.98px) {
+    .checkout-grid {
+        grid-template-columns: 1fr !important;
     }
     
-    .chatbot-toggle,
-    .back-to-top {
-        width: 45px;
-        height: 45px;
-        font-size: 20px;
+    .order-summary {
+        position: static !important;
+    }
+}
+
+/* Blog Grid Responsive */
+@media (max-width: 767.98px) {
+    .blog-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Footer Responsive */
+@media (max-width: 767.98px) {
+    .footer-grid {
+        grid-template-columns: 1fr !important;
+        text-align: center;
     }
     
-    .back-to-top {
-        right: 80px;
+    .footer-links {
+        justify-content: center;
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+/* Show/Hide on specific breakpoints */
+@media (max-width: 575.98px) {
+    .hide-xs { display: none !important; }
+    .show-xs { display: block !important; }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .hide-sm { display: none !important; }
+    .show-sm { display: block !important; }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hide-md { display: none !important; }
+    .show-md { display: block !important; }
+}
+
+@media (min-width: 992px) {
+    .hide-lg { display: none !important; }
+    .show-lg { display: block !important; }
+}
+
+/* Text alignment responsive */
+@media (max-width: 767.98px) {
+    .text-center-mobile {
+        text-align: center !important;
+    }
+}
+
+/* Spacing adjustments for mobile */
+@media (max-width: 767.98px) {
+    .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+    .py-16 { padding-top: 2.5rem !important; padding-bottom: 2.5rem !important; }
+    .py-12 { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+    
+    .gap-8 { gap: 1.5rem !important; }
+    .gap-6 { gap: 1rem !important; }
+}
+
+/* Touch-friendly buttons on mobile */
+@media (max-width: 767.98px) {
+    button, .btn, a.btn {
+        min-height: 44px; /* iOS recommended touch target */
+        min-width: 44px;
+    }
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Fix for iOS input zoom */
+@media (max-width: 767.98px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="number"],
+    input[type="date"],
+    select,
+    textarea {
+        font-size: 16px !important;
     }
 }
