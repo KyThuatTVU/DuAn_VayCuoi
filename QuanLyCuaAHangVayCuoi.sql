@@ -46,15 +46,26 @@ CREATE TABLE hinh_anh_vay_cuoi (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (vay_id) REFERENCES vay_cuoi(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
--- Bảng đơn hàng
+-- Bảng đơn hàng (đã cập nhật cho thanh toán QR)
 CREATE TABLE don_hang (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   ma_don_hang VARCHAR(50) UNIQUE COMMENT 'Mã đơn hàng duy nhất',
    nguoi_dung_id BIGINT NULL,
+   ho_ten VARCHAR(255) NOT NULL COMMENT 'Họ tên người nhận',
+   so_dien_thoai VARCHAR(30) NOT NULL COMMENT 'Số điện thoại người nhận',
+   dia_chi TEXT NOT NULL COMMENT 'Địa chỉ nhận váy',
+   ghi_chu TEXT NULL COMMENT 'Ghi chú đơn hàng',
    tong_tien DECIMAL(14,2) NOT NULL,
    trang_thai ENUM('pending','processing','completed','cancelled') DEFAULT 'pending',
+   phuong_thuc_thanh_toan VARCHAR(50) DEFAULT 'qr_code' COMMENT 'Phương thức thanh toán',
+   trang_thai_thanh_toan ENUM('pending','paid','failed','expired') DEFAULT 'pending' COMMENT 'Trạng thái thanh toán',
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+   updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+   FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE SET NULL,
+   INDEX idx_ma_don_hang (ma_don_hang),
+   INDEX idx_trang_thai (trang_thai),
+   INDEX idx_trang_thai_thanh_toan (trang_thai_thanh_toan)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Đơn hàng thuê váy cưới';
 
 -- Bảng hóa đơn
 CREATE TABLE hoa_don (
@@ -233,9 +244,9 @@ INSERT INTO vay_cuoi (id, ma_vay, ten_vay, mo_ta, gia_thue, so_luong_ton) VALUES
 (2, 'VC002', 'Váy Đuôi Cá Quyến Rũ', 'Thiết kế đuôi cá tôn dáng, chất liệu ren cao cấp.', 4500000.00, 3),
 (3, 'VC003', 'Váy Chữ A Tối Giản', 'Váy cưới phong cách minimalist, thanh lịch và sang trọng.', 3000000.00, 10);
 
--- Thêm đơn hàng cho người dùng 1
-INSERT INTO don_hang (id, nguoi_dung_id, tong_tien, trang_thai) VALUES
-(1, 1, 5000000.00, 'completed');
+-- Thêm đơn hàng mẫu cho người dùng 1 (với cấu trúc mới)
+INSERT INTO don_hang (id, ma_don_hang, nguoi_dung_id, ho_ten, so_dien_thoai, dia_chi, ghi_chu, tong_tien, trang_thai, phuong_thuc_thanh_toan, trang_thai_thanh_toan) VALUES
+(1, 'DH20231120001', 1, 'Nguyễn Thị An', '0901234567', '123 Đường ABC, Quận 1, TP.HCM', 'Giao hàng buổi sáng', 5000000.00, 'completed', 'qr_code', 'paid');
 
 -- Thêm hóa đơn cho đơn hàng 1
 INSERT INTO hoa_don (id, don_hang_id, nguoi_dung_id, ma_hoa_don, tong_thanh_toan, status) VALUES
@@ -308,38 +319,43 @@ SELECT * FROM khuyen_mai;
 -- BẢNG GIỎ HÀNG (CART)
 -- ===================================================================
 
--- Bảng giỏ hàng
+-- Bảng giỏ hàng (cho thuê váy cưới)
 CREATE TABLE gio_hang (
    id BIGINT AUTO_INCREMENT PRIMARY KEY,
    nguoi_dung_id BIGINT NOT NULL,
    vay_id BIGINT NOT NULL,
-   so_luong INT DEFAULT 1,
-   ngay_thue DATE NULL COMMENT 'Ngày dự định thuê váy',
-   so_ngay_thue INT DEFAULT 1 COMMENT 'Số ngày thuê',
-   ghi_chu TEXT NULL,
+   so_luong INT DEFAULT 1 COMMENT 'Số lượng váy thuê (thường là 1)',
+   ngay_bat_dau_thue DATE NOT NULL COMMENT 'Ngày bắt đầu thuê váy',
+   ngay_tra_vay DATE NOT NULL COMMENT 'Ngày trả váy',
+   so_ngay_thue INT DEFAULT 1 COMMENT 'Số ngày thuê (tự động tính)',
+   ghi_chu TEXT NULL COMMENT 'Ghi chú đặc biệt (size, yêu cầu sửa...)',
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
    FOREIGN KEY (nguoi_dung_id) REFERENCES nguoi_dung(id) ON DELETE CASCADE,
    FOREIGN KEY (vay_id) REFERENCES vay_cuoi(id) ON DELETE CASCADE,
    UNIQUE KEY unique_user_dress (nguoi_dung_id, vay_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Giỏ hàng cho thuê váy cưới';
 
 -- Index để tăng tốc truy vấn
 CREATE INDEX idx_user_cart ON gio_hang(nguoi_dung_id);
 CREATE INDEX idx_created ON gio_hang(created_at);
 
--- 13. Xem giỏ hàng của người dùng
+-- 13. Xem giỏ hàng của người dùng (cho thuê váy)
 SELECT 
     gh.id,
     gh.nguoi_dung_id,
     nd.ho_ten,
+    nd.email,
+    nd.so_dien_thoai,
     vc.ma_vay,
     vc.ten_vay,
-    vc.gia_thue,
+    vc.gia_thue as gia_thue_moi_ngay,
     gh.so_luong,
-    gh.ngay_thue,
+    gh.ngay_bat_dau_thue,
+    gh.ngay_tra_vay,
     gh.so_ngay_thue,
-    (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien,
+    (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien_thue,
+    gh.ghi_chu,
     gh.created_at
 FROM gio_hang gh
 JOIN nguoi_dung nd ON gh.nguoi_dung_id = nd.id

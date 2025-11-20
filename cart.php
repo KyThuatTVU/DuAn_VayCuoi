@@ -31,31 +31,44 @@ require_once 'includes/header.php';
             <!-- Cart Summary -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-                    <h3 class="text-2xl font-bold text-gray-800 mb-6">Tổng Đơn Hàng</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6">💰 Tổng Chi Phí Thuê</h3>
                     
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between text-gray-600">
-                            <span>Tạm tính:</span>
+                            <span>Tiền thuê váy:</span>
                             <span id="subtotal">0đ</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
-                            <span>Phí dịch vụ:</span>
+                            <span>Phí dịch vụ (5%):</span>
                             <span id="service-fee">0đ</span>
                         </div>
+                        <div class="flex justify-between text-gray-600 text-sm">
+                            <span>Đặt cọc (30%):</span>
+                            <span id="deposit-fee">0đ</span>
+                        </div>
                         <div class="border-t pt-4 flex justify-between text-xl font-bold text-gray-800">
-                            <span>Tổng cộng:</span>
+                            <span>Tổng thanh toán:</span>
                             <span id="total" class="text-pink-600">0đ</span>
                         </div>
                     </div>
                     
+                    <div class="bg-blue-50 rounded-xl p-4 mb-4 text-sm text-gray-700">
+                        <p class="font-semibold mb-2">📋 Lưu ý:</p>
+                        <ul class="space-y-1 text-xs">
+                            <li>• Thanh toán 30% đặt cọc khi đặt hàng</li>
+                            <li>• Thanh toán 70% còn lại khi nhận váy</li>
+                            <li>• Hoàn cọc sau khi trả váy nguyên vẹn</li>
+                        </ul>
+                    </div>
+                    
                     <button onclick="checkout()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all">
                         <i class="fas fa-check-circle mr-2"></i>
-                        Tiến Hành Đặt Hàng
+                        Đặt Thuê Váy
                     </button>
                     
                     <a href="products.php" class="block text-center mt-4 text-pink-600 hover:text-pink-700">
                         <i class="fas fa-arrow-left mr-2"></i>
-                        Tiếp tục mua sắm
+                        Tiếp tục xem váy
                     </a>
                 </div>
             </div>
@@ -89,7 +102,7 @@ function displayCart(items, total) {
             <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
                 <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
                 <h3 class="text-2xl font-bold text-gray-800 mb-2">Giỏ hàng trống</h3>
-                <p class="text-gray-600 mb-6">Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+                <p class="text-gray-600 mb-6">Bạn chưa chọn váy nào để thuê</p>
                 <a href="products.php" class="inline-block bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all">
                     <i class="fas fa-shopping-bag mr-2"></i>
                     Khám phá váy cưới
@@ -101,34 +114,57 @@ function displayCart(items, total) {
     }
     
     container.innerHTML = items.map(item => `
-        <div class="bg-white rounded-2xl shadow-lg p-6 flex gap-6 items-center hover:shadow-xl transition-shadow">
-            <img src="assets/images/dress-${item.vay_id}.jpg" alt="${item.ten_vay}" class="w-32 h-32 object-cover rounded-xl">
-            
-            <div class="flex-1">
-                <h3 class="text-xl font-bold text-gray-800 mb-2">${item.ten_vay}</h3>
-                <p class="text-gray-600 text-sm mb-2">Mã: ${item.ma_vay}</p>
-                <p class="text-pink-600 font-bold text-lg">${formatPrice(item.gia_thue)}/ngày</p>
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+            <div class="flex gap-6 items-start">
+                <img src="assets/images/dress-${item.vay_id}.jpg" alt="${item.ten_vay}" 
+                     onerror="this.src='images/vay1.jpg'"
+                     class="w-32 h-32 object-cover rounded-xl flex-shrink-0">
                 
-                <div class="flex gap-4 mt-3 text-sm text-gray-600">
-                    <span><i class="fas fa-calendar mr-1"></i> ${item.so_ngay_thue} ngày</span>
-                    ${item.ngay_thue ? `<span><i class="fas fa-clock mr-1"></i> ${item.ngay_thue}</span>` : ''}
+                <div class="flex-1">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-1">${item.ten_vay}</h3>
+                            <p class="text-gray-600 text-sm">Mã: ${item.ma_vay}</p>
+                        </div>
+                        <button onclick="removeItem(${item.cart_id})" 
+                                class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-all"
+                                title="Xóa khỏi giỏ">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 mb-3">
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span class="text-gray-600">📅 Ngày thuê:</span>
+                                <p class="font-bold text-gray-800">${formatDate(item.ngay_bat_dau_thue)}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">📅 Ngày trả:</span>
+                                <p class="font-bold text-gray-800">${formatDate(item.ngay_tra_vay)}</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">⏱️ Số ngày:</span>
+                                <p class="font-bold text-blue-600">${item.so_ngay_thue} ngày</p>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">💰 Giá/ngày:</span>
+                                <p class="font-bold text-blue-600">${formatPrice(item.gia_thue_moi_ngay)}</p>
+                            </div>
+                        </div>
+                        ${item.ghi_chu ? `
+                        <div class="mt-3 pt-3 border-t border-blue-200">
+                            <span class="text-gray-600 text-sm">📝 Ghi chú:</span>
+                            <p class="text-gray-800 text-sm mt-1">${item.ghi_chu}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Tổng tiền thuê:</span>
+                        <span class="text-2xl font-bold text-pink-600">${formatPrice(item.tong_tien_thue)}</span>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="text-center">
-                <div class="flex items-center gap-3 mb-3">
-                    <button onclick="updateQuantity(${item.cart_id}, ${item.so_luong - 1})" class="w-8 h-8 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors">
-                        <i class="fas fa-minus text-sm"></i>
-                    </button>
-                    <span class="text-xl font-bold w-12">${item.so_luong}</span>
-                    <button onclick="updateQuantity(${item.cart_id}, ${item.so_luong + 1})" class="w-8 h-8 bg-pink-500 text-white rounded-full hover:bg-pink-600 transition-colors">
-                        <i class="fas fa-plus text-sm"></i>
-                    </button>
-                </div>
-                <p class="text-xl font-bold text-gray-800 mb-3">${formatPrice(item.tong_tien)}</p>
-                <button onclick="removeItem(${item.cart_id})" class="text-red-500 hover:text-red-700 text-sm">
-                    <i class="fas fa-trash mr-1"></i> Xóa
-                </button>
             </div>
         </div>
     `).join('');
@@ -136,12 +172,20 @@ function displayCart(items, total) {
     updateSummary(total);
 }
 
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
 function updateSummary(total) {
     const serviceFee = total * 0.05; // 5% phí dịch vụ
+    const depositFee = total * 0.30; // 30% đặt cọc
     const finalTotal = total + serviceFee;
     
     document.getElementById('subtotal').textContent = formatPrice(total);
     document.getElementById('service-fee').textContent = formatPrice(serviceFee);
+    document.getElementById('deposit-fee').textContent = formatPrice(depositFee);
     document.getElementById('total').textContent = formatPrice(finalTotal);
 }
 
@@ -200,7 +244,20 @@ function removeItem(cartId) {
 }
 
 function checkout() {
-    window.location.href = 'checkout.php';
+    // Kiểm tra giỏ hàng có sản phẩm không
+    fetch('api/cart.php?action=count')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.count > 0) {
+            window.location.href = 'checkout.php';
+        } else {
+            alert('Giỏ hàng trống. Vui lòng thêm sản phẩm!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.location.href = 'checkout.php';
+    });
 }
 
 function formatPrice(price) {

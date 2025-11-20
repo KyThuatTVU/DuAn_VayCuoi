@@ -4,42 +4,343 @@ require_once 'includes/config.php';
 require_once 'includes/header.php';
 ?>
 
+<!-- Promotional Banner -->
+<section class="relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-4">
+    <div class="container mx-auto px-4">
+        <!-- Banner chính với animation -->
+        <div class="relative bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl shadow-2xl overflow-hidden">
+            <!-- Background pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+                <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
+            </div>
+            
+            <div class="relative grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
+                <!-- Left Content -->
+                <div class="text-white space-y-6 z-10">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
+                        <svg class="w-5 h-5 text-yellow-300 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <span class="text-sm font-semibold">Ưu Đãi Đặc Biệt</span>
+                    </div>
+                    
+                    <!-- Main Heading -->
+                    <h2 class="text-4xl md:text-5xl font-bold leading-tight">
+                        Giảm Giá Lên Đến
+                        <span class="block text-6xl md:text-7xl text-yellow-300 mt-2 animate-bounce">30%</span>
+                    </h2>
+                    
+                    <!-- Description -->
+                    <p class="text-lg md:text-xl text-white/90 leading-relaxed">
+                        Cho tất cả các mẫu váy cưới cao cấp. Đặt lịch ngay hôm nay để nhận ưu đãi!
+                    </p>
+                    
+                    <!-- Promo Code -->
+                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl p-4 max-w-md">
+                        <div class="flex-1">
+                            <p class="text-sm text-white/80 mb-1">Mã giảm giá:</p>
+                            <p class="text-2xl font-bold tracking-wider">WEDDING2024</p>
+                        </div>
+                        <button onclick="copyPromoCode()" class="bg-white text-pink-600 px-6 py-3 rounded-xl font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <a href="products.php" class="inline-flex items-center gap-2 bg-white text-pink-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-pink-50 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                            <span>Xem Bộ Sưu Tập</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </a>
+                        <a href="booking.php" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border-2 border-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 transition-all transform hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Đặt Lịch Thử</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Countdown Timer -->
+                    <div class="flex items-center gap-2 text-sm">
+                        <svg class="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-white/90">Ưu đãi kết thúc trong: <strong class="text-yellow-300">3 ngày 12 giờ</strong></span>
+                    </div>
+                </div>
+                
+                <!-- Right Image -->
+                <div class="relative z-10 hidden md:block">
+                    <div class="relative">
+                        <!-- Decorative circles -->
+                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full opacity-50 animate-ping"></div>
+                        <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-white rounded-full opacity-20"></div>
+                        
+                        <!-- Main image -->
+                        <div class="relative bg-white/10 backdrop-blur-sm rounded-3xl p-4 border-4 border-white/30 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                            <img src="images/ad.png" alt="Váy cưới khuyến mãi" class="rounded-2xl w-full h-96 object-cover shadow-xl">
+                            
+                            <!-- Floating badge -->
+                            <div class="absolute -top-6 -left-6 bg-gradient-to-br from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-2xl shadow-2xl transform rotate-12 animate-bounce">
+                                <p class="text-sm font-semibold">Giảm ngay</p>
+                                <p class="text-3xl font-bold">30%</p>
+                            </div>
+                            
+                            <!-- Stats badges -->
+                            <div class="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-2xl">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex -space-x-2">
+                                        <div class="w-8 h-8 rounded-full bg-pink-200 border-2 border-white"></div>
+                                        <div class="w-8 h-8 rounded-full bg-purple-200 border-2 border-white"></div>
+                                        <div class="w-8 h-8 rounded-full bg-blue-200 border-2 border-white"></div>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="text-xs text-gray-500">Đã đặt hôm nay</p>
+                                        <p class="text-sm font-bold text-gray-800">127+ khách hàng</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom features bar -->
+            <div class="relative border-t border-white/20 bg-white/5 backdrop-blur-sm">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold">Miễn phí thử váy</p>
+                            <p class="text-xs text-white/70">Tại showroom</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold">Giao hàng nhanh</p>
+                            <p class="text-xs text-white/70">Trong 24h</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold">Bảo đảm chất lượng</p>
+                            <p class="text-xs text-white/70">100% hài lòng</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-white">
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold">Giá cả hợp lý</p>
+                            <p class="text-xs text-white/70">Nhiều ưu đãi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function copyPromoCode() {
+    const code = 'WEDDING2024';
+    navigator.clipboard.writeText(code).then(() => {
+        // Show success message
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+        btn.classList.add('bg-green-500', 'text-white');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('bg-green-500', 'text-white');
+        }, 2000);
+    });
+}
+</script>
 
 <!-- Featured Categories -->
-<section class="categories-section">
-    <div class="container">
-        <div class="section-header">
-            <h2>Phong Cách Váy Cưới</h2>
-            <p>Chọn phong cách phù hợp với cá tính của bạn</p>
+<section class="py-20 bg-gradient-to-br from-white via-pink-50 to-purple-50 relative overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-pink-200 rounded-full opacity-20 blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-200 rounded-full opacity-20 blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    
+    <div class="container mx-auto px-4 relative z-10">
+        <!-- Section Header -->
+        <div class="text-center mb-16 space-y-4">
+            <div class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-purple-100 px-6 py-2 rounded-full border border-pink-200">
+                <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <span class="text-sm font-semibold text-pink-700">Bộ Sưu Tập</span>
+            </div>
+            <h2 class="text-5xl md:text-6xl font-bold bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
+                Phong Cách Váy Cưới
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Chọn phong cách phù hợp với cá tính của bạn - Mỗi chiếc váy là một câu chuyện tình yêu
+            </p>
         </div>
-        <div class="categories-grid">
-            <div class="category-card">
-                <img src="images/vay1.jpg" alt="Váy công chúa">
-                <div class="category-overlay">
-                    <h3>Váy Công Chúa</h3>
-                    <a href="products.php?cat=princess" class="btn-link">Xem Thêm →</a>
+
+        <!-- Categories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Category 1: Váy Công Chúa -->
+            <a href="products.php?cat=princess" class="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                <div class="relative h-96 overflow-hidden">
+                    <img src="images/vay1.jpg" alt="Váy công chúa" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <!-- Gradient overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    
+                    <!-- Decorative corner -->
+                    <div class="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-pink-400 to-rose-500 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0">
+                        <div class="space-y-3">
+                            <h3 class="text-3xl font-bold text-white">Váy Công Chúa</h3>
+                            <p class="text-white/90 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Lộng lẫy, quyền quý như một nàng công chúa thực thụ
+                            </p>
+                            <div class="flex items-center gap-2 text-white font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                                <span>Khám phá ngay</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="category-card">
-                <img src="images/vay2.jpg" alt="Váy đuôi cá">
-                <div class="category-overlay">
-                    <h3>Váy Đuôi Cá</h3>
-                    <a href="products.php?cat=mermaid" class="btn-link">Xem Thêm →</a>
+            </a>
+
+            <!-- Category 2: Váy Đuôi Cá -->
+            <a href="products.php?cat=mermaid" class="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                <div class="relative h-96 overflow-hidden">
+                    <img src="images/vay2.jpg" alt="Váy đuôi cá" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    
+                    <div class="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0">
+                        <div class="space-y-3">
+                            <h3 class="text-3xl font-bold text-white">Váy Đuôi Cá</h3>
+                            <p class="text-white/90 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Quyến rũ, gợi cảm, tôn dáng hoàn hảo
+                            </p>
+                            <div class="flex items-center gap-2 text-white font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                                <span>Khám phá ngay</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="category-card">
-                <img src="images/vay3.jpg" alt="Váy chữ A">
-                <div class="category-overlay">
-                    <h3>Váy Chữ A</h3>
-                    <a href="products.php?cat=aline" class="btn-link">Xem Thêm →</a>
+            </a>
+
+            <!-- Category 3: Váy Chữ A -->
+            <a href="products.php?cat=aline" class="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                <div class="relative h-96 overflow-hidden">
+                    <img src="images/vay3.jpg" alt="Váy chữ A" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    
+                    <div class="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0">
+                        <div class="space-y-3">
+                            <h3 class="text-3xl font-bold text-white">Váy Chữ A</h3>
+                            <p class="text-white/90 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Thanh lịch, duyên dáng, phù hợp mọi vóc dáng
+                            </p>
+                            <div class="flex items-center gap-2 text-white font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                                <span>Khám phá ngay</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="category-card">
-                <img src="images/vay3.jpg" alt="Váy hiện đại">
-                <div class="category-overlay">
-                    <h3>Váy Hiện Đại</h3>
-                    <a href="products.php?cat=modern" class="btn-link">Xem Thêm →</a>
+            </a>
+
+            <!-- Category 4: Váy Hiện Đại -->
+            <a href="products.php?cat=modern" class="group relative overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3">
+                <div class="relative h-96 overflow-hidden">
+                    <img src="images/vay4.jpg" alt="Váy hiện đại" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
+                    
+                    <div class="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg transform group-hover:rotate-12 transition-transform duration-300">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="absolute bottom-0 left-0 right-0 p-6 transform transition-transform duration-300 group-hover:translate-y-0">
+                        <div class="space-y-3">
+                            <h3 class="text-3xl font-bold text-white">Váy Hiện Đại</h3>
+                            <p class="text-white/90 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                Tinh tế, tối giản, phong cách đương đại
+                            </p>
+                            <div class="flex items-center gap-2 text-white font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
+                                <span>Khám phá ngay</span>
+                                <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </a>
+        </div>
+
+        <!-- Bottom CTA -->
+        <div class="text-center mt-16">
+            <div class="inline-flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl border border-pink-100">
+                <p class="text-gray-600 text-lg">Không tìm thấy phong cách phù hợp?</p>
+                <a href="products.php" class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-8 py-4 rounded-full font-bold text-lg hover:from-pink-600 hover:to-rose-600 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <span>Xem Tất Cả Bộ Sưu Tập</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </div>
@@ -484,7 +785,7 @@ require_once 'includes/header.php';
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                         </svg>
                     </div>
-                    <img src="assets/images/blog-1.jpg" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
+                    <img src="images/cn1.jpg" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
                     <div class="absolute top-4 right-4 bg-white rounded-full px-4 py-2 shadow-lg">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -522,7 +823,7 @@ require_once 'includes/header.php';
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
                     </div>
-                    <img src="assets/images/blog-2.jpg" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
+                    <img src="images/cn2.jpg"" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
                     <div class="absolute top-4 right-4 bg-white rounded-full px-4 py-2 shadow-lg">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -560,7 +861,7 @@ require_once 'includes/header.php';
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                         </svg>
                     </div>
-                    <img src="assets/images/blog-3.jpg" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
+                    <img src="images/cn3.jpg"" alt="Blog" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.style.display='none'">
                     <div class="absolute top-4 right-4 bg-white rounded-full px-4 py-2 shadow-lg">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

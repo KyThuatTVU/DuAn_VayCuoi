@@ -45,19 +45,45 @@ switch ($action) {
         ]);
 }
 
-// Thêm sản phẩm vào giỏ hàng
+// Thêm váy vào giỏ hàng (cho thuê)
 function addToCart($conn, $user_id) {
     $vay_id = intval($_POST['vay_id'] ?? 0);
     $so_luong = intval($_POST['so_luong'] ?? 1);
-    $ngay_thue = $_POST['ngay_thue'] ?? null;
+    $ngay_bat_dau_thue = $_POST['ngay_bat_dau_thue'] ?? null;
+    $ngay_tra_vay = $_POST['ngay_tra_vay'] ?? null;
     $so_ngay_thue = intval($_POST['so_ngay_thue'] ?? 1);
+    $ghi_chu = $_POST['ghi_chu'] ?? '';
     
     if ($vay_id <= 0) {
         echo json_encode([
             'success' => false,
-            'message' => 'Sản phẩm không hợp lệ'
+            'message' => 'Váy cưới không hợp lệ'
         ]);
         return;
+    }
+    
+    // Validate ngày thuê
+    if (empty($ngay_bat_dau_thue)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Vui lòng chọn ngày bắt đầu thuê'
+        ]);
+        return;
+    }
+    
+    // Tính số ngày thuê nếu có ngày trả
+    if (!empty($ngay_tra_vay)) {
+        $start = new DateTime($ngay_bat_dau_thue);
+        $end = new DateTime($ngay_tra_vay);
+        $diff = $start->diff($end);
+        $so_ngay_thue = max(1, $diff->days); // Tối thiểu 1 ngày
+    }
+    
+    // Tính ngày trả nếu chưa có
+    if (empty($ngay_tra_vay)) {
+        $start = new DateTime($ngay_bat_dau_thue);
+        $start->modify("+{$so_ngay_thue} days");
+        $ngay_tra_vay = $start->format('Y-m-d');
     }
     
     // Kiểm tra váy có tồn tại không
@@ -77,14 +103,17 @@ function addToCart($conn, $user_id) {
     
     $vay = $result->fetch_assoc();
     
-    // Kiểm tra số lượng tồn kho
+    // Kiểm tra số lượng váy còn có thể cho thuê
     if ($vay['so_luong_ton'] < $so_luong) {
         echo json_encode([
             'success' => false,
-            'message' => 'Số lượng váy không đủ. Chỉ còn ' . $vay['so_luong_ton'] . ' váy'
+            'message' => 'Váy không đủ để cho thuê. Chỉ còn ' . $vay['so_luong_ton'] . ' váy có sẵn'
         ]);
         return;
     }
+    
+    // TODO: Kiểm tra váy có bị trùng lịch thuê không (nâng cao)
+    // Cần check xem trong khoảng thời gian này váy đã được thuê chưa
     
     // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
     $check_cart = "SELECT id, so_luong FROM gio_hang WHERE nguoi_dung_id = ? AND vay_id = ?";
@@ -94,50 +123,50 @@ function addToCart($conn, $user_id) {
     $cart_result = $stmt->get_result();
     
     if ($cart_result->num_rows > 0) {
-        // Cập nhật số lượng
+        // Váy đã có trong giỏ - Cập nhật thông tin thuê
         $cart_item = $cart_result->fetch_assoc();
-        $new_quantity = $cart_item['so_luong'] + $so_luong;
         
-        if ($new_quantity > $vay['so_luong_ton']) {
-            echo json_encode([
-                'success' => false,
-                'message' => 'Số lượng vượt quá tồn kho'
-            ]);
-            return;
-        }
-        
-        $update_sql = "UPDATE gio_hang SET so_luong = ?, so_ngay_thue = ?, ngay_thue = ? WHERE id = ?";
+        $update_sql = "UPDATE gio_hang SET 
+                       so_luong = ?, 
+                       ngay_bat_dau_thue = ?, 
+                       ngay_tra_vay = ?,
+                       so_ngay_thue = ?,
+                       ghi_chu = ?
+                       WHERE id = ?";
         $stmt = $conn->prepare($update_sql);
-        $stmt->bind_param("iisi", $new_quantity, $so_ngay_thue, $ngay_thue, $cart_item['id']);
+        $stmt->bind_param("issisi", $so_luong, $ngay_bat_dau_thue, $ngay_tra_vay, $so_ngay_thue, $ghi_chu, $cart_item['id']);
         
         if ($stmt->execute()) {
             echo json_encode([
                 'success' => true,
-                'message' => 'Đã cập nhật số lượng trong giỏ hàng',
-                'product_name' => $vay['ten_vay']
+                'message' => 'Đã cập nhật thông tin thuê váy trong giỏ hàng',
+                'product_name' => $vay['ten_vay'],
+                'rental_days' => $so_ngay_thue
             ]);
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'Lỗi khi cập nhật giỏ hàng'
+                'message' => 'Lỗi khi cập nhật giỏ hàng: ' . $conn->error
             ]);
         }
     } else {
         // Thêm mới vào giỏ hàng
-        $insert_sql = "INSERT INTO gio_hang (nguoi_dung_id, vay_id, so_luong, ngay_thue, so_ngay_thue) VALUES (?, ?, ?, ?, ?)";
+        $insert_sql = "INSERT INTO gio_hang (nguoi_dung_id, vay_id, so_luong, ngay_bat_dau_thue, ngay_tra_vay, so_ngay_thue, ghi_chu) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($insert_sql);
-        $stmt->bind_param("iiisi", $user_id, $vay_id, $so_luong, $ngay_thue, $so_ngay_thue);
+        $stmt->bind_param("iiissis", $user_id, $vay_id, $so_luong, $ngay_bat_dau_thue, $ngay_tra_vay, $so_ngay_thue, $ghi_chu);
         
         if ($stmt->execute()) {
             echo json_encode([
                 'success' => true,
-                'message' => 'Đã thêm vào giỏ hàng',
-                'product_name' => $vay['ten_vay']
+                'message' => 'Đã thêm váy vào giỏ hàng để thuê',
+                'product_name' => $vay['ten_vay'],
+                'rental_days' => $so_ngay_thue
             ]);
         } else {
             echo json_encode([
                 'success' => false,
-                'message' => 'Lỗi khi thêm vào giỏ hàng'
+                'message' => 'Lỗi khi thêm vào giỏ hàng: ' . $conn->error
             ]);
         }
     }
@@ -202,18 +231,20 @@ function removeFromCart($conn, $user_id) {
     }
 }
 
-// Lấy danh sách giỏ hàng
+// Lấy danh sách giỏ hàng (cho thuê váy)
 function getCart($conn, $user_id) {
     $sql = "SELECT 
                 gh.id as cart_id,
                 gh.vay_id,
                 vc.ten_vay,
                 vc.ma_vay,
-                vc.gia_thue,
+                vc.gia_thue as gia_thue_moi_ngay,
                 gh.so_luong,
-                gh.ngay_thue,
+                gh.ngay_bat_dau_thue,
+                gh.ngay_tra_vay,
                 gh.so_ngay_thue,
-                (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien,
+                gh.ghi_chu,
+                (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien_thue,
                 gh.created_at
             FROM gio_hang gh
             JOIN vay_cuoi vc ON gh.vay_id = vc.id
@@ -230,14 +261,15 @@ function getCart($conn, $user_id) {
     
     while ($row = $result->fetch_assoc()) {
         $items[] = $row;
-        $total += $row['tong_tien'];
+        $total += $row['tong_tien_thue'];
     }
     
     echo json_encode([
         'success' => true,
         'items' => $items,
         'total' => $total,
-        'count' => count($items)
+        'count' => count($items),
+        'type' => 'rental' // Đánh dấu đây là giỏ hàng cho thuê
     ]);
 }
 

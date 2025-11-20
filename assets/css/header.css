@@ -149,6 +149,29 @@
     background: linear-gradient(135deg, #7ec8e3 0%, #5ab8d9 100%);
     box-shadow: 0 6px 16px rgba(126, 200, 227, 0.4);
     transform: translateY(-2px);
+    position: relative;
+}
+
+.main-nav a.active::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #fff, transparent);
+    border-radius: 2px;
+    animation: activeGlow 2s ease-in-out infinite;
+}
+
+@keyframes activeGlow {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
 /* Dropdown */
