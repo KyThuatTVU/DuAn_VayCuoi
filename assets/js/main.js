@@ -1,6 +1,81 @@
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     
+    // Mobile Menu Toggle
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenuClose = document.querySelector('.mobile-menu-close');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+    console.log('Mobile Menu Elements:', {
+        toggle: mobileMenuToggle,
+        close: mobileMenuClose,
+        menu: mobileMenu,
+        overlay: mobileMenuOverlay
+    });
+
+    function openMobileMenu() {
+        console.log('Opening mobile menu');
+        if (mobileMenu) {
+            mobileMenu.classList.remove('translate-x-full');
+        }
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.classList.remove('invisible', 'opacity-0');
+        }
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+        console.log('Closing mobile menu');
+        if (mobileMenu) {
+            mobileMenu.classList.add('translate-x-full');
+        }
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.classList.add('invisible', 'opacity-0');
+        }
+        document.body.style.overflow = '';
+    }
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Mobile menu toggle clicked');
+            openMobileMenu();
+        });
+    } else {
+        console.error('Mobile menu toggle button not found!');
+    }
+
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeMobileMenu();
+        });
+    }
+
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    }
+
+    // Mobile Submenu Toggle
+    const mobileSubmenuToggles = document.querySelectorAll('.mobile-submenu-toggle');
+    console.log('Found submenu toggles:', mobileSubmenuToggles.length);
+    
+    mobileSubmenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            const submenu = this.nextElementSibling;
+            const icon = this.querySelector('svg:last-child');
+            
+            if (submenu) {
+                submenu.classList.toggle('hidden');
+                if (icon) {
+                    icon.classList.toggle('rotate-180');
+                }
+            }
+        });
+    });
+    
     // Search Toggle
     const searchToggle = document.querySelector('.search-toggle');
     const searchBar = document.querySelector('.search-bar');

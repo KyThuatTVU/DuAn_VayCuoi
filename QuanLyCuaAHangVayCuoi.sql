@@ -173,6 +173,7 @@ CREATE TABLE lien_he (
    phone VARCHAR(30),
    subject VARCHAR(255),
    message TEXT,
+   image_path VARCHAR(300) NULL,
    status ENUM('new','replied','closed') DEFAULT 'new',
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    FOREIGN KEY (user_id) REFERENCES nguoi_dung(id) ON DELETE SET NULL

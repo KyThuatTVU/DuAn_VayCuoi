@@ -112,38 +112,56 @@
 </style>
 
 <!-- Contact Buttons (Left Side) -->
-<div id="contact-buttons" class="fixed bottom-6 left-6 z-50 flex flex-col gap-3 transition-all duration-300">
+<div id="contact-buttons" class="fixed bottom-6 left-6 z-50 flex flex-col-reverse gap-5 transition-all duration-300">
+    
+    <!-- Phone Button -->
+    <div class="relative group">
+        <!-- Pulse ring effect -->
+        <span class="absolute inset-0 flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+        </span>
+        
+        <a href="tel:0787972075" 
+           class="relative flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <i class="fas fa-phone-alt text-2xl animate-pulse"></i>
+        </a>
+        
+        <!-- Tooltip -->
+        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+            Gọi: 078.797.2075
+            <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
+        </div>
+    </div>
     
     <!-- Zalo Button -->
     <div class="relative group">
-        <div class="absolute inset-0 bg-blue-500 rounded-full animate-pulse-ring opacity-75"></div>
-        <a href="https://zalo.me/0123456789" target="_blank" 
-           class="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-blue-500/50 animate-bounce-slow">
-            <svg class="w-9 h-9" viewBox="0 0 48 48" fill="currentColor">
-                <path d="M24 4C13.5 4 5 11.9 5 21.7c0 5.7 3 10.8 7.6 14.3L11 44l7.8-2.6c1.7.5 3.5.8 5.2.8 10.5 0 19-7.9 19-17.7S34.5 4 24 4zm7 27h-14c-.6 0-1-.4-1-1s.4-1 1-1h14c.6 0 1 .4 1 1s-.4 1-1 1zm0-6h-14c-.6 0-1-.4-1-1s.4-1 1-1h14c.6 0 1 .4 1 1s-.4 1-1 1zm0-6h-14c-.6 0-1-.4-1-1s.4-1 1-1h14c.6 0 1 .4 1 1s-.4 1-1 1z"/>
-            </svg>
+        <!-- Pulse ring effect -->
+        <span class="absolute inset-0 flex items-center justify-center">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+        </span>
+        
+        <a href="https://zalo.me/0787972075" target="_blank" 
+           class="relative flex flex-col items-center justify-center w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <span class="text-white text-xs font-bold tracking-wide animate-pulse">Zalo</span>
         </a>
-        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl pointer-events-none">
-            <span class="flex items-center gap-2">
-                <i class="fas fa-comment-dots"></i>
-                Chat qua Zalo
-            </span>
+        
+        <!-- Tooltip -->
+        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+            Chat qua Zalo
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
 
-    <!-- Phone Button -->
+    <!-- Scroll to Top Button -->
     <div class="relative group">
-        <div class="absolute inset-0 bg-green-500 rounded-full animate-pulse-ring opacity-75"></div>
-        <a href="tel:+84123456789" 
-           class="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-green-500/50 animate-shake">
-            <i class="fas fa-phone-alt text-2xl"></i>
-        </a>
-        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl pointer-events-none">
-            <span class="flex items-center gap-2">
-                <i class="fas fa-phone-volume"></i>
-                Gọi ngay: 0123-456-789
-            </span>
+        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
+           class="flex items-center justify-center w-16 h-16 bg-cyan-400 hover:bg-cyan-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <i class="fas fa-arrow-up text-2xl"></i>
+        </button>
+        
+        <!-- Tooltip -->
+        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+            Lên đầu trang
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
@@ -152,20 +170,20 @@
 <!-- Chatbot Button (Right Side) -->
 <div id="chatbot-button" class="fixed bottom-6 right-6 z-50 transition-all duration-300">
     <div class="relative group">
-        <div class="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full animate-pulse-ring opacity-75"></div>
         <button id="chatbot-toggle" 
-                class="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 hover:from-pink-600 hover:via-pink-700 hover:to-purple-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-pink-500/50 animate-gradient">
-            <i class="fas fa-headset text-2xl"></i>
+                class="flex items-center justify-center w-16 h-16 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+            <i class="fas fa-comments text-2xl"></i>
+            
+            <!-- Notification badge -->
             <span class="absolute -top-1 -right-1 flex h-5 w-5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold">3</span>
+                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold border-2 border-white">3</span>
             </span>
         </button>
-        <div class="absolute right-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-xl pointer-events-none">
-            <span class="flex items-center gap-2">
-                <i class="fas fa-comments"></i>
-                Tư vấn online 24/7
-            </span>
+        
+        <!-- Tooltip -->
+        <div class="absolute right-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+            Tư vấn online 24/7
             <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
@@ -409,3 +427,72 @@
         }, 300);
     });
 </script>
+
+
+<!-- Responsive CSS for Mobile -->
+<style>
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        #floatingContact {
+            left: 8px !important;
+            bottom: 70px !important;
+        }
+
+        .floating-btn .w-16 {
+            width: 3.5rem !important;
+            height: 3.5rem !important;
+        }
+
+        .floating-btn svg {
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+        }
+
+        .floating-btn .text-lg {
+            font-size: 0.75rem !important;
+        }
+
+        .floating-btn .absolute.left-20 {
+            left: 4rem;
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        #floatingContact {
+            left: 6px !important;
+            bottom: 60px !important;
+        }
+
+        .floating-btn .w-16 {
+            width: 3rem !important;
+            height: 3rem !important;
+        }
+
+        .floating-btn svg {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+        }
+
+        .floating-btn .text-lg {
+            font-size: 0.65rem !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .floating-btn .absolute.left-20 {
+            display: none !important;
+        }
+
+        #floatingContact {
+            left: 4px !important;
+            bottom: 50px !important;
+        }
+
+        .floating-btn .w-16 {
+            width: 2.75rem !important;
+            height: 2.75rem !important;
+        }
+    }
+</style>

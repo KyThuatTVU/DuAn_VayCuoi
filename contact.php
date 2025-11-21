@@ -8,6 +8,7 @@ $success_message = '';
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Lấy dữ liệu từ form
     $name = sanitizeInput($_POST['name'] ?? '');
     $email = sanitizeInput($_POST['email'] ?? '');
     $phone = sanitizeInput($_POST['phone'] ?? '');
@@ -16,25 +17,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Validate
     if (empty($name) || empty($email) || empty($subject) || empty($message)) {
-        $error_message = 'Vui lòng điền đầy đủ các trường bắt buộc.';
+        $error_message = 'Vui lòng điền đầy đủ các trường bắt buộc (Họ tên, Email, Chủ đề, Nội dung).';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error_message = 'Email không hợp lệ.';
+        $error_message = 'Địa chỉ email không hợp lệ.';
+    } elseif (!empty($phone) && !preg_match('/^[0-9]{10,11}$/', $phone)) {
+        $error_message = 'Số điện thoại không hợp lệ (phải có 10-11 chữ số).';
     } else {
-        // Lấy user_id nếu đã đăng nhập
-        $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-        
-        // Insert vào database
-        $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, status) VALUES (?, ?, ?, ?, ?, ?, 'new')");
-        $stmt->bind_param("isssss", $user_id, $name, $email, $phone, $subject, $message);
-        
-        if ($stmt->execute()) {
-            $success_message = 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
-            // Reset form
-            $_POST = array();
-        } else {
-            $error_message = 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+        // Xử lý upload ảnh
+        $image_path = null;
+        if (isset($_FILES['contact_image']) && $_FILES['contact_image']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = 'uploads/contacts/';
+            
+            // Tạo thư mục nếu chưa tồn tại
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+            
+            $file_tmp = $_FILES['contact_image']['tmp_name'];
+            $file_name = $_FILES['contact_image']['name'];
+            $file_size = $_FILES['contact_image']['size'];
+            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+            
+            // Kiểm tra định dạng file
+            $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+            $max_file_size = 5 * 1024 * 1024; // 5MB
+            
+            if (!in_array($file_ext, $allowed_extensions)) {
+                $error_message = 'Chỉ chấp nhận file ảnh định dạng JPG, JPEG, PNG, GIF.';
+            } elseif ($file_size > $max_file_size) {
+                $error_message = 'Kích thước file không được vượt quá 5MB.';
+            } else {
+                // Tạo tên file unique
+                $new_file_name = 'contact_' . time() . '_' . uniqid() . '.' . $file_ext;
+                $upload_path = $upload_dir . $new_file_name;
+                
+                if (move_uploaded_file($file_tmp, $upload_path)) {
+                    $image_path = $upload_path;
+                } else {
+                    $error_message = 'Có lỗi khi upload ảnh. Vui lòng thử lại.';
+                }
+            }
         }
-        $stmt->close();
+        
+        // Nếu không có lỗi upload, tiếp tục insert vào database
+        if (empty($error_message)) {
+            // Lấy user_id nếu đã đăng nhập
+            $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+            
+            try {
+                // Insert vào database với prepared statement
+                if ($user_id) {
+                    $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, image_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', NOW())");
+                    $stmt->bind_param("issssss", $user_id, $name, $email, $phone, $subject, $message, $image_path);
+                } else {
+                    $stmt = $conn->prepare("INSERT INTO lien_he (name, email, phone, subject, message, image_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'new', NOW())");
+                    $stmt->bind_param("ssssss", $name, $email, $phone, $subject, $message, $image_path);
+                }
+                
+                if ($stmt->execute()) {
+                    $success_message = 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
+                    // Reset form data sau khi gửi thành công
+                    $_POST = array();
+                    $name = $email = $phone = $subject = $message = '';
+                } else {
+                    $error_message = 'Có lỗi xảy ra khi gửi tin nhắn. Vui lòng thử lại sau.';
+                }
+                $stmt->close();
+            } catch (Exception $e) {
+                $error_message = 'Lỗi hệ thống: ' . $e->getMessage();
+            }
+        }
     }
 }
 
@@ -59,6 +111,49 @@ require_once 'includes/header.php';
         <div class="text-center mb-12">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">Liên Hệ Với Chúng Tôi</h1>
             <p class="text-lg text-gray-600">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn</p>
+        </div>
+
+        <!-- Contact Cards Component -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+            <!-- Contact Card 1 - Hotline -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+                <div class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <i class="fas fa-phone-alt text-3xl text-primary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Hotline</h3>
+                <a href="tel:0787972075" class="text-primary text-lg font-semibold hover:underline">078.797.2075</a>
+                <p class="text-gray-600 mt-2 text-sm">Hỗ trợ 24/7</p>
+            </div>
+            
+            <!-- Contact Card 2 - Zalo -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+                <div class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <i class="fab fa-whatsapp text-3xl text-accent"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Zalo</h3>
+                <a href="https://zalo.me/0787972075" class="text-accent text-lg font-semibold hover:underline" target="_blank">078.797.2075</a>
+                <p class="text-gray-600 mt-2 text-sm">Chat nhanh</p>
+            </div>
+            
+            <!-- Contact Card 3 - Email -->
+            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+                <div class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <i class="fas fa-envelope text-3xl text-secondary"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Email</h3>
+                <a href="mailto:duyphongtv123@gmail.com" class="text-secondary text-lg font-semibold hover:underline break-all">duyphongtv123@gmail.com</a>
+                <p class="text-gray-600 mt-2 text-sm">Hỗ trợ email</p>
+            </div>
+            
+            <!-- Contact Card 4 - Địa chỉ -->
+            <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-xl p-8 text-center hover:shadow-xl transition-shadow">
+                <div class="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                    <i class="fas fa-map-marker-alt text-3xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-3">Địa chỉ</h3>
+                <p class="text-gray-700 text-sm leading-relaxed">123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</p>
+                <p class="text-gray-600 mt-2 text-sm">Ghé thăm</p>
+            </div>
         </div>
 
         <!-- Success/Error Messages -->
@@ -86,7 +181,7 @@ require_once 'includes/header.php';
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-xl shadow-lg p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Gửi Tin Nhắn</h2>
-                    <form method="POST" class="space-y-6">
+                    <form method="POST" enctype="multipart/form-data" class="space-y-6">
                         <!-- Họ và Tên -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -162,6 +257,32 @@ require_once 'includes/header.php';
                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition resize-none"
                                 placeholder="Nhập nội dung tin nhắn của bạn..."
                             ><?php echo isset($_POST['message']) ? htmlspecialchars($_POST['message']) : ''; ?></textarea>
+                        </div>
+
+                        <!-- Upload Ảnh -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Đính Kèm Ảnh (Tùy chọn)
+                            </label>
+                            <div class="flex items-center justify-center w-full">
+                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click để chọn ảnh</span> hoặc kéo thả</p>
+                                        <p class="text-xs text-gray-500">PNG, JPG, GIF (MAX. 5MB)</p>
+                                    </div>
+                                    <input 
+                                        type="file" 
+                                        name="contact_image" 
+                                        accept="image/jpeg,image/jpg,image/png,image/gif"
+                                        class="hidden"
+                                        onchange="displayFileName(this)"
+                                    >
+                                </label>
+                            </div>
+                            <p id="file-name" class="mt-2 text-sm text-gray-600"></p>
                         </div>
 
                         <!-- Submit Button -->
@@ -269,5 +390,18 @@ require_once 'includes/header.php';
         </div>
     </div>
 </section>
+
+<script>
+function displayFileName(input) {
+    const fileNameDisplay = document.getElementById('file-name');
+    if (input.files && input.files[0]) {
+        const fileName = input.files[0].name;
+        const fileSize = (input.files[0].size / 1024 / 1024).toFixed(2); // Convert to MB
+        fileNameDisplay.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle"></i> Đã chọn: <strong>${fileName}</strong> (${fileSize} MB)</span>`;
+    } else {
+        fileNameDisplay.innerHTML = '';
+    }
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

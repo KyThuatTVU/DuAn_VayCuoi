@@ -207,11 +207,6 @@
     <!-- Chatbot Widget -->
     <?php include 'includes/chatbot-widget.php'; ?>
 
-    <!-- Back to Top -->
-    <button class="back-to-top" title="Lên đầu trang" style="left: 24px; right: auto; bottom: 200px;">
-        <i class="fas fa-arrow-up"></i>
-    </button>
-
     <script src="assets/js/main.js"></script>
     
     <!-- Cart Update Script -->

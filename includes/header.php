@@ -30,6 +30,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css">
 </head>
 <body>
     <!-- Top Bar -->
@@ -147,12 +148,6 @@ if (session_status() === PHP_SESSION_NONE) {
                             <path d="m21 21-4.35-4.35"/>
                         </svg>
                     </button>
-                    <a href="wishlist.php" class="hidden md:flex relative items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition-colors" title="Yêu thích">
-                        <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
-                    </a>
                     <a href="cart.php" class="relative flex items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition-colors" title="Giỏ hàng">
                         <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="21" r="1"/>
@@ -257,6 +252,183 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay fixed inset-0 bg-black/50 z-40 opacity-0 invisible transition-all duration-300 lg:hidden" id="mobileMenuOverlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 h-full w-80 max-w-[85%] bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 lg:hidden overflow-y-auto" id="mobileMenu">
+        <div class="p-6">
+            <!-- Close Button -->
+            <button class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors mobile-menu-close">
+                <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+
+            <!-- Logo -->
+            <div class="mb-8">
+                <img src="images/Green And White Illustrative Flower Shop Logo.png" alt="<?php echo SITE_NAME; ?>" class="h-16 w-auto">
+            </div>
+
+            <!-- Mobile Navigation -->
+            <nav class="space-y-2">
+                <a href="index.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base transition-all <?php echo isActive('index.php') ? 'bg-gradient-to-r from-primary to-accent text-white' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span>Trang chủ</span>
+                </a>
+
+                <!-- Products with Submenu -->
+                <div class="mobile-submenu-wrapper">
+                    <button class="flex items-center justify-between w-full px-4 py-3 rounded-xl font-semibold text-base text-gray-700 hover:bg-gray-100 transition-all mobile-submenu-toggle">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            <span>Váy Cưới</span>
+                        </div>
+                        <svg class="w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </button>
+                    <div class="mobile-submenu hidden pl-12 pr-4 py-2 space-y-1">
+                        <a href="products.php?cat=princess" class="block py-2 text-gray-600 hover:text-primary transition-colors">Váy Công Chúa</a>
+                        <a href="products.php?cat=mermaid" class="block py-2 text-gray-600 hover:text-primary transition-colors">Váy Đuôi Cá</a>
+                        <a href="products.php?cat=aline" class="block py-2 text-gray-600 hover:text-primary transition-colors">Váy Chữ A</a>
+                        <a href="products.php?cat=modern" class="block py-2 text-gray-600 hover:text-primary transition-colors">Váy Hiện Đại</a>
+                    </div>
+                </div>
+
+                <a href="booking.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base transition-all <?php echo isActive('booking.php') ? 'bg-gradient-to-r from-primary to-accent text-white' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6" stroke="currentColor" stroke-width="2"/>
+                        <line x1="8" y1="2" x2="8" y2="6" stroke="currentColor" stroke-width="2"/>
+                        <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>Đặt Lịch</span>
+                </a>
+
+                <a href="blog.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base transition-all <?php echo isActive('blog.php') ? 'bg-gradient-to-r from-primary to-accent text-white' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8" stroke="white" stroke-width="2"/>
+                    </svg>
+                    <span>Tin Tức</span>
+                </a>
+
+                <a href="about.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base transition-all <?php echo isActive('about.php') ? 'bg-gradient-to-r from-primary to-accent text-white' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                    <span>Về Chúng Tôi</span>
+                </a>
+
+                <a href="contact.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base transition-all <?php echo isActive('contact.php') ? 'bg-gradient-to-r from-primary to-accent text-white' : 'text-gray-700 hover:bg-gray-100'; ?>">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <span>Liên Hệ</span>
+                </a>
+            </nav>
+
+            <!-- Mobile Auth Buttons -->
+            <?php if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']): ?>
+            <div class="mt-6 space-y-3 pt-6 border-t border-gray-200">
+                <a href="login.php" class="flex items-center justify-center gap-2 w-full px-5 py-3 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/>
+                    </svg>
+                    <span>Đăng Nhập</span>
+                </a>
+                <a href="register.php" class="flex items-center justify-center gap-2 w-full px-5 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-xl font-semibold hover:from-accent hover:to-primary transition-all shadow-lg">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    <span>Đăng Ký</span>
+                </a>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Script -->
+    <script>
+    // Immediate mobile menu functionality
+    (function() {
+        function initMobileMenu() {
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileMenuClose = document.querySelector('.mobile-menu-close');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+            if (!mobileMenuToggle || !mobileMenu || !mobileMenuOverlay) {
+                console.error('Mobile menu elements not found');
+                return;
+            }
+
+            function openMobileMenu() {
+                mobileMenu.classList.remove('translate-x-full');
+                mobileMenuOverlay.classList.remove('invisible', 'opacity-0');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMobileMenu() {
+                mobileMenu.classList.add('translate-x-full');
+                mobileMenuOverlay.classList.add('invisible', 'opacity-0');
+                document.body.style.overflow = '';
+            }
+
+            mobileMenuToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openMobileMenu();
+            });
+
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    closeMobileMenu();
+                });
+            }
+
+            mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+            // Mobile Submenu Toggle
+            const mobileSubmenuToggles = document.querySelectorAll('.mobile-submenu-toggle');
+            mobileSubmenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const submenu = this.nextElementSibling;
+                    const icon = this.querySelector('svg:last-child');
+                    
+                    if (submenu) {
+                        submenu.classList.toggle('hidden');
+                        if (icon) {
+                            icon.classList.toggle('rotate-180');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileMenu);
+        } else {
+            initMobileMenu();
+        }
+    })();
+    </script>
 
     <!-- Main Content -->
     <main class="main-content">
