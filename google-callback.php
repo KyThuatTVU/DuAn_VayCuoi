@@ -75,13 +75,12 @@ if ($result->num_rows > 0) {
     
     // Cập nhật avatar từ Google (luôn cập nhật để có avatar mới nhất)
     if (!empty($avatar_url)) {
-        // Nếu avatar hiện tại là file local và có avatar mới từ Google
-        if (empty($user['avt']) || strpos($user['avt'], 'uploads/') === false) {
-            $update_stmt = $conn->prepare("UPDATE nguoi_dung SET avt = ? WHERE id = ?");
-            $update_stmt->bind_param("si", $avatar_url, $user['id']);
-            $update_stmt->execute();
-            $update_stmt->close();
-        }
+        // Luôn cập nhật avatar từ Google vào database
+        $update_stmt = $conn->prepare("UPDATE nguoi_dung SET avt = ? WHERE id = ?");
+        $update_stmt->bind_param("si", $avatar_url, $user['id']);
+        $update_stmt->execute();
+        $update_stmt->close();
+        
         // Sử dụng avatar từ Google cho session
         $user['avt'] = $avatar_url;
     }
@@ -90,7 +89,7 @@ if ($result->num_rows > 0) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_name'] = $user['ho_ten'];
     $_SESSION['user_email'] = $user['email'];
-    $_SESSION['user_avatar'] = !empty($user['avt']) ? $user['avt'] : '';
+    $_SESSION['user_avatar'] = $user['avt']; // Lấy trực tiếp từ $user['avt'] đã được cập nhật
     $_SESSION['logged_in'] = true;
     
     $_SESSION['success'] = "Đăng nhập thành công! Chào mừng " . $user['ho_ten'];
