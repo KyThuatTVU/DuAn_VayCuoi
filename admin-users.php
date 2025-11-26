@@ -5,17 +5,47 @@ require_once 'includes/config.php';
 $page_title = 'Quản Lý Khách Hàng';
 $page_subtitle = 'Xem và quản lý thông tin khách hàng';
 
-// Xử lý xóa
+// Kiểm tra và thêm cột status nếu chưa có
+$check_column = $conn->query("SHOW COLUMNS FROM nguoi_dung LIKE 'status'");
+if ($check_column->num_rows == 0) {
+    $conn->query("ALTER TABLE nguoi_dung ADD COLUMN status ENUM('active','locked','disabled') DEFAULT 'active' AFTER avt");
+}
+
+// Xử lý các action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] === 'delete') {
-        $id = intval($_POST['id']);
+    $action = $_POST['action'];
+    $id = intval($_POST['id']);
+    
+    if ($action === 'delete') {
         $stmt = $conn->prepare("DELETE FROM nguoi_dung WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $_SESSION['admin_success'] = 'Xóa người dùng thành công!';
-        header('Location: admin-users.php');
-        exit();
     }
+    
+    if ($action === 'lock') {
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'locked' WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $_SESSION['admin_success'] = 'Đã khóa tài khoản người dùng!';
+    }
+    
+    if ($action === 'disable') {
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'disabled' WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $_SESSION['admin_success'] = 'Đã vô hiệu hóa tài khoản người dùng!';
+    }
+    
+    if ($action === 'activate') {
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'active' WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $_SESSION['admin_success'] = 'Đã kích hoạt lại tài khoản người dùng!';
+    }
+    
+    header('Location: admin-users.php');
+    exit();
 }
 
 // Lấy danh sách
@@ -44,7 +74,8 @@ $stmt->execute();
 $total = $stmt->get_result()->fetch_assoc()['total'];
 $total_pages = ceil($total / $per_page);
 
-$sql = "SELECT n.*, (SELECT COUNT(*) FROM don_hang WHERE nguoi_dung_id = n.id) as order_count,
+$sql = "SELECT n.*, COALESCE(n.status, 'active') as status,
+        (SELECT COUNT(*) FROM don_hang WHERE nguoi_dung_id = n.id) as order_count,
         (SELECT SUM(tong_tien) FROM don_hang WHERE nguoi_dung_id = n.id AND trang_thai_thanh_toan = 'paid') as total_spent
         FROM nguoi_dung n WHERE $where ORDER BY n.created_at DESC LIMIT ? OFFSET ?";
 $params[] = $per_page;
@@ -83,6 +114,7 @@ include 'includes/admin-layout.php';
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Khách hàng</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Email</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">SĐT</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Trạng thái</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Đơn hàng</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Tổng chi</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Ngày ĐK</th>
@@ -110,6 +142,24 @@ include 'includes/admin-layout.php';
                 <td class="px-6 py-4 text-sm text-navy-600"><?php echo htmlspecialchars($user['email']); ?></td>
                 <td class="px-6 py-4 text-sm text-navy-600"><?php echo htmlspecialchars($user['so_dien_thoai'] ?? '-'); ?></td>
                 <td class="px-6 py-4">
+                    <?php 
+                    $status = $user['status'] ?? 'active';
+                    $status_classes = [
+                        'active' => 'bg-green-100 text-green-700',
+                        'locked' => 'bg-red-100 text-red-700',
+                        'disabled' => 'bg-gray-100 text-gray-700'
+                    ];
+                    $status_labels = [
+                        'active' => 'Hoạt động',
+                        'locked' => 'Đã khóa',
+                        'disabled' => 'Vô hiệu hóa'
+                    ];
+                    ?>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium <?php echo $status_classes[$status] ?? $status_classes['active']; ?>">
+                        <?php echo $status_labels[$status] ?? 'Hoạt động'; ?>
+                    </span>
+                </td>
+                <td class="px-6 py-4">
                     <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"><?php echo $user['order_count']; ?></span>
                 </td>
                 <td class="px-6 py-4 font-bold text-green-600">
@@ -118,18 +168,38 @@ include 'includes/admin-layout.php';
                 <td class="px-6 py-4 text-sm text-navy-500">
                     <?php echo date('d/m/Y', strtotime($user['created_at'])); ?>
                 </td>
-                <td class="px-6 py-4 space-x-3">
-                    <a href="admin-user-detail.php?id=<?php echo $user['id']; ?>" class="text-accent-500 hover:text-accent-600">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                    <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['ho_ten']); ?>')" class="text-red-500 hover:text-red-600">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <a href="admin-user-detail.php?id=<?php echo $user['id']; ?>" class="text-accent-500 hover:text-accent-600" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        
+                        <?php if (($user['status'] ?? 'active') === 'active'): ?>
+                            <button onclick="lockUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
+                                    class="text-orange-500 hover:text-orange-600" title="Khóa tài khoản">
+                                <i class="fas fa-lock"></i>
+                            </button>
+                            <button onclick="disableUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
+                                    class="text-gray-500 hover:text-gray-600" title="Vô hiệu hóa">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        <?php else: ?>
+                            <button onclick="activateUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
+                                    class="text-green-500 hover:text-green-600" title="Kích hoạt lại">
+                                <i class="fas fa-unlock"></i>
+                            </button>
+                        <?php endif; ?>
+                        
+                        <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
+                                class="text-red-500 hover:text-red-600" title="Xóa">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
             <?php if (empty($users)): ?>
-            <tr><td colspan="7" class="px-6 py-8 text-center text-navy-500">Không có khách hàng nào</td></tr>
+            <tr><td colspan="8" class="px-6 py-8 text-center text-navy-500">Không có khách hàng nào</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
@@ -149,16 +219,39 @@ include 'includes/admin-layout.php';
 </div>
 <?php endif; ?>
 
-<form id="deleteForm" method="POST" class="hidden">
-    <input type="hidden" name="action" value="delete">
-    <input type="hidden" name="id" id="deleteId">
+<form id="actionForm" method="POST" class="hidden">
+    <input type="hidden" name="action" id="actionType">
+    <input type="hidden" name="id" id="actionId">
 </form>
 
 <script>
+    function submitAction(action, id) {
+        document.getElementById('actionType').value = action;
+        document.getElementById('actionId').value = id;
+        document.getElementById('actionForm').submit();
+    }
+    
     function deleteUser(id, name) {
         if (confirm('Bạn có chắc muốn xóa người dùng "' + name + '"?\nTất cả đơn hàng liên quan sẽ bị ảnh hưởng!')) {
-            document.getElementById('deleteId').value = id;
-            document.getElementById('deleteForm').submit();
+            submitAction('delete', id);
+        }
+    }
+    
+    function lockUser(id, name) {
+        if (confirm('Bạn có chắc muốn KHÓA tài khoản "' + name + '"?\n\nNgười dùng sẽ không thể đăng nhập cho đến khi được mở khóa.')) {
+            submitAction('lock', id);
+        }
+    }
+    
+    function disableUser(id, name) {
+        if (confirm('Bạn có chắc muốn VÔ HIỆU HÓA tài khoản "' + name + '"?\n\nTài khoản sẽ bị vô hiệu hóa hoàn toàn.')) {
+            submitAction('disable', id);
+        }
+    }
+    
+    function activateUser(id, name) {
+        if (confirm('Bạn có chắc muốn KÍCH HOẠT LẠI tài khoản "' + name + '"?\n\nNgười dùng sẽ có thể đăng nhập bình thường.')) {
+            submitAction('activate', id);
         }
     }
 </script>

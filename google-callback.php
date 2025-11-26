@@ -129,7 +129,7 @@ if ($is_admin_login) {
 
 // ========== XỬ LÝ ĐĂNG NHẬP USER THƯỜNG ==========
 // Kiểm tra user đã tồn tại chưa
-$stmt = $conn->prepare("SELECT * FROM nguoi_dung WHERE email = ?");
+$stmt = $conn->prepare("SELECT *, COALESCE(status, 'active') as status FROM nguoi_dung WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -137,6 +137,17 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     // User đã tồn tại - đăng nhập
     $user = $result->fetch_assoc();
+    
+    // Kiểm tra trạng thái tài khoản
+    if ($user['status'] === 'locked') {
+        $_SESSION['errors'] = ['Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.'];
+        redirect('login.php');
+    }
+    
+    if ($user['status'] === 'disabled') {
+        $_SESSION['errors'] = ['Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.'];
+        redirect('login.php');
+    }
     
     // Cập nhật avatar từ Google (luôn cập nhật để có avatar mới nhất)
     if (!empty($avatar_url)) {

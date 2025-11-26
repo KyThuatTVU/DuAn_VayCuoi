@@ -43,7 +43,7 @@ if (!empty($errors)) {
 
 // Kiểm tra thông tin đăng nhập
 try {
-    $stmt = $conn->prepare("SELECT id, ho_ten, email, mat_khau, avt FROM nguoi_dung WHERE email = ?");
+    $stmt = $conn->prepare("SELECT id, ho_ten, email, mat_khau, avt, COALESCE(status, 'active') as status FROM nguoi_dung WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -61,6 +61,19 @@ try {
     // Kiểm tra mật khẩu
     if (!password_verify($mat_khau, $user['mat_khau'])) {
         $_SESSION['errors'] = ["Email hoặc mật khẩu không đúng"];
+        $_SESSION['old_email'] = $email;
+        redirect('login.php');
+    }
+    
+    // Kiểm tra trạng thái tài khoản
+    if ($user['status'] === 'locked') {
+        $_SESSION['errors'] = ["Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ."];
+        $_SESSION['old_email'] = $email;
+        redirect('login.php');
+    }
+    
+    if ($user['status'] === 'disabled') {
+        $_SESSION['errors'] = ["Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết."];
         $_SESSION['old_email'] = $email;
         redirect('login.php');
     }

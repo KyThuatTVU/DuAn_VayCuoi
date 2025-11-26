@@ -24,8 +24,9 @@ switch($sort) {
 }
 
 // Lấy danh sách váy cưới từ database
+// Ưu tiên lấy ảnh chính từ cột hinh_anh_chinh, nếu không có thì lấy từ bảng hinh_anh_vay_cuoi
 $sql = "SELECT v.*, 
-        (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id AND is_primary = 1 LIMIT 1) as hinh_anh_chinh,
+        COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id LIMIT 1)) as anh_dai_dien,
         (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh
         FROM vay_cuoi v 
         WHERE v.so_luong_ton > 0
@@ -186,7 +187,7 @@ require_once 'includes/header.php';
                             <!-- Product Image -->
                             <div class="relative overflow-hidden aspect-[3/4]">
                                 <?php 
-                                $image_url = !empty($product['hinh_anh_chinh']) ? $product['hinh_anh_chinh'] : 'images/vay1.jpg';
+                                $image_url = !empty($product['anh_dai_dien']) ? $product['anh_dai_dien'] : 'images/vay1.jpg';
                                 ?>
                                 <img src="<?php echo htmlspecialchars($image_url); ?>" 
                                      alt="<?php echo htmlspecialchars($product['ten_vay']); ?>" 

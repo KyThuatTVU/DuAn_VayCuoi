@@ -17,12 +17,15 @@ if (!file_exists($upload_dir)) {
     mkdir($upload_dir, 0777, true);
 }
 
+// Kiểm tra và thêm cột hinh_anh_chinh nếu chưa có
+$check_column = $conn->query("SHOW COLUMNS FROM vay_cuoi LIKE 'hinh_anh_chinh'");
+if ($check_column->num_rows == 0) {
+    $conn->query("ALTER TABLE vay_cuoi ADD COLUMN hinh_anh_chinh VARCHAR(500) NULL AFTER so_luong_ton");
+}
+
 // Xử lý thêm/sửa/xóa
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
-    // Debug: Ghi log
-    error_log("Admin Dresses POST: action=$action, POST=" . print_r($_POST, true));
     
     if ($action === 'add') {
         $ma_vay = trim($_POST['ma_vay']);
@@ -30,28 +33,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mo_ta = trim($_POST['mo_ta']);
         $gia_thue = floatval($_POST['gia_thue']);
         $so_luong = intval($_POST['so_luong_ton']);
+        $hinh_anh_chinh = '';
         
-        $stmt = $conn->prepare("INSERT INTO vay_cuoi (ma_vay, ten_vay, mo_ta, gia_thue, so_luong_ton) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssdi", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong);
+        // Upload ảnh chính
+        if (!empty($_FILES['main_image']['name']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
+            $file_name = time() . '_main_' . basename($_FILES['main_image']['name']);
+            $file_path = $upload_dir . $file_name;
+            if (move_uploaded_file($_FILES['main_image']['tmp_name'], $file_path)) {
+                $hinh_anh_chinh = $file_path;
+            }
+        }
+        
+        $stmt = $conn->prepare("INSERT INTO vay_cuoi (ma_vay, ten_vay, mo_ta, gia_thue, so_luong_ton, hinh_anh_chinh) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssdis", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $hinh_anh_chinh);
         
         if ($stmt->execute()) {
             $vay_id = $conn->insert_id;
             
-            // Upload hình ảnh
-            if (!empty($_FILES['images']['name'][0])) {
-                $is_first = true;
-                foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                    if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
-                        $file_name = time() . '_' . $key . '_' . basename($_FILES['images']['name'][$key]);
+            // Upload ảnh phụ vào bảng hinh_anh_vay_cuoi
+            if (!empty($_FILES['gallery_images']['name'][0])) {
+                foreach ($_FILES['gallery_images']['tmp_name'] as $key => $tmp_name) {
+                    if ($_FILES['gallery_images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $file_name = time() . '_' . $key . '_' . basename($_FILES['gallery_images']['name'][$key]);
                         $file_path = $upload_dir . $file_name;
                         
                         if (move_uploaded_file($tmp_name, $file_path)) {
-                            $url = $file_path;
-                            $is_primary = $is_first ? 1 : 0;
-                            $is_first = false;
-                            
-                            $img_stmt = $conn->prepare("INSERT INTO hinh_anh_vay_cuoi (vay_id, url, is_primary, sort_order) VALUES (?, ?, ?, ?)");
-                            $img_stmt->bind_param("isii", $vay_id, $url, $is_primary, $key);
+                            $img_stmt = $conn->prepare("INSERT INTO hinh_anh_vay_cuoi (vay_id, url, is_primary, sort_order) VALUES (?, ?, 0, ?)");
+                            $img_stmt->bind_param("isi", $vay_id, $file_path, $key);
                             $img_stmt->execute();
                         }
                     }
@@ -71,26 +79,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $gia_thue = floatval($_POST['gia_thue']);
         $so_luong = intval($_POST['so_luong_ton']);
         
-        $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=? WHERE id=?");
-        $stmt->bind_param("sssdii", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $id);
+        // Upload ảnh chính mới nếu có
+        if (!empty($_FILES['main_image']['name']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
+            // Xóa ảnh chính cũ
+            $old_img = $conn->query("SELECT hinh_anh_chinh FROM vay_cuoi WHERE id = $id")->fetch_assoc();
+            if (!empty($old_img['hinh_anh_chinh']) && file_exists($old_img['hinh_anh_chinh'])) {
+                unlink($old_img['hinh_anh_chinh']);
+            }
+            
+            $file_name = time() . '_main_' . basename($_FILES['main_image']['name']);
+            $file_path = $upload_dir . $file_name;
+            if (move_uploaded_file($_FILES['main_image']['tmp_name'], $file_path)) {
+                $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=?, hinh_anh_chinh=? WHERE id=?");
+                $stmt->bind_param("sssdisi", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $file_path, $id);
+            }
+        } else {
+            $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=? WHERE id=?");
+            $stmt->bind_param("sssdii", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $id);
+        }
         $stmt->execute();
         
-        // Upload hình ảnh mới nếu có
-        if (!empty($_FILES['images']['name'][0])) {
-            // Lấy sort_order cao nhất
+        // Upload ảnh phụ mới nếu có
+        if (!empty($_FILES['gallery_images']['name'][0])) {
             $max_order = $conn->query("SELECT MAX(sort_order) as max_order FROM hinh_anh_vay_cuoi WHERE vay_id = $id")->fetch_assoc()['max_order'] ?? 0;
             
-            foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                if ($_FILES['images']['error'][$key] === UPLOAD_ERR_OK) {
-                    $file_name = time() . '_' . $key . '_' . basename($_FILES['images']['name'][$key]);
+            foreach ($_FILES['gallery_images']['tmp_name'] as $key => $tmp_name) {
+                if ($_FILES['gallery_images']['error'][$key] === UPLOAD_ERR_OK) {
+                    $file_name = time() . '_' . $key . '_' . basename($_FILES['gallery_images']['name'][$key]);
                     $file_path = $upload_dir . $file_name;
                     
                     if (move_uploaded_file($tmp_name, $file_path)) {
-                        $url = $file_path;
                         $sort = $max_order + $key + 1;
-                        
                         $img_stmt = $conn->prepare("INSERT INTO hinh_anh_vay_cuoi (vay_id, url, is_primary, sort_order) VALUES (?, ?, 0, ?)");
-                        $img_stmt->bind_param("isi", $id, $url, $sort);
+                        $img_stmt->bind_param("isi", $id, $file_path, $sort);
                         $img_stmt->execute();
                     }
                 }
@@ -101,7 +122,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($action === 'delete') {
         $id = intval($_POST['id']);
-        // Xóa hình ảnh trước
+        // Xóa ảnh chính
+        $dress = $conn->query("SELECT hinh_anh_chinh FROM vay_cuoi WHERE id = $id")->fetch_assoc();
+        if (!empty($dress['hinh_anh_chinh']) && file_exists($dress['hinh_anh_chinh'])) {
+            unlink($dress['hinh_anh_chinh']);
+        }
+        // Xóa ảnh phụ
         $images = $conn->query("SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = $id")->fetch_all(MYSQLI_ASSOC);
         foreach ($images as $img) {
             if (file_exists($img['url'])) unlink($img['url']);
@@ -124,12 +150,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['admin_success'] = 'Xóa hình ảnh thành công!';
     }
     
-    if ($action === 'set_primary') {
-        $img_id = intval($_POST['image_id']);
+    if ($action === 'delete_main_image') {
         $vay_id = intval($_POST['vay_id']);
-        $conn->query("UPDATE hinh_anh_vay_cuoi SET is_primary = 0 WHERE vay_id = $vay_id");
-        $conn->query("UPDATE hinh_anh_vay_cuoi SET is_primary = 1 WHERE id = $img_id");
-        $_SESSION['admin_success'] = 'Đã đặt làm ảnh chính!';
+        $dress = $conn->query("SELECT hinh_anh_chinh FROM vay_cuoi WHERE id = $vay_id")->fetch_assoc();
+        if (!empty($dress['hinh_anh_chinh']) && file_exists($dress['hinh_anh_chinh'])) {
+            unlink($dress['hinh_anh_chinh']);
+        }
+        $conn->query("UPDATE vay_cuoi SET hinh_anh_chinh = NULL WHERE id = $vay_id");
+        $_SESSION['admin_success'] = 'Đã xóa ảnh chính!';
     }
     
     header('Location: admin-dresses.php');
@@ -161,8 +189,9 @@ $stmt->execute();
 $total = $stmt->get_result()->fetch_assoc()['total'];
 $total_pages = ceil($total / $per_page);
 
-$sql = "SELECT v.*, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id AND is_primary = 1 LIMIT 1) as image,
-        (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as image_count
+$sql = "SELECT v.*, 
+        COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id LIMIT 1)) as image,
+        (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as gallery_count
         FROM vay_cuoi v WHERE $where ORDER BY v.created_at DESC LIMIT ? OFFSET ?";
 $params[] = $per_page;
 $params[] = $offset;
@@ -244,9 +273,14 @@ include 'includes/admin-layout.php';
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <span class="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
-                        <?php echo $dress['image_count']; ?> ảnh
-                    </span>
+                    <div class="flex flex-col gap-1">
+                        <span class="px-2 py-0.5 rounded text-xs font-medium <?php echo !empty($dress['hinh_anh_chinh']) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'; ?>">
+                            <?php echo !empty($dress['hinh_anh_chinh']) ? '✓ Ảnh chính' : '✗ Chưa có ảnh chính'; ?>
+                        </span>
+                        <span class="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700">
+                            <?php echo $dress['gallery_count']; ?> ảnh phụ
+                        </span>
+                    </div>
                 </td>
                 <td class="px-6 py-4 space-x-2">
                     <button onclick="openImageModal(<?php echo $dress['id']; ?>)" class="text-blue-500 hover:text-blue-600" title="Quản lý ảnh">
@@ -314,9 +348,18 @@ include 'includes/admin-layout.php';
                         <textarea name="mo_ta" id="mo_ta" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-navy-700 mb-1">Hình ảnh (có thể chọn nhiều)</label>
-                        <input type="file" name="images[]" id="images" multiple accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
-                        <p class="text-xs text-navy-500 mt-1">Ảnh đầu tiên sẽ là ảnh chính. Hỗ trợ: JPG, PNG, GIF</p>
+                        <label class="block text-sm font-medium text-navy-700 mb-1">
+                            <i class="fas fa-star text-yellow-500 mr-1"></i>Ảnh chính (hiển thị đại diện sản phẩm)
+                        </label>
+                        <input type="file" name="main_image" id="main_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+                        <p class="text-xs text-navy-500 mt-1">Ảnh đại diện chính của váy cưới</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-navy-700 mb-1">
+                            <i class="fas fa-images text-blue-500 mr-1"></i>Ảnh phụ (gallery - có thể chọn nhiều)
+                        </label>
+                        <input type="file" name="gallery_images[]" id="gallery_images" multiple accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+                        <p class="text-xs text-navy-500 mt-1">Các ảnh chi tiết, góc khác của váy. Hỗ trợ: JPG, PNG, GIF</p>
                     </div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
@@ -330,7 +373,7 @@ include 'includes/admin-layout.php';
 
 <!-- Modal Quản lý ảnh -->
 <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overflow-y-auto">
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 my-8">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-3xl mx-4 my-8">
         <div class="p-6">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-bold text-navy-900">Quản lý hình ảnh</h3>
@@ -338,24 +381,48 @@ include 'includes/admin-layout.php';
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <div id="imageGallery" class="grid grid-cols-3 gap-4 mb-4">
-                <!-- Images loaded via JS -->
-            </div>
-            <form method="POST" enctype="multipart/form-data" class="border-t pt-4">
-                <input type="hidden" name="action" value="edit">
-                <input type="hidden" name="id" id="imageVayId">
-                <input type="hidden" name="ma_vay" id="img_ma_vay">
-                <input type="hidden" name="ten_vay" id="img_ten_vay">
-                <input type="hidden" name="mo_ta" id="img_mo_ta">
-                <input type="hidden" name="gia_thue" id="img_gia_thue">
-                <input type="hidden" name="so_luong_ton" id="img_so_luong">
-                <div class="flex gap-4">
-                    <input type="file" name="images[]" multiple accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-4 py-2">
-                    <button type="submit" class="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition">
-                        <i class="fas fa-upload mr-2"></i>Tải lên
-                    </button>
+            
+            <!-- Ảnh chính -->
+            <div class="mb-6 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                <h4 class="font-semibold text-navy-800 mb-3"><i class="fas fa-star text-yellow-500 mr-2"></i>Ảnh chính (đại diện sản phẩm)</h4>
+                <div id="mainImageContainer" class="mb-3">
+                    <!-- Main image loaded via JS -->
                 </div>
-            </form>
+                <form method="POST" enctype="multipart/form-data" class="flex gap-3">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="id" id="mainImageVayId">
+                    <input type="hidden" name="ma_vay" id="main_ma_vay">
+                    <input type="hidden" name="ten_vay" id="main_ten_vay">
+                    <input type="hidden" name="mo_ta" id="main_mo_ta">
+                    <input type="hidden" name="gia_thue" id="main_gia_thue">
+                    <input type="hidden" name="so_luong_ton" id="main_so_luong">
+                    <input type="file" name="main_image" accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                    <button type="submit" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm">
+                        <i class="fas fa-upload mr-1"></i>Cập nhật ảnh chính
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Ảnh phụ -->
+            <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <h4 class="font-semibold text-navy-800 mb-3"><i class="fas fa-images text-blue-500 mr-2"></i>Ảnh phụ (gallery)</h4>
+                <div id="imageGallery" class="grid grid-cols-4 gap-3 mb-4">
+                    <!-- Gallery images loaded via JS -->
+                </div>
+                <form method="POST" enctype="multipart/form-data" class="flex gap-3">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="id" id="imageVayId">
+                    <input type="hidden" name="ma_vay" id="img_ma_vay">
+                    <input type="hidden" name="ten_vay" id="img_ten_vay">
+                    <input type="hidden" name="mo_ta" id="img_mo_ta">
+                    <input type="hidden" name="gia_thue" id="img_gia_thue">
+                    <input type="hidden" name="so_luong_ton" id="img_so_luong">
+                    <input type="file" name="gallery_images[]" multiple accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm">
+                        <i class="fas fa-upload mr-1"></i>Thêm ảnh phụ
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -404,35 +471,57 @@ include 'includes/admin-layout.php';
         document.getElementById('imageModal').classList.remove('hidden');
         document.getElementById('imageModal').classList.add('flex');
         document.getElementById('imageVayId').value = vayId;
+        document.getElementById('mainImageVayId').value = vayId;
         
         // Load images via AJAX
         fetch('api/get-dress-images.php?vay_id=' + vayId)
             .then(r => r.json())
             .then(data => {
-                let html = '';
+                // Set hidden fields for both forms
+                const dress = data.dress;
+                ['img_', 'main_'].forEach(prefix => {
+                    document.getElementById(prefix + 'ma_vay').value = dress.ma_vay;
+                    document.getElementById(prefix + 'ten_vay').value = dress.ten_vay;
+                    document.getElementById(prefix + 'mo_ta').value = dress.mo_ta || '';
+                    document.getElementById(prefix + 'gia_thue').value = dress.gia_thue;
+                    document.getElementById(prefix + 'so_luong').value = dress.so_luong_ton;
+                });
+                
+                // Hiển thị ảnh chính
+                let mainHtml = '';
+                if (dress.hinh_anh_chinh) {
+                    mainHtml = `
+                        <div class="relative inline-block">
+                            <img src="${dress.hinh_anh_chinh}" class="w-40 h-40 object-cover rounded-lg ring-2 ring-yellow-400">
+                            <button onclick="deleteMainImage(${vayId})" class="absolute -top-2 -right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 shadow" title="Xóa ảnh chính">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    mainHtml = '<p class="text-gray-500 text-sm italic">Chưa có ảnh chính. Vui lòng upload ảnh đại diện cho sản phẩm.</p>';
+                }
+                document.getElementById('mainImageContainer').innerHTML = mainHtml;
+                
+                // Hiển thị ảnh phụ (gallery)
+                let galleryHtml = '';
                 if (data.images && data.images.length > 0) {
                     data.images.forEach(img => {
-                        html += `
+                        galleryHtml += `
                             <div class="relative group">
-                                <img src="${img.url}" class="w-full h-32 object-cover rounded-lg ${img.is_primary == 1 ? 'ring-2 ring-accent-500' : ''}">
-                                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition rounded-lg flex items-center justify-center gap-2">
-                                    ${img.is_primary != 1 ? `<button onclick="setPrimary(${img.id}, ${vayId})" class="p-2 bg-white rounded-full text-accent-500 hover:bg-accent-500 hover:text-white" title="Đặt làm ảnh chính"><i class="fas fa-star"></i></button>` : ''}
-                                    <button onclick="deleteImage(${img.id})" class="p-2 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white" title="Xóa"><i class="fas fa-trash"></i></button>
+                                <img src="${img.url}" class="w-full h-24 object-cover rounded-lg">
+                                <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition rounded-lg flex items-center justify-center">
+                                    <button onclick="deleteImage(${img.id})" class="p-2 bg-white rounded-full text-red-500 hover:bg-red-500 hover:text-white" title="Xóa">
+                                        <i class="fas fa-trash text-xs"></i>
+                                    </button>
                                 </div>
-                                ${img.is_primary == 1 ? '<span class="absolute top-1 left-1 bg-accent-500 text-white text-xs px-2 py-0.5 rounded">Ảnh chính</span>' : ''}
                             </div>
                         `;
                     });
-                    // Set hidden fields for upload form
-                    document.getElementById('img_ma_vay').value = data.dress.ma_vay;
-                    document.getElementById('img_ten_vay').value = data.dress.ten_vay;
-                    document.getElementById('img_mo_ta').value = data.dress.mo_ta || '';
-                    document.getElementById('img_gia_thue').value = data.dress.gia_thue;
-                    document.getElementById('img_so_luong').value = data.dress.so_luong_ton;
                 } else {
-                    html = '<p class="col-span-3 text-center text-navy-500 py-4">Chưa có hình ảnh nào</p>';
+                    galleryHtml = '<p class="col-span-4 text-center text-gray-500 py-4 text-sm">Chưa có ảnh phụ nào</p>';
                 }
-                document.getElementById('imageGallery').innerHTML = html;
+                document.getElementById('imageGallery').innerHTML = galleryHtml;
             });
     }
     
@@ -441,17 +530,18 @@ include 'includes/admin-layout.php';
         document.getElementById('imageModal').classList.remove('flex');
     }
     
-    function setPrimary(imgId, vayId) {
-        document.getElementById('imageAction').value = 'set_primary';
-        document.getElementById('imageId').value = imgId;
-        document.getElementById('actionVayId').value = vayId;
-        document.getElementById('imageActionForm').submit();
-    }
-    
     function deleteImage(imgId) {
         if (confirm('Bạn có chắc muốn xóa hình ảnh này?')) {
             document.getElementById('imageAction').value = 'delete_image';
             document.getElementById('imageId').value = imgId;
+            document.getElementById('imageActionForm').submit();
+        }
+    }
+    
+    function deleteMainImage(vayId) {
+        if (confirm('Bạn có chắc muốn xóa ảnh chính?')) {
+            document.getElementById('imageAction').value = 'delete_main_image';
+            document.getElementById('actionVayId').value = vayId;
             document.getElementById('imageActionForm').submit();
         }
     }

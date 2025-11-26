@@ -2,174 +2,60 @@
 session_start();
 require_once 'includes/config.php';
 
-// Dữ liệu sản phẩm mẫu
-$products = [
-    1 => [
-        'name' => 'Váy Công Chúa Lộng Lẫy',
-        'price' => 5500000,
-        'rating' => 5,
-        'reviews' => 45,
-        'category' => 'Váy Công Chúa',
-        'code' => 'VCC001',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay1.jpg', 'images/vay2.jpg', 'images/vay3.jpg'],
-        'description' => 'Váy cưới công chúa lộng lẫy với thiết kế váy xòe bồng bềnh, thân váy đính ren và đá lấp lánh. Phù hợp cho cô dâu muốn tỏa sáng như một nàng công chúa trong ngày trọng đại.',
-        'features' => [
-            'Chất liệu: Lụa cao cấp, ren Pháp',
-            'Màu sắc: Trắng ngà',
-            'Kiểu dáng: Công chúa xòe',
-            'Đính kết: Đá pha lê Swarovski',
-            'Độ dài: Kéo đuôi 2m'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => 'Mới'
-    ],
-    2 => [
-        'name' => 'Váy Đuôi Cá Quyến Rũ',
-        'price' => 6200000,
-        'rating' => 5,
-        'reviews' => 38,
-        'category' => 'Váy Đuôi Cá',
-        'code' => 'VDC002',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay2.jpg', 'images/vay1.jpg', 'images/vay4.jpg'],
-        'description' => 'Váy cưới đuôi cá quyến rũ ôm sát thân hình, tôn dáng hoàn hảo. Thiết kế hiện đại với đường cắt tinh tế, phù hợp cho cô dâu có vóc dáng chuẩn.',
-        'features' => [
-            'Chất liệu: Satin cao cấp, ren hoa',
-            'Màu sắc: Trắng tinh',
-            'Kiểu dáng: Đuôi cá ôm body',
-            'Đính kết: Đá pha lê và ngọc trai',
-            'Độ dài: Kéo đuôi 1.5m'
-        ],
-        'sizes' => ['S', 'M', 'L'],
-        'badge' => 'Hot'
-    ],
-    3 => [
-        'name' => 'Váy Chữ A Thanh Lịch',
-        'price' => 4800000,
-        'rating' => 5,
-        'reviews' => 32,
-        'category' => 'Váy Chữ A',
-        'code' => 'VCA003',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay3.jpg', 'images/vay2.jpg', 'images/vay1.jpg'],
-        'description' => 'Váy cưới chữ A thanh lịch với thiết kế đơn giản nhưng tinh tế. Phù hợp với mọi vóc dáng, tạo cảm giác nhẹ nhàng và thoải mái.',
-        'features' => [
-            'Chất liệu: Voan lụa, ren Ý',
-            'Màu sắc: Trắng kem',
-            'Kiểu dáng: Chữ A xòe nhẹ',
-            'Đính kết: Thêu tay tinh xảo',
-            'Độ dài: Kéo đuôi 1m'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => ''
-    ],
-    4 => [
-        'name' => 'Váy Hiện Đại Tinh Tế',
-        'price' => 5000000,
-        'rating' => 5,
-        'reviews' => 28,
-        'category' => 'Váy Hiện Đại',
-        'code' => 'VHD004',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay4.jpg', 'images/vay3.jpg', 'images/vay2.jpg'],
-        'description' => 'Váy cưới hiện đại với thiết kế tối giản nhưng sang trọng. Đường nét sắc sảo, phù hợp cho cô dâu yêu thích phong cách hiện đại.',
-        'features' => [
-            'Chất liệu: Mikado cao cấp',
-            'Màu sắc: Trắng ngọc trai',
-            'Kiểu dáng: Suông hiện đại',
-            'Đính kết: Đơn giản, tinh tế',
-            'Độ dài: Dài chấm đất'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => 'Mới'
-    ],
-    5 => [
-        'name' => 'Váy Ren Cổ Điển',
-        'price' => 4500000,
-        'rating' => 4,
-        'reviews' => 25,
-        'category' => 'Váy Cổ Điển',
-        'code' => 'VCD005',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay1.jpg', 'images/vay4.jpg', 'images/vay3.jpg'],
-        'description' => 'Váy cưới ren cổ điển với họa tiết ren tinh xảo. Mang đậm phong cách vintage, phù hợp cho đám cưới theo chủ đề cổ điển.',
-        'features' => [
-            'Chất liệu: Ren Pháp cao cấp',
-            'Màu sắc: Trắng ngà vintage',
-            'Kiểu dáng: Cổ điển xòe nhẹ',
-            'Đính kết: Ren thêu tay',
-            'Độ dài: Kéo đuôi 1.2m'
-        ],
-        'sizes' => ['S', 'M', 'L'],
-        'badge' => ''
-    ],
-    6 => [
-        'name' => 'Váy Xòe Lãng Mạn',
-        'price' => 5800000,
-        'rating' => 5,
-        'reviews' => 41,
-        'category' => 'Váy Xòe',
-        'code' => 'VXL006',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay2.jpg', 'images/vay1.jpg', 'images/vay4.jpg'],
-        'description' => 'Váy cưới xòe lãng mạn với nhiều lớp voan mềm mại. Tạo cảm giác nhẹ nhàng, bay bổng như một nàng tiên.',
-        'features' => [
-            'Chất liệu: Voan lụa nhiều lớp',
-            'Màu sắc: Trắng pastel',
-            'Kiểu dáng: Xòe bồng bềnh',
-            'Đính kết: Hoa ren 3D',
-            'Độ dài: Kéo đuôi 1.8m'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => 'Hot'
-    ],
-    7 => [
-        'name' => 'Váy Tối Giản Sang Trọng',
-        'price' => 4200000,
-        'rating' => 5,
-        'reviews' => 35,
-        'category' => 'Váy Tối Giản',
-        'code' => 'VTG007',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay3.jpg', 'images/vay2.jpg', 'images/vay4.jpg'],
-        'description' => 'Váy cưới tối giản sang trọng với thiết kế đơn giản nhưng đầy tinh tế. Phù hợp cho cô dâu yêu thích sự thanh lịch.',
-        'features' => [
-            'Chất liệu: Satin mềm mại',
-            'Màu sắc: Trắng ivory',
-            'Kiểu dáng: Suông tối giản',
-            'Đính kết: Không đính kết',
-            'Độ dài: Dài chấm đất'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => ''
-    ],
-    8 => [
-        'name' => 'Váy Dạ Hội Cao Cấp',
-        'price' => 7500000,
-        'rating' => 5,
-        'reviews' => 52,
-        'category' => 'Váy Dạ Hội',
-        'code' => 'VDH008',
-        'status' => 'Còn hàng',
-        'images' => ['images/vay4.jpg', 'images/vay1.jpg', 'images/vay2.jpg'],
-        'description' => 'Váy cưới dạ hội cao cấp với thiết kế xa hoa, lộng lẫy. Đính kết đá quý và pha lê cao cấp, phù hợp cho đám cưới sang trọng.',
-        'features' => [
-            'Chất liệu: Lụa tơ tằm, ren Pháp',
-            'Màu sắc: Trắng champagne',
-            'Kiểu dáng: Dạ hội xòe lớn',
-            'Đính kết: Đá Swarovski cao cấp',
-            'Độ dài: Kéo đuôi 2.5m'
-        ],
-        'sizes' => ['S', 'M', 'L', 'XL'],
-        'badge' => 'Mới'
-    ]
+$product_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Lấy thông tin váy từ database
+$product = null;
+$images = [];
+
+if ($product_id > 0) {
+    $stmt = $conn->prepare("SELECT * FROM vay_cuoi WHERE id = ?");
+    $stmt->bind_param("i", $product_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $product = $result->fetch_assoc();
+    
+    if ($product) {
+        // Lấy ảnh phụ từ bảng hinh_anh_vay_cuoi
+        $img_result = $conn->query("SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = $product_id ORDER BY sort_order ASC");
+        while ($img = $img_result->fetch_assoc()) {
+            $images[] = $img['url'];
+        }
+        
+        // Thêm ảnh chính vào đầu danh sách nếu có
+        if (!empty($product['hinh_anh_chinh'])) {
+            array_unshift($images, $product['hinh_anh_chinh']);
+        }
+        
+        // Nếu không có ảnh nào, dùng ảnh mặc định
+        if (empty($images)) {
+            $images = ['images/vay1.jpg'];
+        }
+    }
+}
+
+// Nếu không tìm thấy sản phẩm, redirect về trang products
+if (!$product) {
+    header('Location: products.php');
+    exit();
+}
+
+// Chuẩn bị dữ liệu hiển thị
+$product_data = [
+    'id' => $product['id'],
+    'name' => $product['ten_vay'],
+    'price' => $product['gia_thue'],
+    'code' => $product['ma_vay'],
+    'status' => $product['so_luong_ton'] > 0 ? 'Còn hàng' : 'Hết hàng',
+    'stock' => $product['so_luong_ton'],
+    'images' => $images,
+    'description' => $product['mo_ta'] ?? 'Váy cưới cao cấp với thiết kế tinh tế, phù hợp cho ngày trọng đại của bạn.',
+    'sizes' => ['S', 'M', 'L', 'XL'],
+    'rating' => 5,
+    'reviews' => rand(20, 50)
 ];
 
-$product_id = isset($_GET['id']) ? (int)$_GET['id'] : 1;
-$product = isset($products[$product_id]) ? $products[$product_id] : $products[1];
-
-$page_title = $product['name'];
+$page_title = $product_data['name'];
 require_once 'includes/header.php';
 ?>
 
@@ -428,7 +314,7 @@ require_once 'includes/header.php';
         <div class="breadcrumb">
             <a href="index.php">Trang chủ</a> / 
             <a href="products.php">Sản phẩm</a> / 
-            <span><?php echo $product['name']; ?></span>
+            <span><?php echo htmlspecialchars($product_data['name']); ?></span>
         </div>
 
         <!-- Product Detail -->
@@ -436,12 +322,12 @@ require_once 'includes/header.php';
             <!-- Gallery -->
             <div class="product-gallery">
                 <div class="main-image" id="mainImage">
-                    <img src="<?php echo $product['images'][0]; ?>" alt="<?php echo $product['name']; ?>">
+                    <img src="<?php echo htmlspecialchars($product_data['images'][0]); ?>" alt="<?php echo htmlspecialchars($product_data['name']); ?>" onerror="this.src='images/vay1.jpg'">
                 </div>
                 <div class="thumbnail-images">
-                    <?php foreach($product['images'] as $index => $image): ?>
-                    <div class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" onclick="changeImage('<?php echo $image; ?>', this)">
-                        <img src="<?php echo $image; ?>" alt="Thumbnail">
+                    <?php foreach($product_data['images'] as $index => $image): ?>
+                    <div class="thumbnail <?php echo $index === 0 ? 'active' : ''; ?>" onclick="changeImage('<?php echo htmlspecialchars($image); ?>', this)">
+                        <img src="<?php echo htmlspecialchars($image); ?>" alt="Thumbnail" onerror="this.src='images/vay1.jpg'">
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -449,29 +335,29 @@ require_once 'includes/header.php';
 
             <!-- Product Info -->
             <div class="product-info-section">
-                <?php if($product['badge']): ?>
-                <span class="product-badge-detail"><?php echo $product['badge']; ?></span>
+                <?php if($product_data['stock'] <= 2 && $product_data['stock'] > 0): ?>
+                <span class="product-badge-detail">Sắp hết</span>
                 <?php endif; ?>
                 
-                <h1 class="product-title"><?php echo $product['name']; ?></h1>
+                <h1 class="product-title"><?php echo htmlspecialchars($product_data['name']); ?></h1>
                 
                 <div class="product-meta">
                     <div class="product-rating-detail">
                         <span class="stars-large">
                             <?php 
-                            for($i = 0; $i < $product['rating']; $i++) echo '★';
-                            for($i = $product['rating']; $i < 5; $i++) echo '☆';
+                            for($i = 0; $i < $product_data['rating']; $i++) echo '★';
+                            for($i = $product_data['rating']; $i < 5; $i++) echo '☆';
                             ?>
                         </span>
-                        <span>(<?php echo $product['reviews']; ?> đánh giá)</span>
+                        <span>(<?php echo $product_data['reviews']; ?> đánh giá)</span>
                     </div>
-                    <span class="product-code">Mã: <?php echo $product['code']; ?></span>
+                    <span class="product-code">Mã: <?php echo htmlspecialchars($product_data['code']); ?></span>
                 </div>
 
-                <div class="product-price-detail"><?php echo number_format($product['price']); ?>đ</div>
+                <div class="product-price-detail"><?php echo number_format($product_data['price']); ?>đ</div>
                 <p class="price-note">* Giá thuê cho 1 ngày (chưa bao gồm phụ kiện)</p>
 
-                <p class="product-description"><?php echo $product['description']; ?></p>
+                <p class="product-description"><?php echo nl2br(htmlspecialchars($product_data['description'])); ?></p>
 
                 <div class="product-features">
                     <h3>Thông Số Kỹ Thuật</h3>
