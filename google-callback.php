@@ -2,8 +2,34 @@
 session_start();
 require_once 'includes/config.php';
 
+// DEBUG: Ghi log để kiểm tra
+$debug_log = "=== " . date('Y-m-d H:i:s') . " ===\n";
+$debug_log .= "GET: " . print_r($_GET, true) . "\n";
+$debug_log .= "SESSION before: " . print_r($_SESSION, true) . "\n";
+file_put_contents('debug-google-log.txt', $debug_log, FILE_APPEND);
+
+// Kiểm tra loại đăng nhập (admin hay user)
+// Ưu tiên state từ URL (vì session có thể bị mất khi redirect qua Google)
+$state = $_GET['state'] ?? '';
+$is_admin_login = ($state === 'admin_login');
+
+// Fallback: kiểm tra session nếu state không có
+if (!$is_admin_login && isset($_SESSION['google_login_type'])) {
+    $is_admin_login = ($_SESSION['google_login_type'] === 'admin');
+}
+
+// DEBUG: Ghi thêm log
+file_put_contents('debug-google-log.txt', "state: $state, is_admin_login: " . ($is_admin_login ? 'true' : 'false') . "\n\n", FILE_APPEND);
+
+// Xóa session login type sau khi sử dụng
+unset($_SESSION['google_login_type']);
+
 // Kiểm tra có code từ Google không
 if (!isset($_GET['code'])) {
+    if ($is_admin_login) {
+        $_SESSION['admin_errors'] = ['Đăng nhập Google thất bại'];
+        redirect('admin-login.php');
+    }
     $_SESSION['errors'] = ['Đăng nhập Google thất bại'];
     redirect('login.php');
 }
@@ -36,6 +62,10 @@ curl_close($ch);
 $token_info = json_decode($response, true);
 
 if (!isset($token_info['access_token'])) {
+    if ($is_admin_login) {
+        $_SESSION['admin_errors'] = ['Không thể lấy thông tin từ Google'];
+        redirect('admin-login.php');
+    }
     $_SESSION['errors'] = ['Không thể lấy thông tin từ Google'];
     redirect('login.php');
 }
@@ -53,6 +83,10 @@ curl_close($ch);
 $user_info = json_decode($user_info_response, true);
 
 if (!isset($user_info['email'])) {
+    if ($is_admin_login) {
+        $_SESSION['admin_errors'] = ['Không thể lấy thông tin email từ Google'];
+        redirect('admin-login.php');
+    }
     $_SESSION['errors'] = ['Không thể lấy thông tin email từ Google'];
     redirect('login.php');
 }
@@ -63,6 +97,37 @@ $email = $user_info['email'];
 $ho_ten = $user_info['name'] ?? '';
 $avatar_url = $user_info['picture'] ?? '';
 
+// ========== XỬ LÝ ĐĂNG NHẬP ADMIN ==========
+if ($is_admin_login) {
+    // Kiểm tra email có trong bảng admin không
+    $stmt = $conn->prepare("SELECT * FROM admin WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        // Admin tồn tại - đăng nhập thành công
+        $admin = $result->fetch_assoc();
+        
+        $_SESSION['admin_id'] = $admin['id'];
+        $_SESSION['admin_username'] = $admin['username'];
+        $_SESSION['admin_name'] = $admin['full_name'];
+        $_SESSION['admin_email'] = $admin['email'];
+        $_SESSION['admin_avatar'] = $avatar_url; // Lưu avatar từ Google
+        $_SESSION['admin_logged_in'] = true;
+        
+        $_SESSION['admin_success'] = "Đăng nhập thành công! Chào mừng " . $admin['full_name'];
+        $stmt->close();
+        redirect('admin-dashboard.php');
+    } else {
+        // Email không có quyền admin
+        $_SESSION['admin_errors'] = ['Email ' . $email . ' không có quyền truy cập trang quản trị.'];
+        $stmt->close();
+        redirect('admin-login.php');
+    }
+}
+
+// ========== XỬ LÝ ĐĂNG NHẬP USER THƯỜNG ==========
 // Kiểm tra user đã tồn tại chưa
 $stmt = $conn->prepare("SELECT * FROM nguoi_dung WHERE email = ?");
 $stmt->bind_param("s", $email);

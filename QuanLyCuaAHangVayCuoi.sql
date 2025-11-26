@@ -14,6 +14,7 @@ CREATE TABLE nguoi_dung (
    mat_khau VARCHAR(255) NOT NULL,
    so_dien_thoai VARCHAR(30),
    dia_chi TEXT,
+   avt VARCHAR(500) NULL COMMENT 'URL avatar của người dùng (từ Google hoặc upload)',
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
