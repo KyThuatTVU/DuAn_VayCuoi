@@ -2,6 +2,12 @@
 session_start();
 require_once 'includes/config.php';
 
+// Kiểm tra đăng nhập admin
+if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
+    header('Location: admin-login.php');
+    exit();
+}
+
 $page_title = 'Quản Lý Liên Hệ';
 $page_subtitle = 'Xem và phản hồi tin nhắn từ khách hàng';
 

@@ -2,6 +2,12 @@
 session_start();
 require_once 'includes/config.php';
 
+// Kiểm tra đăng nhập admin
+if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
+    header('Location: admin-login.php');
+    exit();
+}
+
 $order_id = intval($_GET['id'] ?? 0);
 if (!$order_id) {
     header('Location: admin-orders.php');

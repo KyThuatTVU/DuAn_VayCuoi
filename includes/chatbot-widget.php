@@ -171,19 +171,19 @@
 <div id="chatbot-button" class="fixed bottom-6 right-6 z-50 transition-all duration-300">
     <div class="relative group">
         <button id="chatbot-toggle" 
-                class="flex items-center justify-center w-16 h-16 bg-pink-500 hover:bg-pink-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-            <i class="fas fa-comments text-2xl"></i>
+                class="flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 overflow-hidden border-2 border-pink-300 hover:border-pink-500 bg-white p-0">
+            <img src="images/chatbot.webp" alt="Chatbot" class="w-full h-full object-cover rounded-full">
             
             <!-- Notification badge -->
             <span class="absolute -top-1 -right-1 flex h-5 w-5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold border-2 border-white">3</span>
+                <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold border-2 border-white text-white">3</span>
             </span>
         </button>
         
         <!-- Tooltip -->
         <div class="absolute right-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
-            Tư vấn online 24/7
+            Chat với Trà My 💬
             <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
@@ -200,16 +200,16 @@
         
         <div class="flex items-center gap-2 relative z-10">
             <div class="relative">
-                <div class="w-11 h-11 rounded-full border-2 border-white bg-gradient-to-br from-white to-pink-50 flex items-center justify-center shadow-lg">
-                    <i class="fas fa-user-tie text-pink-600 text-lg"></i>
+                <div class="w-11 h-11 rounded-full border-2 border-white overflow-hidden shadow-lg">
+                    <img src="images/chatbot.webp" alt="Chatbot" class="w-full h-full object-cover">
                 </div>
                 <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full animate-pulse"></span>
             </div>
             <div>
-                <h3 class="text-white font-bold text-base">Tư Vấn Viên</h3>
+                <h3 class="text-white font-bold text-base">Trà My</h3>
                 <p class="text-pink-100 text-xs flex items-center gap-1">
                     <span class="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></span>
-                    Đang online
+                    Tư vấn viên online
                 </p>
             </div>
         </div>
@@ -223,12 +223,12 @@
         <!-- Welcome Card -->
         <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-3 border border-pink-100 shadow-sm chat-message">
             <div class="flex items-start gap-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <i class="fas fa-robot text-white text-sm"></i>
+                <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-md border border-pink-200">
+                    <img src="images/chatbot.webp" alt="Bot" class="w-full h-full object-cover">
                 </div>
                 <div class="flex-1">
-                    <p class="text-gray-800 text-xs font-medium mb-1">👋 Xin chào! Chào mừng bạn đến với <span class="font-bold text-pink-600">Váy Cưới Thiên Thần</span></p>
-                    <p class="text-gray-600 text-xs">Tôi là trợ lý ảo, sẵn sàng tư vấn giúp bạn tìm được chiếc váy cưới hoàn hảo! 💕</p>
+                    <p class="text-gray-800 text-xs font-medium mb-1">👋 Xin chào! Em là <span class="font-bold text-pink-600">Trà My</span> - tư vấn viên của <span class="font-bold text-pink-600">Váy Cưới Thiên Thần</span></p>
+                    <p class="text-gray-600 text-xs">Em sẵn sàng tư vấn giúp chị tìm được chiếc váy cưới hoàn hảo nhất! 💕</p>
                 </div>
             </div>
         </div>
@@ -306,8 +306,8 @@
         typingDiv.id = 'typing-indicator';
         typingDiv.className = 'flex gap-2 items-end chat-message';
         typingDiv.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                <i class="fas fa-robot text-white text-sm"></i>
+            <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-md border border-pink-200">
+                <img src="images/chatbot.webp" alt="Bot" class="w-full h-full object-cover">
             </div>
             <div class="bg-white rounded-xl rounded-bl-none px-3 py-2 shadow-md border border-gray-100">
                 <div class="typing-indicator flex gap-1">
@@ -341,8 +341,8 @@
             `;
         } else {
             messageDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-md">
-                    <i class="fas fa-robot text-white text-sm"></i>
+                <div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 shadow-md border border-pink-200">
+                    <img src="images/chatbot.webp" alt="Bot" class="w-full h-full object-cover">
                 </div>
                 <div class="bg-white rounded-xl rounded-bl-none px-3 py-2 shadow-md border border-gray-100 max-w-[75%]">
                     <p class="text-gray-800 text-xs leading-relaxed">${message}</p>
@@ -354,22 +354,24 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Bot responses
+    // Bot responses - Trà My
     function getBotResponse(userMessage) {
         const message = userMessage.toLowerCase();
         
         if (message.includes('váy cưới') || message.includes('xem')) {
-            return 'Chúng tôi có nhiều mẫu váy cưới đẹp từ cổ điển đến hiện đại. Bạn có thể xem tại trang <a href="products.php" class="text-pink-500 underline">Sản phẩm</a> của chúng tôi.';
+            return 'Dạ, bên em có rất nhiều mẫu váy cưới đẹp từ cổ điển đến hiện đại ạ! 👰 Chị có thể xem tại trang <a href="products.php" class="text-pink-500 underline font-medium">Bộ sưu tập</a> của shop nha. Chị thích style nào để em tư vấn thêm ạ?';
         } else if (message.includes('giá') || message.includes('bảng giá')) {
-            return 'Giá thuê váy cưới của chúng tôi từ 2.000.000đ - 10.000.000đ tùy theo mẫu. Bạn muốn tôi tư vấn chi tiết hơn không?';
+            return 'Dạ giá thuê váy cưới bên em từ 2.000.000đ - 10.000.000đ tùy mẫu ạ! 💰 Chị cho em biết ngân sách để em tư vấn mẫu phù hợp nhất nha!';
         } else if (message.includes('tư vấn') || message.includes('chọn')) {
-            return 'Để tư vấn chính xác, bạn vui lòng cho tôi biết: chiều cao, số đo 3 vòng và phong cách yêu thích của bạn nhé!';
+            return 'Dạ để em tư vấn chính xác nhất, chị cho em biết: chiều cao, số đo 3 vòng và phong cách chị thích nha! 📝 Em sẽ gợi ý những mẫu váy đẹp nhất cho chị ạ!';
         } else if (message.includes('đặt lịch') || message.includes('hẹn')) {
-            return 'Bạn có thể đặt lịch hẹn tại <a href="booking.php" class="text-pink-500 underline">đây</a> hoặc gọi hotline: 0123-456-789 để được hỗ trợ nhanh nhất.';
+            return 'Dạ chị có thể đặt lịch hẹn <a href="booking.php" class="text-pink-500 underline font-medium">tại đây</a> hoặc gọi hotline: 078.797.2075 để em hỗ trợ nhanh nhất ạ! 📅💕';
         } else if (message.includes('địa chỉ') || message.includes('ở đâu')) {
-            return 'Cửa hàng chúng tôi tại: 123 Đường ABC, Quận XYZ, TP.HCM. Bạn có thể xem bản đồ tại trang <a href="contact.php" class="text-pink-500 underline">Liên hệ</a>.';
+            return 'Dạ shop em ở: 123 Đường ABC, Quận XYZ, TP.HCM ạ! 📍 Chị xem bản đồ tại trang <a href="contact.php" class="text-pink-500 underline font-medium">Liên hệ</a> nha. Chị ghé shop em tư vấn trực tiếp luôn ạ!';
+        } else if (message.includes('xin chào') || message.includes('hello') || message.includes('hi')) {
+            return 'Dạ chào chị ạ! 👋💕 Em là Trà My, rất vui được hỗ trợ chị. Chị cần em tư vấn gì ạ?';
         } else {
-            return 'Cảm ơn bạn đã nhắn tin. Bạn có thể hỏi tôi về: váy cưới, giá thuê, tư vấn chọn váy, đặt lịch hẹn, địa chỉ cửa hàng.';
+            return 'Dạ cảm ơn chị đã nhắn tin ạ! 💕 Chị có thể hỏi em về: váy cưới, giá thuê, tư vấn chọn váy, đặt lịch hẹn, địa chỉ cửa hàng nha!';
         }
     }
 
