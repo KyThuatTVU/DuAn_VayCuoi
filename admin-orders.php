@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 
 // Kiểm tra đăng nhập admin
 if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
@@ -15,11 +16,20 @@ $page_subtitle = 'Xem và quản lý tất cả đơn hàng';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $order_id = intval($_POST['order_id']);
     
+    // Lấy thông tin đơn hàng để gửi thông báo
+    $order_info = $conn->query("SELECT nguoi_dung_id, ma_don_hang FROM don_hang WHERE id = $order_id")->fetch_assoc();
+    
     if ($_POST['action'] === 'update_status') {
         $status = $_POST['status'];
         $stmt = $conn->prepare("UPDATE don_hang SET trang_thai = ? WHERE id = ?");
         $stmt->bind_param("si", $status, $order_id);
         $stmt->execute();
+        
+        // Gửi thông báo cho người dùng
+        if ($order_info && $order_info['nguoi_dung_id']) {
+            notifyOrderUpdate($conn, $order_info['nguoi_dung_id'], $order_id, $order_info['ma_don_hang'], $status);
+        }
+        
         $_SESSION['admin_success'] = 'Cập nhật trạng thái đơn hàng thành công!';
     }
     

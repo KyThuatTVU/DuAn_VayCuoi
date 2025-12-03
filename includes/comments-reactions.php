@@ -402,6 +402,16 @@
     font-weight: 500;
 }
 
+.reply-to-tag {
+    color: #3b82f6;
+    font-weight: 600;
+    background: #eff6ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-right: 4px;
+}
+
 .empty-comments {
     text-align: center;
     padding: 40px;
@@ -735,6 +745,12 @@ function renderComment(comment, isReply = false) {
         badge = '<span class="owner-badge">Bạn</span>';
     }
     
+    // Hiển thị @tên_người nếu đang reply cho ai đó (không phải reply trực tiếp cho comment gốc)
+    let replyToTag = '';
+    if (isReply && comment.reply_to_name && comment.reply_to_id != comment.parent_id) {
+        replyToTag = `<span class="reply-to-tag">@${escapeHtml(comment.reply_to_name)}</span> `;
+    }
+    
     // Style đặc biệt cho bình luận của Admin
     const adminClass = isAdmin ? 'is-author' : '';
     const avatarClass = isAdmin ? 'author-avatar' : '';
@@ -751,7 +767,7 @@ function renderComment(comment, isReply = false) {
                     <div class="comment-date">${formatDate(comment.created_at)}</div>
                 </div>
             </div>
-            <div class="comment-content">${escapeHtml(comment.noi_dung)}</div>
+            <div class="comment-content">${replyToTag}${escapeHtml(comment.noi_dung)}</div>
             <div class="comment-footer">
                 ${replyBtn}
                 ${deleteBtn}

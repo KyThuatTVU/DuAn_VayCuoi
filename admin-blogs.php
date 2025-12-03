@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 
 // Kiểm tra đăng nhập admin
 if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
@@ -39,12 +40,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
+        // Kiểm tra slug đã tồn tại chưa
+        $check_slug = $conn->prepare("SELECT id FROM tin_tuc_cuoi_hoi WHERE slug = ?");
+        $check_slug->bind_param("s", $slug);
+        $check_slug->execute();
+        if ($check_slug->get_result()->num_rows > 0) {
+            // Thêm timestamp vào slug để tránh trùng
+            $slug = $slug . '-' . time();
+        }
+        
         $stmt = $conn->prepare("INSERT INTO tin_tuc_cuoi_hoi (admin_id, title, slug, summary, content, cover_image, status, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("isssssss", $_SESSION['admin_id'], $title, $slug, $summary, $content, $cover_image, $status, $published_at);
         if ($stmt->execute()) {
+            $new_blog_id = $stmt->insert_id;
+            
+            // Gửi thông báo cho tất cả user nếu bài viết được publish
+            if ($status === 'published') {
+                notifyNewBlog($conn, $new_blog_id, $title, $slug);
+            }
+            
             $_SESSION['admin_success'] = 'Thêm bài viết thành công!';
         } else {
-            $_SESSION['admin_error'] = 'Lỗi: Slug đã tồn tại!';
+            $_SESSION['admin_error'] = 'Lỗi khi thêm bài viết: ' . $conn->error;
         }
     }
     

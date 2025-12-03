@@ -19,3 +19,10 @@ ADD FOREIGN KEY (admin_id) REFERENCES admin(id) ON DELETE SET NULL;
 -- Cập nhật constraint để cho phép nguoi_dung_id NULL khi admin trả lời
 ALTER TABLE binh_luan_san_pham MODIFY COLUMN nguoi_dung_id BIGINT NULL;
 ALTER TABLE binh_luan_bai_viet MODIFY COLUMN nguoi_dung_id BIGINT NULL;
+
+-- Thêm cột reply_to_id để lưu ID comment đang được reply (hiển thị @tên)
+ALTER TABLE binh_luan_san_pham 
+ADD COLUMN reply_to_id INT NULL COMMENT 'ID bình luận đang được trả lời (để hiển thị @tên)' AFTER parent_id;
+
+ALTER TABLE binh_luan_bai_viet 
+ADD COLUMN reply_to_id INT NULL COMMENT 'ID bình luận đang được trả lời (để hiển thị @tên)' AFTER parent_id;

@@ -155,6 +155,40 @@ require_once __DIR__ . '/check-user-status.php';
                             <path d="m21 21-4.35-4.35"/>
                         </svg>
                     </button>
+                    
+                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                    <!-- Notification Bell -->
+                    <div class="relative" id="notificationWrapper">
+                        <button class="relative flex items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition-colors" id="notificationBtn" title="Thông báo">
+                            <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                            <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 items-center justify-center px-1 hidden" id="notificationCount">0</span>
+                        </button>
+                        
+                        <!-- Notification Dropdown -->
+                        <div class="notification-dropdown absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible transition-all duration-300 transform translate-y-2 z-50" id="notificationDropdown">
+                            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                                <h3 class="font-bold text-gray-800 text-lg">Thông báo</h3>
+                                <button class="text-sm text-primary hover:underline font-medium" id="markAllReadBtn">Đánh dấu đã đọc</button>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto" id="notificationList">
+                                <div class="p-8 text-center text-gray-400">
+                                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                    </svg>
+                                    <p>Đang tải thông báo...</p>
+                                </div>
+                            </div>
+                            <div class="p-3 border-t border-gray-100 text-center">
+                                <a href="notifications.php" class="text-sm text-primary hover:underline font-medium">Xem tất cả thông báo</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
                     <a href="cart.php" class="relative flex items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition-colors" title="Giỏ hàng">
                         <svg class="w-6 h-6 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="21" r="1"/>
@@ -351,7 +385,41 @@ require_once __DIR__ . '/check-user-status.php';
             </nav>
 
             <!-- Mobile Auth Buttons -->
-            <?php if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']): ?>
+            <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+            <div class="mt-6 space-y-2 pt-6 border-t border-gray-200">
+                <a href="notifications.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base text-gray-700 hover:bg-gray-100 transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span>Thông Báo</span>
+                    <span class="mobile-notification-badge ml-auto bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 items-center justify-center px-1 hidden"></span>
+                </a>
+                <a href="account.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base text-gray-700 hover:bg-gray-100 transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span>Tài Khoản</span>
+                </a>
+                <a href="my-orders.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base text-gray-700 hover:bg-gray-100 transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                    <span>Đơn Hàng</span>
+                </a>
+                <a href="logout.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base text-red-600 hover:bg-red-50 transition-all">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    <span>Đăng Xuất</span>
+                </a>
+            </div>
+            <?php else: ?>
             <div class="mt-6 space-y-3 pt-6 border-t border-gray-200">
                 <a href="login.php" class="flex items-center justify-center gap-2 w-full px-5 py-3 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-white transition-all">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -442,6 +510,210 @@ require_once __DIR__ . '/check-user-status.php';
         }
     })();
     </script>
+
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+    <!-- Notification System -->
+    <style>
+    .notification-dropdown.show {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
+    }
+    .notification-item {
+        transition: all 0.2s;
+    }
+    .notification-item:hover {
+        background: #f9fafb;
+    }
+    .notification-item.unread {
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        border-left: 3px solid #3b82f6;
+    }
+    .notification-item.unread:hover {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+    }
+    .notification-badge {
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    </style>
+    <script>
+    (function() {
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const notificationList = document.getElementById('notificationList');
+        const notificationCount = document.getElementById('notificationCount');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+        
+        if (!notificationBtn) return;
+        
+        let isOpen = false;
+        
+        // Toggle dropdown
+        notificationBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isOpen = !isOpen;
+            if (isOpen) {
+                notificationDropdown.classList.add('show');
+                loadNotifications();
+            } else {
+                notificationDropdown.classList.remove('show');
+            }
+        });
+        
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+                notificationDropdown.classList.remove('show');
+                isOpen = false;
+            }
+        });
+        
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const response = await fetch('api/notifications.php?action=get&limit=10');
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderNotifications(data.notifications);
+                    updateBadge(data.unread_count);
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+        
+        // Render notifications
+        function renderNotifications(notifications) {
+            if (notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="p-8 text-center text-gray-400">
+                        <svg class="w-12 h-12 mx-auto mb-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <p>Chưa có thông báo nào</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            notificationList.innerHTML = notifications.map(n => `
+                <a href="${n.link || '#'}" class="notification-item block p-4 border-b border-gray-50 ${n.da_doc == 0 ? 'unread' : ''}" 
+                   data-id="${n.id}" onclick="markNotificationRead(${n.id})">
+                    <div class="flex gap-3">
+                        <div class="text-2xl flex-shrink-0">${n.icon}</div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-800 text-sm truncate">${escapeHtml(n.tieu_de)}</p>
+                            <p class="text-gray-600 text-sm mt-1 line-clamp-2">${escapeHtml(n.noi_dung)}</p>
+                            <p class="text-gray-400 text-xs mt-2">${n.time_ago}</p>
+                        </div>
+                        ${n.da_doc == 0 ? '<div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>' : ''}
+                    </div>
+                </a>
+            `).join('');
+        }
+        
+        // Update badge
+        function updateBadge(count) {
+            if (count > 0) {
+                notificationCount.textContent = count > 99 ? '99+' : count;
+                notificationCount.classList.remove('hidden');
+                notificationCount.classList.add('flex');
+            } else {
+                notificationCount.classList.add('hidden');
+                notificationCount.classList.remove('flex');
+            }
+        }
+        
+        // Mark as read
+        window.markNotificationRead = async function(id) {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'mark_read');
+                formData.append('notification_id', id);
+                
+                await fetch('api/notifications.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Update UI
+                const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+                if (item) {
+                    item.classList.remove('unread');
+                    const dot = item.querySelector('.bg-blue-500');
+                    if (dot) dot.remove();
+                }
+                
+                // Update count
+                const currentCount = parseInt(notificationCount.textContent) || 0;
+                if (currentCount > 0) {
+                    updateBadge(currentCount - 1);
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        };
+        
+        // Mark all as read
+        markAllReadBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            try {
+                const formData = new FormData();
+                formData.append('action', 'mark_all_read');
+                
+                const response = await fetch('api/notifications.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.querySelectorAll('.notification-item.unread').forEach(item => {
+                        item.classList.remove('unread');
+                        const dot = item.querySelector('.bg-blue-500');
+                        if (dot) dot.remove();
+                    });
+                    updateBadge(0);
+                }
+            } catch (error) {
+                console.error('Error marking all as read:', error);
+            }
+        });
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Initial load count
+        async function loadUnreadCount() {
+            try {
+                const response = await fetch('api/notifications.php?action=count_unread');
+                const data = await response.json();
+                if (data.success) {
+                    updateBadge(data.unread_count);
+                }
+            } catch (error) {
+                console.error('Error loading unread count:', error);
+            }
+        }
+        
+        // Load count on page load
+        loadUnreadCount();
+        
+        // Poll for new notifications every 60 seconds
+        setInterval(loadUnreadCount, 60000);
+    })();
+    </script>
+    <?php endif; ?>
 
     <!-- Main Content -->
     <main class="main-content">

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once '../includes/notification-helper.php';
 
 header('Content-Type: application/json');
 
@@ -26,8 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if ($type === 'product') {
-            // Lấy vay_id từ bình luận gốc
-            $parent = $conn->query("SELECT vay_id FROM binh_luan_san_pham WHERE id = $comment_id")->fetch_assoc();
+            // Lấy thông tin bình luận gốc và sản phẩm
+            $parent = $conn->query("SELECT bl.vay_id, bl.nguoi_dung_id, vc.ten_vay 
+                                    FROM binh_luan_san_pham bl 
+                                    JOIN vay_cuoi vc ON bl.vay_id = vc.id 
+                                    WHERE bl.id = $comment_id")->fetch_assoc();
             if (!$parent) {
                 echo json_encode(['success' => false, 'message' => 'Bình luận không tồn tại']);
                 exit();
@@ -37,9 +41,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO binh_luan_san_pham (nguoi_dung_id, admin_id, is_admin_reply, vay_id, noi_dung, parent_id) VALUES (NULL, ?, 1, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("iisi", $admin_id, $vay_id, $noi_dung, $comment_id);
+            
+            if ($stmt->execute()) {
+                // Gửi thông báo cho người dùng
+                if ($parent['nguoi_dung_id']) {
+                    notifyAdminReply($conn, $parent['nguoi_dung_id'], 'product', $vay_id, $parent['ten_vay']);
+                }
+                echo json_encode(['success' => true, 'message' => 'Đã trả lời bình luận thành công']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Có lỗi xảy ra: ' . $conn->error]);
+            }
         } else {
-            // Lấy bai_viet_id từ bình luận gốc
-            $parent = $conn->query("SELECT bai_viet_id FROM binh_luan_bai_viet WHERE id = $comment_id")->fetch_assoc();
+            // Lấy thông tin bình luận gốc và bài viết
+            $parent = $conn->query("SELECT bl.bai_viet_id, bl.nguoi_dung_id, t.title, t.slug 
+                                    FROM binh_luan_bai_viet bl 
+                                    JOIN tin_tuc_cuoi_hoi t ON bl.bai_viet_id = t.id 
+                                    WHERE bl.id = $comment_id")->fetch_assoc();
             if (!$parent) {
                 echo json_encode(['success' => false, 'message' => 'Bình luận không tồn tại']);
                 exit();
@@ -49,12 +66,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO binh_luan_bai_viet (nguoi_dung_id, admin_id, is_admin_reply, bai_viet_id, noi_dung, parent_id) VALUES (NULL, ?, 1, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("iisi", $admin_id, $bai_viet_id, $noi_dung, $comment_id);
-        }
-        
-        if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Đã trả lời bình luận thành công']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Có lỗi xảy ra: ' . $conn->error]);
+            
+            if ($stmt->execute()) {
+                // Gửi thông báo cho người dùng
+                if ($parent['nguoi_dung_id']) {
+                    notifyAdminReply($conn, $parent['nguoi_dung_id'], 'blog', $bai_viet_id, $parent['title']);
+                }
+                echo json_encode(['success' => true, 'message' => 'Đã trả lời bình luận thành công']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Có lỗi xảy ra: ' . $conn->error]);
+            }
         }
         exit();
     }
