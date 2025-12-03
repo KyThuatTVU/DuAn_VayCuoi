@@ -176,7 +176,7 @@ if (session_status() === PHP_SESSION_NONE) {
                                         </svg>
                                     </div>
                                 <?php endif; ?>
-                                <span class="hidden lg:block font-semibold text-gray-700 max-w-[120px] truncate"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                                <span class="hidden lg:block font-semibold text-gray-700 whitespace-nowrap"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                                 <svg class="hidden lg:block w-4 h-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <polyline points="6 9 12 15 18 9"/>
                                 </svg>

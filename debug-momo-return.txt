@@ -1,0 +1,42 @@
+2025-12-03 03:38:36 - Return Request:
+Array
+(
+    [partnerCode] => MOMOBKUN20180529
+    [orderId] => MOMO_24_1764729383
+    [requestId] => MOMO_24_1764729383
+    [amount] => 10500000
+    [orderInfo] => Thanh toan don hang #DH20251203033623732
+    [orderType] => momo_wallet
+    [transId] => 1764729515333
+    [resultCode] => 1006
+    [message] => Giao dịch bị từ chối bởi người dùng.
+    [payType] => 
+    [responseTime] => 1764729515335
+    [extraData] => 
+    [signature] => e7ff6b059749af1a237305dcab815eea2d15d7c194a9f5fb74790457a19defbc
+)
+
+
+Database updated: Order #24 marked as failed
+
+2025-12-03 03:46:54 - Return Request:
+Array
+(
+    [partnerCode] => MOMO
+    [orderId] => MOMO_26_1764729860
+    [requestId] => MOMO_26_1764729860
+    [amount] => 10500000
+    [orderInfo] => Thanh toan don hang #DH20251203034420115
+    [orderType] => momo_wallet
+    [transId] => 4622089524
+    [resultCode] => 0
+    [message] => Successful.
+    [payType] => napas
+    [responseTime] => 1764730011650
+    [extraData] => 
+    [signature] => 67ea546d88266d7cd7c162379a535c750cb0b84e244f07ea954bfae605c1d0b2
+)
+
+
+Database updated: Order #26 marked as paid
+

@@ -1,0 +1,54 @@
+2025-12-03 03:36:23 - Request:
+{
+    "partnerCode": "MOMOBKUN20180529",
+    "accessKey": "klm05TvNBzhg7h7j",
+    "requestId": "MOMO_24_1764729383",
+    "amount": "10500000",
+    "orderId": "MOMO_24_1764729383",
+    "orderInfo": "Thanh toan don hang #DH20251203033623732",
+    "redirectUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/momo-return.php",
+    "ipnUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/api\/momo-ipn.php",
+    "extraData": "",
+    "requestType": "payWithATM",
+    "signature": "db00215951cd11091543552c2aa6ed0bbbd0bfbcbec21e235d2fbde344e2aa76",
+    "lang": "vi"
+}
+
+2025-12-03 03:36:24 - Response (HTTP 200):
+{"partnerCode":"MOMOBKUN20180529","orderId":"MOMO_24_1764729383","requestId":"MOMO_24_1764729383","amount":10500000,"responseTime":1764729385093,"message":"Thành công.","resultCode":0,"payUrl":"https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT0JLVU4yMDE4MDUyOXxNT01PXzI0XzE3NjQ3MjkzODM&s=eeed1a78ef61df204cc3d76f05448fe53f8842ccd4d623db33e6d3fb76282c82","signature":"a00d4d5555ed3c448e89b1840558d56f99a1aeec17683d74c2a2e2b580b9efeb"}
+2025-12-03 03:39:08 - Request:
+{
+    "partnerCode": "MOMOBKUN20180529",
+    "accessKey": "klm05TvNBzhg7h7j",
+    "requestId": "MOMO_25_1764729548",
+    "amount": "10500000",
+    "orderId": "MOMO_25_1764729548",
+    "orderInfo": "Thanh toan don hang #DH20251203033908585",
+    "redirectUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/momo-return.php",
+    "ipnUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/api\/momo-ipn.php",
+    "extraData": "",
+    "requestType": "payWithATM",
+    "signature": "e18ac0a0148f07c45f7a116fb66eaa53b2a32011cbd4f046714ceeb97528028f",
+    "lang": "vi"
+}
+
+2025-12-03 03:39:08 - Response (HTTP 200):
+{"partnerCode":"MOMOBKUN20180529","orderId":"MOMO_25_1764729548","requestId":"MOMO_25_1764729548","amount":10500000,"responseTime":1764729549065,"message":"Thành công.","resultCode":0,"payUrl":"https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT0JLVU4yMDE4MDUyOXxNT01PXzI1XzE3NjQ3Mjk1NDg&s=ae4cd32ce030e33bd87d4f74c2e7939247b48ff986b56150e86221509879aca7","signature":"3cbae2aaafe16f3ec7bb6de50cb0b665d0f32a1d132b0ab55283bd66da225a49"}
+2025-12-03 03:44:20 - Request:
+{
+    "partnerCode": "MOMO",
+    "accessKey": "F8BBA842ECF85",
+    "requestId": "MOMO_26_1764729860",
+    "amount": "10500000",
+    "orderId": "MOMO_26_1764729860",
+    "orderInfo": "Thanh toan don hang #DH20251203034420115",
+    "redirectUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/momo-return.php",
+    "ipnUrl": "http:\/\/localhost\/DuAn_CuaHangVayCuoiGradenHome\/api\/momo-ipn.php",
+    "extraData": "",
+    "requestType": "payWithATM",
+    "signature": "c5ab12020bd46edd535403a4643792d98d019659d351097c4701a9d4b371fde0",
+    "lang": "vi"
+}
+
+2025-12-03 03:44:20 - Response (HTTP 200):
+{"partnerCode":"MOMO","orderId":"MOMO_26_1764729860","requestId":"MOMO_26_1764729860","amount":10500000,"responseTime":1764729861106,"message":"Thành công.","resultCode":0,"payUrl":"https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3xNT01PXzI2XzE3NjQ3Mjk4NjA&s=05040408872e06482faf84ea62f1b7c59626d9ce583b2313bac1829ba735fefd"}
