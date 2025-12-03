@@ -44,12 +44,32 @@ foreach ($cart_items as $item) {
 $service_fee = $subtotal * 0.05; // 5% phí dịch vụ
 $total = $subtotal + $service_fee;
 
+// Kiểm tra giới hạn MoMo
+$momo_limit_exceeded = $total > 50000000;
+
 require_once 'includes/header.php';
 ?>
 
 <section class="py-16 bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4">
         <h1 class="text-4xl font-bold text-gray-800 mb-8">💳 Thanh Toán</h1>
+        
+        <?php if ($momo_limit_exceeded): ?>
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-yellow-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        <strong>Lưu ý:</strong> Tổng đơn hàng vượt quá 50 triệu VNĐ. 
+                        Phương thức thanh toán MoMo không khả dụng (giới hạn test: 50 triệu). 
+                        Vui lòng chọn phương thức QR Code chuyển khoản.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <form id="checkout-form" method="POST" action="api/create-order.php" class="grid lg:grid-cols-3 gap-8">
             <!-- Thông tin giao hàng -->
@@ -130,17 +150,31 @@ require_once 'includes/header.php';
                     </div>
                     
                     <div class="bg-blue-50 rounded-xl p-4 mb-6">
-                        <h4 class="font-bold text-gray-800 mb-2">💳 Phương thức thanh toán</h4>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="radio" name="payment_method" value="qr_code" checked class="w-5 h-5 text-blue-600">
-                            <div class="flex items-center gap-2">
+                        <h4 class="font-bold text-gray-800 mb-3">💳 Phương thức thanh toán</h4>
+                        
+                        <!-- MoMo -->
+                        <label class="flex items-center gap-3 p-3 bg-white rounded-lg mb-2 border-2 border-transparent has-[:checked]:border-pink-500 transition-all <?php echo $momo_limit_exceeded ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'; ?>">
+                            <input type="radio" name="payment_method" value="momo" <?php echo !$momo_limit_exceeded ? 'checked' : 'disabled'; ?> class="w-5 h-5 text-pink-600">
+                            <div class="flex items-center gap-2 flex-1">
+                                <img src="https://developers.momo.vn/v3/assets/images/square-logo-f9a99607e5640a2372a7af2f0e22c7c6.png" alt="MoMo" class="h-6">
+                                <span class="font-semibold">Ví MoMo</span>
+                                <?php if ($momo_limit_exceeded): ?>
+                                <span class="text-xs text-red-600">(Vượt giới hạn 50 triệu)</span>
+                                <?php endif; ?>
+                            </div>
+                        </label>
+                        
+                        <!-- QR Code VietQR -->
+                        <label class="flex items-center gap-3 cursor-pointer p-3 bg-white rounded-lg border-2 border-transparent has-[:checked]:border-blue-500 transition-all">
+                            <input type="radio" name="payment_method" value="qr_code" <?php echo $momo_limit_exceeded ? 'checked' : ''; ?> class="w-5 h-5 text-blue-600">
+                            <div class="flex items-center gap-2 flex-1">
                                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                                 </svg>
-                                <span class="font-semibold">Quét mã QR</span>
+                                <span class="font-semibold">Quét mã QR (VietQR)</span>
                             </div>
                         </label>
-                        <p class="text-sm text-gray-600 mt-2 ml-8">Thanh toán qua VietQR - Vietcombank</p>
+                        <p class="text-sm text-gray-600 mt-2 ml-8">Chuyển khoản qua Vietcombank</p>
                     </div>
                     
                     <div class="bg-yellow-50 rounded-xl p-4 mb-6 text-sm text-gray-700">
@@ -153,9 +187,9 @@ require_once 'includes/header.php';
                         </ul>
                     </div>
                     
-                    <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all">
-                        <i class="fas fa-qrcode mr-2"></i>
-                        Tạo Mã QR Thanh Toán
+                    <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all">
+                        <i class="fas fa-wallet mr-2"></i>
+                        <span id="btn-text">Thanh Toán MoMo</span>
                     </button>
                     
                     <a href="cart.php" class="block text-center mt-4 text-gray-600 hover:text-gray-800">
@@ -169,58 +203,88 @@ require_once 'includes/header.php';
 </section>
 
 <script>
+// Cập nhật text nút khi thay đổi phương thức thanh toán
+document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.querySelector('#submit-btn i');
+        
+        if (this.value === 'momo') {
+            btnText.textContent = 'Thanh Toán MoMo';
+            btnIcon.className = 'fas fa-wallet mr-2';
+        } else {
+            btnText.textContent = 'Tạo Mã QR Thanh Toán';
+            btnIcon.className = 'fas fa-qrcode mr-2';
+        }
+    });
+});
+
 document.getElementById('checkout-form').addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = new FormData(this);
     const submitBtn = this.querySelector('button[type="submit"]');
+    const paymentMethod = formData.get('payment_method');
+    
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang xử lý...';
     
+    // Bước 1: Tạo đơn hàng
     fetch('api/create-order.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => {
-        // Kiểm tra response trước
-        if (!response.ok) {
-            throw new Error('HTTP error! status: ' + response.status);
+    .then(response => response.text())
+    .then(text => {
+        console.log('Create order response:', text);
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            throw new Error('Response không hợp lệ: ' + text.substring(0, 100));
         }
-        
-        // Lấy text trước để debug
-        return response.text().then(text => {
-            console.log('Response text:', text);
-            
-            // Thử parse JSON
-            try {
-                return JSON.parse(text);
-            } catch (e) {
-                console.error('JSON parse error:', e);
-                console.error('Response was:', text);
-                throw new Error('Response không phải JSON hợp lệ. Response: ' + text.substring(0, 100));
-            }
-        });
     })
     .then(data => {
-        console.log('Parsed data:', data);
+        if (!data.success) {
+            throw new Error(data.message || 'Không thể tạo đơn hàng');
+        }
         
-        if (data.success) {
-            // Chuyển đến trang thanh toán QR
-            window.location.href = 'payment-qr.php?order_id=' + data.order_id;
+        const orderId = data.order_id;
+        
+        // Bước 2: Xử lý theo phương thức thanh toán
+        if (paymentMethod === 'momo') {
+            // Tạo URL thanh toán MoMo
+            return fetch('api/momo-create-payment.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ order_id: orderId })
+            })
+            .then(response => response.json())
+            .then(momoData => {
+                if (momoData.success && momoData.payUrl) {
+                    // Chuyển hướng đến MoMo
+                    window.location.href = momoData.payUrl;
+                } else {
+                    throw new Error(momoData.message || 'Không thể tạo thanh toán MoMo');
+                }
+            });
         } else {
-            alert('Lỗi: ' + data.message);
-            if (data.debug) {
-                console.error('Debug info:', data.debug);
-            }
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i>Tạo Mã QR Thanh Toán';
+            // Chuyển đến trang QR Code
+            window.location.href = 'payment-qr.php?order_id=' + orderId;
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('Có lỗi xảy ra: ' + error.message);
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i>Tạo Mã QR Thanh Toán';
+        
+        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        if (paymentMethod === 'momo') {
+            submitBtn.innerHTML = '<i class="fas fa-wallet mr-2"></i><span id="btn-text">Thanh Toán MoMo</span>';
+        } else {
+            submitBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i><span id="btn-text">Tạo Mã QR Thanh Toán</span>';
+        }
     });
 });
 </script>

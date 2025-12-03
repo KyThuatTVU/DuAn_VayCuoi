@@ -36,6 +36,14 @@ $new_contacts = $result->fetch_assoc()['total'];
 $result = $conn->query("SELECT COUNT(*) as total FROM dat_lich_thu_vay WHERE status = 'pending'");
 $pending_bookings = $result->fetch_assoc()['total'];
 
+// Thống kê thanh toán
+$payment_stats = $conn->query("SELECT 
+    COUNT(*) as total_payments,
+    SUM(CASE WHEN status = 'success' THEN amount ELSE 0 END) as total_success_amount,
+    SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as total_success,
+    SUM(CASE WHEN status = 'initiated' THEN 1 ELSE 0 END) as total_pending
+FROM thanh_toan")->fetch_assoc();
+
 // Doanh thu theo tháng (12 tháng)
 $monthly_data = [];
 for ($i = 11; $i >= 0; $i--) {
@@ -108,7 +116,8 @@ $top_dresses = $conn->query("SELECT vc.ten_vay, COUNT(cthd.id) as rentals FROM v
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
                     <?php if (!empty($_SESSION['admin_avatar'])): ?>
-                        <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover">
+                        <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-user text-3xl text-accent-500" style="display:none;"></i>
                     <?php else: ?>
                         <i class="fas fa-user text-3xl text-accent-500"></i>
                     <?php endif; ?>
@@ -144,6 +153,10 @@ $top_dresses = $conn->query("SELECT vc.ten_vay, COUNT(cthd.id) as rentals FROM v
                 </a>
                 <a href="admin-blogs.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-newspaper w-5"></i> Tin tức
+                </a>
+                <a href="admin-payments.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-credit-card w-5"></i> Thanh toán
+                    <?php if($payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
                 </a>
                 <div class="border-t border-navy-700 mt-4 pt-4">
                     <a href="index.php" target="_blank" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded">
@@ -192,7 +205,7 @@ $top_dresses = $conn->query("SELECT vc.ten_vay, COUNT(cthd.id) as rentals FROM v
             <!-- Content -->
             <div class="p-6">
                 <!-- Stats Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-6">
                     <!-- Doanh thu -->
                     <div class="card bg-white rounded-2xl p-6 shadow-sm border-l-4 border-accent-500">
                         <div class="flex items-center justify-between">
@@ -218,6 +231,27 @@ $top_dresses = $conn->query("SELECT vc.ten_vay, COUNT(cthd.id) as rentals FROM v
                             </div>
                         </div>
                     </div>
+
+                    <!-- Thanh toán -->
+                    <a href="admin-payments.php" class="card bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500 hover:shadow-lg transition-all">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-navy-500 text-sm font-medium">Thanh toán</p>
+                                <p class="text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($payment_stats['total_success']); ?></p>
+                                <p class="text-xs text-green-600 mt-1"><?php echo number_format($payment_stats['total_success_amount']/1000000, 1); ?>M VNĐ</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-credit-card text-green-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <?php if($payment_stats['total_pending'] > 0): ?>
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <p class="text-xs text-yellow-600">
+                                <i class="fas fa-clock mr-1"></i><?php echo $payment_stats['total_pending']; ?> đang chờ
+                            </p>
+                        </div>
+                        <?php endif; ?>
+                    </a>
 
                     <!-- Khách hàng -->
                     <div class="card bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">

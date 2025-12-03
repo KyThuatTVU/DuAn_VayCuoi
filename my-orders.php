@@ -15,10 +15,14 @@ $user_id = $_SESSION['user_id'];
 $orders_query = $conn->prepare("SELECT 
     dh.*,
     t.transaction_id,
-    t.status as payment_status,
+    t.status as payment_transaction_status,
     TIMESTAMPDIFF(MINUTE, dh.created_at, NOW()) as minutes_ago,
     CASE 
-        WHEN dh.trang_thai_thanh_toan = 'pending' AND TIMESTAMPDIFF(MINUTE, dh.created_at, NOW()) < 10 THEN 1
+        WHEN dh.trang_thai_thanh_toan = 'pending' 
+        AND dh.trang_thai != 'cancelled'
+        AND TIMESTAMPDIFF(MINUTE, dh.created_at, NOW()) < 10 
+        AND (t.status IS NULL OR t.status NOT IN ('success', 'completed'))
+        THEN 1
         ELSE 0
     END as can_continue_payment
 FROM don_hang dh
@@ -106,7 +110,13 @@ require_once 'includes/header.php';
                     </div>
                     
                     <div class="flex gap-3">
-                        <?php if ($order['can_continue_payment'] == 1): ?>
+                        <?php if ($order['trang_thai_thanh_toan'] == 'paid'): ?>
+                            <!-- Đã thanh toán thành công -->
+                            <span class="text-green-600 px-6 py-3 font-semibold">
+                                <i class="fas fa-check-circle mr-2"></i>
+                                Đã thanh toán thành công
+                            </span>
+                        <?php elseif ($order['can_continue_payment'] == 1): ?>
                             <!-- Có thể tiếp tục thanh toán -->
                             <a href="payment-qr.php?order_id=<?php echo $order['id']; ?>" 
                                class="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transition-all">
@@ -118,6 +128,12 @@ require_once 'includes/header.php';
                             <span class="text-gray-500 px-6 py-3">
                                 <i class="fas fa-clock mr-2"></i>
                                 Đã hết hạn thanh toán
+                            </span>
+                        <?php elseif ($order['trang_thai_thanh_toan'] == 'failed'): ?>
+                            <!-- Thanh toán thất bại -->
+                            <span class="text-red-600 px-6 py-3">
+                                <i class="fas fa-times-circle mr-2"></i>
+                                Thanh toán thất bại
                             </span>
                         <?php endif; ?>
                         

@@ -82,7 +82,7 @@ try {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_name'] = $user['ho_ten'];
     $_SESSION['user_email'] = $user['email'];
-    $_SESSION['user_avatar'] = $user['avt'];
+    $_SESSION['user_avatar'] = $user['avt'] ?? ''; // Đảm bảo không null
     $_SESSION['logged_in'] = true;
     
     // Xử lý remember me

@@ -82,7 +82,7 @@ include 'includes/admin-layout.php';
             <div class="text-center mb-6">
                 <div class="w-24 h-24 mx-auto rounded-full bg-navy-100 overflow-hidden flex items-center justify-center mb-4">
                     <?php if (!empty($user['avt'])): ?>
-                        <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover">
+                        <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover" referrerpolicy="no-referrer">
                     <?php else: ?>
                         <i class="fas fa-user text-4xl text-navy-400"></i>
                     <?php endif; ?>

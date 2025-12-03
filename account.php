@@ -30,7 +30,7 @@ $stmt->close();
                 <div class="user-profile-card">
                     <div class="profile-avatar">
                         <?php if (!empty($user['avt'])): ?>
-                            <img src="<?php echo htmlspecialchars($user['avt']); ?>" alt="Avatar">
+                            <img src="<?php echo htmlspecialchars($user['avt']); ?>" alt="Avatar" referrerpolicy="no-referrer">
                         <?php else: ?>
                             <div class="avatar-placeholder">
                                 <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,7 +113,7 @@ $stmt->close();
                     <div class="avatar-upload-section">
                         <div class="current-avatar">
                             <?php if (!empty($user['avt'])): ?>
-                                <img src="<?php echo htmlspecialchars($user['avt']); ?>" alt="Avatar" id="preview-avatar">
+                                <img src="<?php echo htmlspecialchars($user['avt']); ?>" alt="Avatar" id="preview-avatar" referrerpolicy="no-referrer">
                             <?php else: ?>
                                 <div class="avatar-placeholder" id="preview-avatar">
                                     <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

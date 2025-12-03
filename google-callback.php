@@ -77,8 +77,16 @@ $user_info_url = 'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' .
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $user_info_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 $user_info_response = curl_exec($ch);
+$curl_error = curl_error($ch);
 curl_close($ch);
+
+// DEBUG: Log response từ Google
+file_put_contents('debug-google-log.txt', "Google API Response: " . $user_info_response . "\n", FILE_APPEND);
+if ($curl_error) {
+    file_put_contents('debug-google-log.txt', "CURL Error: " . $curl_error . "\n", FILE_APPEND);
+}
 
 $user_info = json_decode($user_info_response, true);
 
@@ -97,8 +105,17 @@ $email = $user_info['email'];
 $ho_ten = $user_info['name'] ?? '';
 $avatar_url = $user_info['picture'] ?? '';
 
+// DEBUG: Log avatar URL
+file_put_contents('debug-google-log.txt', "Avatar URL from Google: " . $avatar_url . "\n", FILE_APPEND);
+
 // ========== XỬ LÝ ĐĂNG NHẬP ADMIN ==========
 if ($is_admin_login) {
+    // Kiểm tra và thêm cột email vào bảng admin nếu chưa có
+    $check_column = $conn->query("SHOW COLUMNS FROM admin LIKE 'email'");
+    if ($check_column->num_rows == 0) {
+        $conn->query("ALTER TABLE admin ADD COLUMN email VARCHAR(150) NULL AFTER full_name");
+    }
+    
     // Kiểm tra email có trong bảng admin không
     $stmt = $conn->prepare("SELECT * FROM admin WHERE email = ?");
     $stmt->bind_param("s", $email);
@@ -109,11 +126,17 @@ if ($is_admin_login) {
         // Admin tồn tại - đăng nhập thành công
         $admin = $result->fetch_assoc();
         
+        // Xác định avatar admin
+        $admin_avatar = !empty($avatar_url) ? $avatar_url : '';
+        
+        // DEBUG: Log admin avatar
+        file_put_contents('debug-google-log.txt', "Admin avatar: " . $admin_avatar . "\n", FILE_APPEND);
+        
         $_SESSION['admin_id'] = $admin['id'];
         $_SESSION['admin_username'] = $admin['username'];
         $_SESSION['admin_name'] = $admin['full_name'];
         $_SESSION['admin_email'] = $admin['email'];
-        $_SESSION['admin_avatar'] = $avatar_url; // Lưu avatar từ Google
+        $_SESSION['admin_avatar'] = $admin_avatar;
         $_SESSION['admin_logged_in'] = true;
         
         $_SESSION['admin_success'] = "Đăng nhập thành công! Chào mừng " . $admin['full_name'];
@@ -128,6 +151,9 @@ if ($is_admin_login) {
 }
 
 // ========== XỬ LÝ ĐĂNG NHẬP USER THƯỜNG ==========
+// Đảm bảo cột avt đủ lớn để chứa URL Google (có thể dài)
+$conn->query("ALTER TABLE nguoi_dung MODIFY COLUMN avt VARCHAR(1000) NULL");
+
 // Kiểm tra user đã tồn tại chưa
 $stmt = $conn->prepare("SELECT *, COALESCE(status, 'active') as status FROM nguoi_dung WHERE email = ?");
 $stmt->bind_param("s", $email);
@@ -149,26 +175,37 @@ if ($result->num_rows > 0) {
         redirect('login.php');
     }
     
-    // Cập nhật avatar từ Google (luôn cập nhật để có avatar mới nhất)
+    // Xác định avatar để sử dụng
+    // Ưu tiên: avatar từ Google > avatar đã có trong DB
+    $final_avatar = '';
+    
     if (!empty($avatar_url)) {
-        // Luôn cập nhật avatar từ Google vào database
+        // Có avatar từ Google - cập nhật vào database
         $update_stmt = $conn->prepare("UPDATE nguoi_dung SET avt = ? WHERE id = ?");
         $update_stmt->bind_param("si", $avatar_url, $user['id']);
         $update_stmt->execute();
         $update_stmt->close();
-        
-        // Sử dụng avatar từ Google cho session
-        $user['avt'] = $avatar_url;
+        $final_avatar = $avatar_url;
+    } elseif (!empty($user['avt'])) {
+        // Không có avatar từ Google nhưng có trong DB
+        $final_avatar = $user['avt'];
     }
+    
+    // DEBUG: Log final avatar
+    file_put_contents('debug-google-log.txt', "Final avatar for user {$user['id']}: " . $final_avatar . "\n", FILE_APPEND);
     
     // Set session
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_name'] = $user['ho_ten'];
     $_SESSION['user_email'] = $user['email'];
-    $_SESSION['user_avatar'] = $user['avt']; // Lấy trực tiếp từ $user['avt'] đã được cập nhật
+    $_SESSION['user_avatar'] = $final_avatar;
     $_SESSION['logged_in'] = true;
     
     $_SESSION['success'] = "Đăng nhập thành công! Chào mừng " . $user['ho_ten'];
+    
+    // DEBUG: Log session sau khi set
+    file_put_contents('debug-google-log.txt', "SESSION after login: " . print_r($_SESSION, true) . "\n\n", FILE_APPEND);
+    
     redirect('index.php');
     
 } else {

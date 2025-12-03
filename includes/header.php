@@ -161,7 +161,13 @@ if (session_status() === PHP_SESSION_NONE) {
                         <div class="relative group">
                             <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-primary/30 rounded-full hover:border-primary transition-all">
                                 <?php if (!empty($_SESSION['user_avatar'])): ?>
-                                    <img src="<?php echo htmlspecialchars($_SESSION['user_avatar']); ?>" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-primary" referrerpolicy="no-referrer">
+                                    <img src="<?php echo htmlspecialchars($_SESSION['user_avatar']); ?>" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-primary" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent items-center justify-center" style="display:none;">
+                                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="12" cy="7" r="4"/>
+                                        </svg>
+                                    </div>
                                 <?php else: ?>
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
                                         <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

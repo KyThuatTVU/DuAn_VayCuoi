@@ -134,7 +134,7 @@ include 'includes/admin-layout.php';
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-full bg-navy-100 overflow-hidden flex items-center justify-center">
                             <?php if (!empty($user['avt'])): ?>
-                                <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover">
+                                <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover" referrerpolicy="no-referrer">
                             <?php else: ?>
                                 <i class="fas fa-user text-navy-400"></i>
                             <?php endif; ?>

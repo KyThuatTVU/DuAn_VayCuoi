@@ -70,7 +70,8 @@ if (isset($_FILES['avt']) && $_FILES['avt']['error'] === UPLOAD_ERR_OK) {
                 $old_user = $result->fetch_assoc();
                 $stmt->close();
                 
-                if (!empty($old_user['avt']) && file_exists($old_user['avt'])) {
+                // Chỉ xóa file local, không xóa URL Google
+                if (!empty($old_user['avt']) && !str_starts_with($old_user['avt'], 'http') && file_exists($old_user['avt'])) {
                     unlink($old_user['avt']);
                 }
                 

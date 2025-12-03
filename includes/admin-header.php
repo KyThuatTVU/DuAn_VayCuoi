@@ -35,6 +35,9 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
                     <a href="admin-bookings.php" class="px-3 py-2 rounded-md text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) === 'admin-bookings.php' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-600 hover:bg-gray-100'; ?>">
                         <i class="fas fa-calendar-alt mr-1"></i>Lịch hẹn
                     </a>
+                    <a href="admin-payments.php" class="px-3 py-2 rounded-md text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) === 'admin-payments.php' ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-100'; ?>">
+                        <i class="fas fa-credit-card mr-1"></i>Thanh toán
+                    </a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -62,6 +65,7 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
             <a href="admin-contacts.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Liên hệ</a>
             <a href="admin-blogs.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Tin tức</a>
             <a href="admin-bookings.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Lịch hẹn</a>
+            <a href="admin-payments.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Thanh toán</a>
         </div>
     </div>
 </nav>

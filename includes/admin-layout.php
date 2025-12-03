@@ -60,7 +60,8 @@ $current_file = basename($_SERVER['PHP_SELF']);
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
                     <?php if (!empty($_SESSION['admin_avatar'])): ?>
-                        <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover">
+                        <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <i class="fas fa-user text-3xl text-accent-500" style="display:none;"></i>
                     <?php else: ?>
                         <i class="fas fa-user text-3xl text-accent-500"></i>
                     <?php endif; ?>
@@ -97,6 +98,10 @@ $current_file = basename($_SERVER['PHP_SELF']);
                 <a href="admin-blogs.php" class="sidebar-link <?php echo $current_file == 'admin-blogs.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-newspaper w-5"></i> Tin tức
                 </a>
+                <a href="admin-payments.php" class="sidebar-link <?php echo $current_file == 'admin-payments.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-credit-card w-5"></i> Thanh toán
+                    <?php if (isset($payment_stats) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
+                </a>
                 <div class="border-t border-navy-700 mt-4 pt-4">
                     <a href="index.php" target="_blank" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded">
                         <i class="fas fa-external-link-alt w-5"></i> Xem website
@@ -125,7 +130,10 @@ $current_file = basename($_SERVER['PHP_SELF']);
                     </button>
                     <div class="w-10 h-10 rounded-full overflow-hidden bg-navy-200">
                         <?php if (!empty($_SESSION['admin_avatar'])): ?>
-                            <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover">
+                            <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-full h-full flex items-center justify-center" style="display:none;">
+                                <i class="fas fa-user text-navy-500"></i>
+                            </div>
                         <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center">
                                 <i class="fas fa-user text-navy-500"></i>

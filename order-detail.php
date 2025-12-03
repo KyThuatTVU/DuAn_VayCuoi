@@ -239,12 +239,31 @@ require_once 'includes/header.php';
                     Quay lại danh sách
                 </a>
                 
-                <?php if ($order['trang_thai_thanh_toan'] === 'pending' && $order['minutes_ago'] < 10): ?>
+                <?php if ($order['trang_thai_thanh_toan'] === 'paid'): ?>
+                <!-- Đã thanh toán -->
+                <div class="flex-1 bg-green-50 border-2 border-green-500 text-green-700 px-6 py-4 rounded-xl font-bold text-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Đã thanh toán thành công
+                </div>
+                <?php elseif ($order['trang_thai_thanh_toan'] === 'pending' && $order['minutes_ago'] < 10 && $order['payment_status'] !== 'success'): ?>
+                <!-- Có thể tiếp tục thanh toán -->
                 <a href="payment-qr.php?order_id=<?php echo $order['id']; ?>" 
                    class="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-4 rounded-xl font-bold text-center hover:shadow-lg transition-all">
                     <i class="fas fa-qrcode mr-2"></i>
-                    Tiếp tục thanh toán
+                    Tiếp tục thanh toán (còn <?php echo 10 - $order['minutes_ago']; ?> phút)
                 </a>
+                <?php elseif ($order['trang_thai_thanh_toan'] === 'pending' && $order['minutes_ago'] >= 10): ?>
+                <!-- Hết hạn -->
+                <div class="flex-1 bg-gray-50 border-2 border-gray-300 text-gray-600 px-6 py-4 rounded-xl font-bold text-center">
+                    <i class="fas fa-clock mr-2"></i>
+                    Đã hết hạn thanh toán
+                </div>
+                <?php elseif ($order['trang_thai_thanh_toan'] === 'failed'): ?>
+                <!-- Thất bại -->
+                <div class="flex-1 bg-red-50 border-2 border-red-500 text-red-700 px-6 py-4 rounded-xl font-bold text-center">
+                    <i class="fas fa-times-circle mr-2"></i>
+                    Thanh toán thất bại
+                </div>
                 <?php endif; ?>
             </div>
         </div>
