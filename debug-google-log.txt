@@ -1,8 +1,8 @@
-=== 2025-11-26 04:32:02 ===
+=== 2025-12-03 03:09:55 ===
 GET: Array
 (
     [state] => admin_login
-    [code] => 4/0Ab32j93muiQjFFgYOWr7HpqN2P-znGobhPdpOxd9qNOs6LFE-HFbjhGuY4Ee_xACmo0cbA
+    [code] => 4/0Ab32j929TVapisEm0Yjoavt7TcxWkNI9EM45UuDd_EkT7bdO3Z4qrEmg0hrtoDbQoQya0A
     [scope] => email profile https://www.googleapis.com/auth/userinfo.email openid https://www.googleapis.com/auth/userinfo.profile
     [authuser] => 0
     [prompt] => none
@@ -10,236 +10,6 @@ GET: Array
 
 SESSION before: Array
 (
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-26 16:22:52 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j92o8BwYh0PkKKjb8qZJvItk4x_uBL2ggFBs3eGEbwy7WNmLdK0QDqlClEkjXLITew
-    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-26 19:21:35 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j92Xu9jK26IQ9hSBF_NQjSckGkU1lh0XLFNUyY8N3m3haUVSfolKRFD4vhS9wkVlDA
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-27 08:39:38 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j92_TUdti4BhlTCIyZlk3A4nF18zcVIlR920eSIjZfxCxS7-FrFQr6nT5-jTOMxMtg
-    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-27 08:40:31 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j91imFV7UsdoQ-94ZELaQPbC150aQL2Py-a7EGOLVxXGPvp4lxKFMAb_pGF_qFTLzg
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email openid https://www.googleapis.com/auth/userinfo.profile
-    [authuser] => 1
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-27 08:40:36 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j929hw6c35FwM6GIEl1bi1CUyIKBP2ZB8hnAKStxdSE_WH2BJ9HbIiLSqI2N-cimMQ
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-11-27 08:41:15 ===
-GET: Array
-(
-    [code] => 4/0Ab32j90fWzptsleWKKqugqn3jC9PxtNrODAKBNOAf8n4OivzXwpblRBNIjDHFIUXdo9OhA
-    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
-    [authuser] => 1
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [admin_id] => 2
-    [admin_username] => nguyenhuynhkithuat84tv
-    [admin_name] => Thuật Thuật
-    [admin_email] => nguyenhuynhkithuat84tv@gmail.com
-    [admin_logged_in] => 1
-)
-
-state: , is_admin_login: false
-
-=== 2025-11-27 08:41:25 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j90nCsqMhBoimN1a0CEvz_83_4iuthitKW_y_KIE82s8WguGAKSvzBMoY49gYU5-uQ
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [user_id] => 6
-    [user_name] => Thiên Vũ Đỗ
-    [user_email] => dothienvu84tv@gmail.com
-    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-    [logged_in] => 1
-    [success] => Đăng nhập thành công! Chào mừng Thiên Vũ Đỗ
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-=== 2025-12-03 01:28:20 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j93G3EpGGjI4Vwk9qBmRCZ1htIVVuVE_OTFUGRUROiGT839ArwXhEqyMuZj-tBx_0A
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [google_login_type] => admin
-)
-
-state: admin_login, is_admin_login: true
-
-Google API Response: {
-  "id": "102458705850277446461",
-  "email": "nguyenhuynhkithuat84tv@gmail.com",
-  "verified_email": true,
-  "name": "Thuật Thuật",
-  "given_name": "Thuật",
-  "family_name": "Thuật",
-  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
-}
-
-Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-=== 2025-12-03 01:29:27 ===
-GET: Array
-(
-    [code] => 4/0Ab32j91Dg1kTygVbARS43Ic6kWlOqTZKe39PiGTe2S3bA8RBkNzi_j0TseCWwRD-ZqYK5A
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 1
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_id] => 2
-    [admin_username] => nguyenhuynhkithuat84tv
-    [admin_name] => Thuật Thuật
-    [admin_email] => nguyenhuynhkithuat84tv@gmail.com
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [admin_logged_in] => 1
-)
-
-state: , is_admin_login: false
-
-Google API Response: {
-  "id": "105227688268935859438",
-  "email": "dothienvu84tv@gmail.com",
-  "verified_email": true,
-  "name": "Thiên Vũ Đỗ",
-  "given_name": "Thiên Vũ",
-  "family_name": "Đỗ",
-  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c"
-}
-
-Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-Final avatar for user 6: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-SESSION after login: Array
-(
-    [admin_id] => 2
-    [admin_username] => nguyenhuynhkithuat84tv
-    [admin_name] => Thuật Thuật
-    [admin_email] => nguyenhuynhkithuat84tv@gmail.com
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-    [admin_logged_in] => 1
-    [user_id] => 6
-    [user_name] => Thiên Vũ Đỗ
-    [user_email] => dothienvu84tv@gmail.com
-    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-    [logged_in] => 1
-    [success] => Đăng nhập thành công! Chào mừng Thiên Vũ Đỗ
-)
-
-
-=== 2025-12-03 01:33:29 ===
-GET: Array
-(
-    [state] => admin_login
-    [code] => 4/0Ab32j90J4-gztAGyTtx4TIIP5Z0jf3TVfzFw6ohjbDKzJrKxp2rxghajK2m3WQfPTdmCYA
-    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
-    [authuser] => 0
-    [prompt] => none
-)
-
-SESSION before: Array
-(
-    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
     [user_id] => 6
     [user_name] => Thiên Vũ Đỗ
     [user_email] => dothienvu84tv@gmail.com
@@ -263,41 +33,37 @@ Google API Response: {
 
 Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
 Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
-=== 2025-12-03 02:45:49 ===
+=== 2025-12-03 03:31:51 ===
 GET: Array
 (
-    [code] => 4/0Ab32j90efMbRyNtWNfB3uzKEEAu75pz-bFXQd5tRQOws8_K1w3vHFy65VThv8f5MoXPftA
+    [state] => admin_login
+    [code] => 4/0Ab32j93IAwe2_Kj7PIZawXhaBFi6ZDO8AZCVF7ZGAH-iAWsFiG2ggtwK6paYbF-lbeAOcA
     [scope] => email profile https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid
-    [authuser] => 1
+    [authuser] => 0
     [prompt] => none
 )
 
 SESSION before: Array
 (
+    [user_id] => 7
+    [user_name] => Phạm Quang Vinh
+    [user_email] => vphamquang539@gmail.com
+    [user_avatar] => uploads/avatars/692fa0ce8bb69_1764729038.jpg
+    [logged_in] => 1
+    [google_login_type] => admin
 )
 
-state: , is_admin_login: false
+state: admin_login, is_admin_login: true
 
 Google API Response: {
-  "id": "105227688268935859438",
-  "email": "dothienvu84tv@gmail.com",
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
   "verified_email": true,
-  "name": "Thiên Vũ Đỗ",
-  "given_name": "Thiên Vũ",
-  "family_name": "Đỗ",
-  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c"
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
 }
 
-Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-Final avatar for user 6: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-SESSION after login: Array
-(
-    [user_id] => 6
-    [user_name] => Thiên Vũ Đỗ
-    [user_email] => dothienvu84tv@gmail.com
-    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
-    [logged_in] => 1
-    [success] => Đăng nhập thành công! Chào mừng Thiên Vũ Đỗ
-)
-
-
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
