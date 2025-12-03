@@ -3,6 +3,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Kiểm tra trạng thái user (nếu đã đăng nhập)
+require_once __DIR__ . '/check-user-status.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -31,6 +34,10 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+    <!-- User Status Checker - Kiểm tra tài khoản bị khóa realtime -->
+    <script src="assets/js/user-status-checker.js" defer></script>
+    <?php endif; ?>
 </head>
 <body>
     <!-- Top Bar -->

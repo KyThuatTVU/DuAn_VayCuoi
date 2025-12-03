@@ -67,3 +67,33 @@ Google API Response: {
 
 Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
 Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 03:52:57 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j90h12yIxeBma1GBSp3Z0R1W_Ynq08mf2vNaiHWP8KMrY-N_nriwZm3bntrzJifsAg
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [old_email] => vphamquang539@gmail.com
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
