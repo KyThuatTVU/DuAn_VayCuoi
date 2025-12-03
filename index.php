@@ -1,6 +1,22 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+
+// Lấy sản phẩm nổi bật từ database (8 sản phẩm mới nhất còn hàng)
+$featured_products = [];
+$sql = "SELECT v.*, 
+        (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien
+        FROM vay_cuoi v 
+        WHERE v.so_luong_ton > 0 
+        ORDER BY v.created_at DESC 
+        LIMIT 8";
+$result = $conn->query($sql);
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $featured_products[] = $row;
+    }
+}
+
 require_once 'includes/header.php';
 ?>
 
@@ -354,260 +370,69 @@ function copyPromoCode() {
             <p class="text-gray-600 text-lg">Những mẫu váy được yêu thích nhất</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <!-- Sản phẩm 1 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay1.jpg" alt="Váy Công Chúa Lộng Lẫy" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">
-                        Mới
-                    </div>
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Yêu thích">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                        </button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Xem nhanh">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
+            <?php if (empty($featured_products)): ?>
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 text-lg">Chưa có sản phẩm nào. Vui lòng quay lại sau!</p>
                 </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Công Chúa Lộng Lẫy</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg">
-                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            <?php else: ?>
+                <?php foreach ($featured_products as $index => $product): 
+                    $image_url = !empty($product['anh_dai_dien']) ? $product['anh_dai_dien'] : 'images/vay' . (($index % 8) + 1) . '.jpg';
+                    $is_new = (strtotime($product['created_at']) > strtotime('-30 days'));
+                    $is_hot = ($product['so_luong_ton'] <= 3);
+                ?>
+                <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
+                    <div class="relative overflow-hidden">
+                        <img src="<?php echo htmlspecialchars($image_url); ?>" 
+                             alt="<?php echo htmlspecialchars($product['ten_vay']); ?>" 
+                             class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500"
+                             onerror="this.src='images/vay1.jpg'">
+                        <?php if ($is_new): ?>
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">
+                            Mới
                         </div>
-                        <span class="text-gray-500 text-sm">(45 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">5.500.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=1" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">
-                            Chi Tiết
-                        </a>
-                        <a href="booking.php?id=1" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">
-                            Đặt Lịch
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 2 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay2.jpg" alt="Váy Đuôi Cá Quyến Rũ" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg animate-pulse">
-                        Hot
-                    </div>
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Yêu thích">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                        </button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Xem nhanh">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Đuôi Cá Quyến Rũ</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg">
-                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        <?php elseif ($is_hot): ?>
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg animate-pulse">
+                            Hot
                         </div>
-                        <span class="text-gray-500 text-sm">(38 đánh giá)</span>
+                        <?php endif; ?>
+                        <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Yêu thích">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
+                            <a href="product-detail.php?id=<?php echo $product['id']; ?>" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors" title="Xem nhanh">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">6.200.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=2" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">
-                            Chi Tiết
-                        </a>
-                        <a href="booking.php?id=2" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">
-                            Đặt Lịch
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 3 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay3.jpg" alt="Váy Chữ A Thanh Lịch" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        </button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Chữ A Thanh Lịch</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-                        <span class="text-gray-500 text-sm">(32 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">4.800.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=3" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=3" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-3 line-clamp-1"><?php echo htmlspecialchars($product['ten_vay']); ?></h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="flex text-yellow-400 text-lg">
+                                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                            </div>
+                            <span class="text-gray-500 text-sm">(<?php echo $product['so_luong_ton']; ?> còn lại)</span>
+                        </div>
+                        <div class="mb-6">
+                            <span class="text-3xl font-bold text-pink-600"><?php echo number_format($product['gia_thue']); ?>đ</span>
+                            <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <a href="product-detail.php?id=<?php echo $product['id']; ?>" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">
+                                Chi Tiết
+                            </a>
+                            <a href="booking.php?id=<?php echo $product['id']; ?>" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">
+                                Đặt Lịch
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Sản phẩm 4 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay4.jpg" alt="Váy Hiện Đại Tinh Tế" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">Mới</div>
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        </button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Hiện Đại Tinh Tế</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-                        <span class="text-gray-500 text-sm">(28 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">5.000.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=4" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=4" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 5 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay5.jpg" alt="Váy Ren Cổ Điển" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Ren Cổ Điển</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span class="text-gray-300">★</span></div>
-                        <span class="text-gray-500 text-sm">(25 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">4.500.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=5" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=5" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 6 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay6.jpg" alt="Váy Xòe Lãng Mạn" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg animate-pulse">Hot</div>
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Xòe Lãng Mạn</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-                        <span class="text-gray-500 text-sm">(41 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">5.800.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=6" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=6" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 7 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay7.jpg" alt="Váy Tối Giản Sang Trọng" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Tối Giản Sang Trọng</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-                        <span class="text-gray-500 text-sm">(35 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">4.200.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=7" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=7" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sản phẩm 8 -->
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
-                <div class="relative overflow-hidden">
-                    <img src="images/vay8.jpg" alt="Váy Dạ Hội Cao Cấp" class="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute top-4 right-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-1.5 rounded-full text-sm font-semibold shadow-lg">Mới</div>
-                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></button>
-                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-500 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-3">Váy Dạ Hội Cao Cấp</h3>
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="flex text-yellow-400 text-lg"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
-                        <span class="text-gray-500 text-sm">(52 đánh giá)</span>
-                    </div>
-                    <div class="mb-6">
-                        <span class="text-3xl font-bold text-pink-600">7.500.000đ</span>
-                        <span class="text-gray-500 text-sm ml-2">/ ngày thuê</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <a href="product-detail.php?id=8" class="flex-1 text-center px-4 py-2.5 border-2 border-pink-500 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 transition-colors">Chi Tiết</a>
-                        <a href="booking.php?id=8" class="flex-1 text-center px-4 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all shadow-md">Đặt Lịch</a>
-                    </div>
-                </div>
-            </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <div class="text-center mt-12">
             <a href="products.php" class="inline-block px-8 py-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full font-semibold text-lg hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">

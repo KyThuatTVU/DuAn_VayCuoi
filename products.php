@@ -24,18 +24,54 @@ switch($sort) {
 }
 
 // Lấy danh sách váy cưới từ database
-// Ưu tiên lấy ảnh chính từ cột hinh_anh_chinh, nếu không có thì lấy từ bảng hinh_anh_vay_cuoi
-$sql = "SELECT v.*, 
-        COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id LIMIT 1)) as anh_dai_dien,
-        (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh
-        FROM vay_cuoi v 
-        WHERE v.so_luong_ton > 0
-        ORDER BY $order_by";
+// Lấy ảnh chính (is_primary = 1) từ bảng hinh_anh_vay_cuoi, nếu không có thì lấy ảnh đầu tiên
+// Lấy thêm phong_cach và danh sách size (nếu có)
+
+// Kiểm tra xem bảng vay_cuoi_size có tồn tại không
+$size_table_exists = false;
+$check_table = $conn->query("SHOW TABLES LIKE 'vay_cuoi_size'");
+if ($check_table && $check_table->num_rows > 0) {
+    $size_table_exists = true;
+}
+
+// Xây dựng SQL query
+if ($size_table_exists) {
+    $sql = "SELECT v.*, 
+            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+            (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
+            (SELECT GROUP_CONCAT(DISTINCT size ORDER BY FIELD(size, 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL') SEPARATOR ',') 
+             FROM vay_cuoi_size WHERE vay_id = v.id) as sizes
+            FROM vay_cuoi v 
+            WHERE v.so_luong_ton > 0
+            ORDER BY $order_by";
+} else {
+    // Nếu bảng size chưa tồn tại, không lấy sizes
+    $sql = "SELECT v.*, 
+            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+            (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
+            NULL as sizes
+            FROM vay_cuoi v 
+            WHERE v.so_luong_ton > 0
+            ORDER BY $order_by";
+}
 
 $result = $conn->query($sql);
 $products = [];
 if ($result && $result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
+        // Nếu chưa có phong_cach trong DB, thử detect từ tên/mô tả
+        if (empty($row['phong_cach'])) {
+            $text = strtolower($row['ten_vay'] . ' ' . ($row['mo_ta'] ?? ''));
+            if (strpos($text, 'công chúa') !== false || strpos($text, 'princess') !== false) {
+                $row['phong_cach'] = 'công chúa';
+            } elseif (strpos($text, 'đuôi cá') !== false || strpos($text, 'mermaid') !== false) {
+                $row['phong_cach'] = 'đuôi cá';
+            } elseif (strpos($text, 'chữ a') !== false || strpos($text, 'a-line') !== false) {
+                $row['phong_cach'] = 'chữ a';
+            } elseif (strpos($text, 'hiện đại') !== false || strpos($text, 'modern') !== false) {
+                $row['phong_cach'] = 'hiện đại';
+            }
+        }
         $products[] = $row;
     }
 }
@@ -74,10 +110,10 @@ require_once 'includes/header.php';
                         Lọc Theo Giá
                     </h3>
                     <div class="space-y-3">
-                        <input type="range" min="0" max="10000000" step="500000" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                        <input type="range" id="price-filter" min="0" max="10000000" step="500000" value="10000000" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
                         <div class="flex justify-between text-sm text-gray-600 font-medium">
                             <span>0đ</span>
-                            <span>10.000.000đ</span>
+                            <span id="price-display">10.000.000đ</span>
                         </div>
                     </div>
                 </div>
@@ -92,19 +128,19 @@ require_once 'includes/header.php';
                     </h3>
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" name="style" value="công chúa" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Công Chúa</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" name="style" value="đuôi cá" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Đuôi Cá</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" name="style" value="chữ a" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Chữ A</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" name="style" value="hiện đại" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Hiện Đại</span>
                         </label>
                     </div>
@@ -120,26 +156,29 @@ require_once 'includes/header.php';
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
                         <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" value="S" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">S</span>
                         </label>
                         <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" value="M" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">M</span>
                         </label>
                         <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" value="L" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">L</span>
                         </label>
                         <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="checkbox" value="XL" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">XL</span>
                         </label>
                     </div>
                 </div>
 
-                <button class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <button id="apply-filter-btn" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-4 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
                     Áp Dụng Lọc
+                </button>
+                <button onclick="resetFilters()" class="w-full mt-3 bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                    Xóa Bộ Lọc
                 </button>
             </aside>
 
@@ -147,13 +186,22 @@ require_once 'includes/header.php';
             <div class="space-y-8">
                 <!-- Header -->
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-4">
-                        Bộ Sưu Tập Váy Cưới
-                    </h1>
+                    <div class="flex items-center justify-between mb-4">
+                        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                            Bộ Sưu Tập Váy Cưới
+                        </h1>
+                        <!-- Mobile Filter Button -->
+                        <button id="mobile-filter-btn" class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-600 rounded-xl font-semibold hover:bg-blue-200 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                            </svg>
+                            Bộ lọc
+                        </button>
+                    </div>
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-gray-200">
                         <span class="text-gray-600 font-medium">
-                            Hiển thị <span class="text-blue-600 font-bold"><?php echo min($total_products, 12); ?></span> trong 
-                            <span class="text-blue-600 font-bold"><?php echo $total_products; ?></span> sản phẩm
+                            Hiển thị <span id="product-count-display" class="text-blue-600 font-bold"><?php echo $total_products; ?></span> trong 
+                            <span id="product-total-display" class="text-blue-600 font-bold"><?php echo $total_products; ?></span> sản phẩm
                         </span>
                         <div class="flex items-center gap-3">
                             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +218,7 @@ require_once 'includes/header.php';
                 </div>
 
                 <!-- Products Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <?php if (empty($products)): ?>
                         <div class="col-span-full text-center py-20">
                             <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
@@ -291,6 +339,104 @@ require_once 'includes/header.php';
         </div>
     </div>
 </section>
+
+<!-- Mobile Filter Modal -->
+<div id="mobile-filter-modal" class="fixed inset-0 bg-black/50 z-[9999] hidden backdrop-blur-sm">
+    <div class="absolute right-0 top-0 h-full w-80 max-w-[90%] bg-white shadow-2xl transform transition-transform duration-300 overflow-y-auto">
+        <div class="p-6">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Bộ Lọc Sản Phẩm</h3>
+                <button id="close-mobile-filter" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Price Filter -->
+            <div class="mb-6">
+                <h4 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Lọc Theo Giá
+                </h4>
+                <input type="range" id="mobile-price-filter" min="0" max="10000000" step="500000" value="10000000" class="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                <div class="flex justify-between text-sm text-gray-600 font-medium mt-2">
+                    <span>0đ</span>
+                    <span id="mobile-price-display">10.000.000đ</span>
+                </div>
+            </div>
+            
+            <!-- Style Filter -->
+            <div class="mb-6">
+                <h4 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                    </svg>
+                    Phong Cách
+                </h4>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" value="công chúa" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="text-gray-700">Váy Công Chúa</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" value="đuôi cá" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="text-gray-700">Váy Đuôi Cá</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" value="chữ a" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="text-gray-700">Váy Chữ A</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" value="hiện đại" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <span class="text-gray-700">Váy Hiện Đại</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Size Filter -->
+            <div class="mb-6">
+                <h4 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Kích Thước
+                </h4>
+                <div class="grid grid-cols-4 gap-2">
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                        <input type="checkbox" value="S" class="mobile-size-filter hidden">
+                        <span class="font-semibold text-gray-700">S</span>
+                    </label>
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                        <input type="checkbox" value="M" class="mobile-size-filter hidden">
+                        <span class="font-semibold text-gray-700">M</span>
+                    </label>
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                        <input type="checkbox" value="L" class="mobile-size-filter hidden">
+                        <span class="font-semibold text-gray-700">L</span>
+                    </label>
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                        <input type="checkbox" value="XL" class="mobile-size-filter hidden">
+                        <span class="font-semibold text-gray-700">XL</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Buttons -->
+            <div class="space-y-3 pt-4 border-t border-gray-200">
+                <button id="apply-mobile-filter" class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-all">
+                    Áp Dụng Lọc
+                </button>
+                <button id="reset-mobile-filter" class="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all">
+                    Xóa Bộ Lọc
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Cart Notification -->
 <div id="cart-notification" class="hidden fixed top-24 right-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-6 rounded-2xl shadow-2xl z-50 animate-slide-in">
@@ -550,6 +696,370 @@ function quickView(productId) {
     // Redirect to product detail page
     window.location.href = 'product-detail.php?id=' + productId;
 }
+
+// ========== BỘ LỌC SẢN PHẨM ==========
+
+// Dữ liệu sản phẩm từ PHP
+const allProducts = <?php echo json_encode($products, JSON_UNESCAPED_UNICODE); ?>;
+let filteredProducts = [...allProducts];
+
+// Debug: Log dữ liệu sản phẩm để kiểm tra
+console.log('Loaded products:', allProducts.length);
+console.log('Sample product:', allProducts[0]);
+
+// Cập nhật hiển thị giá trên thanh range
+const priceFilter = document.getElementById('price-filter');
+const priceDisplay = document.getElementById('price-display');
+
+if (priceFilter && priceDisplay) {
+    priceFilter.addEventListener('input', function() {
+        priceDisplay.textContent = formatPrice(this.value);
+    });
+}
+
+// Hàm lọc sản phẩm
+function filterProducts() {
+    const maxPrice = priceFilter ? parseInt(priceFilter.value) : 10000000;
+    
+    // Lấy các phong cách được chọn
+    const selectedStyles = [];
+    document.querySelectorAll('.style-filter:checked').forEach(cb => {
+        selectedStyles.push(cb.value.toLowerCase());
+    });
+    
+    // Lấy các size được chọn
+    const selectedSizes = [];
+    document.querySelectorAll('.size-filter:checked').forEach(cb => {
+        selectedSizes.push(cb.value.toUpperCase());
+    });
+    
+    // Lọc sản phẩm
+    filteredProducts = allProducts.filter(product => {
+        // Lọc theo giá
+        if (parseFloat(product.gia_thue) > maxPrice) return false;
+        
+        // Lọc theo phong cách
+        if (selectedStyles.length > 0) {
+            // Ưu tiên dùng cột phong_cach từ DB nếu có
+            const productStyle = (product.phong_cach || '').toLowerCase();
+            const searchText = ((product.ten_vay || '') + ' ' + (product.mo_ta || '')).toLowerCase();
+            
+            const hasStyle = selectedStyles.some(style => {
+                // Kiểm tra cột phong_cach trước
+                if (productStyle && productStyle === style) return true;
+                // Fallback: tìm trong tên và mô tả
+                return searchText.includes(style);
+            });
+            if (!hasStyle) return false;
+        }
+        
+        // Lọc theo size
+        if (selectedSizes.length > 0) {
+            // Ưu tiên dùng cột sizes từ DB nếu có (format: "S,M,L")
+            const productSizes = (product.sizes || '').toUpperCase();
+            const searchText = ((product.ten_vay || '') + ' ' + (product.mo_ta || '')).toUpperCase();
+            
+            const hasSize = selectedSizes.some(size => {
+                // Kiểm tra cột sizes trước (từ bảng vay_cuoi_size)
+                if (productSizes) {
+                    const sizesArray = productSizes.split(',').map(s => s.trim());
+                    if (sizesArray.includes(size)) return true;
+                }
+                // Fallback: tìm trong tên và mô tả
+                const patterns = [
+                    `SIZE ${size}`,
+                    `SIZE: ${size}`,
+                    ` ${size} `,
+                    `-${size}-`,
+                    `-${size}`,
+                    `${size}-`
+                ];
+                return patterns.some(p => searchText.includes(p));
+            });
+            if (!hasSize) return false;
+        }
+        
+        return true;
+    });
+    
+    // Render lại danh sách sản phẩm
+    renderProducts();
+    
+    // Cập nhật số lượng hiển thị
+    updateProductCount();
+    
+    // Hiển thị thông báo số kết quả
+    showFilterResult();
+}
+
+// Hiển thị thông báo kết quả lọc
+function showFilterResult() {
+    const existingNotif = document.getElementById('filter-notification');
+    if (existingNotif) existingNotif.remove();
+    
+    const notif = document.createElement('div');
+    notif.id = 'filter-notification';
+    notif.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-slide-up';
+    notif.innerHTML = `
+        <span class="font-semibold">${filteredProducts.length}</span> sản phẩm được tìm thấy
+    `;
+    document.body.appendChild(notif);
+    
+    setTimeout(() => {
+        notif.remove();
+    }, 2000);
+}
+
+// Render danh sách sản phẩm
+function renderProducts() {
+    const container = document.getElementById('products-grid');
+    if (!container) return;
+    
+    if (filteredProducts.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-20">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
+                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-700 mb-2">Không tìm thấy sản phẩm</h3>
+                <p class="text-gray-500 mb-4">Không có váy cưới nào phù hợp với bộ lọc của bạn.</p>
+                <button onclick="resetFilters()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all">
+                    Xóa bộ lọc
+                </button>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = filteredProducts.map(product => {
+        const imageUrl = product.anh_dai_dien || 'images/vay1.jpg';
+        const stockClass = product.so_luong_ton > 5 ? 'text-emerald-600' : 'text-amber-600';
+        const stockBadge = product.so_luong_ton <= 2 ? `
+            <div class="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg animate-pulse">
+                Sắp hết
+            </div>
+        ` : '';
+        
+        return `
+            <div class="group bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2" data-price="${product.gia_thue}" data-style="${product.phong_cach || ''}" data-size="${product.kich_thuoc || ''}">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="${escapeHtml(imageUrl)}" 
+                         alt="${escapeHtml(product.ten_vay)}" 
+                         onerror="this.src='images/vay1.jpg'"
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    ${stockBadge}
+                    <div class="absolute top-4 left-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-500 hover:text-white transition-colors" title="Yêu thích">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                        <button onclick="quickView(${product.id})" class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-500 hover:text-white transition-colors" title="Xem nhanh">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-5 space-y-3">
+                    <h3 class="text-lg font-bold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        ${escapeHtml(product.ten_vay)}
+                    </h3>
+                    <div class="text-sm text-gray-500 font-medium">
+                        Mã: ${escapeHtml(product.ma_vay)}
+                    </div>
+                    <div class="flex items-center gap-2 text-sm font-semibold ${stockClass}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        Còn ${product.so_luong_ton} sản phẩm
+                    </div>
+                    <div class="pt-3 border-t border-gray-200">
+                        <div class="flex items-baseline gap-2 mb-4">
+                            <span class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                                ${formatPrice(product.gia_thue)}
+                            </span>
+                            <span class="text-sm text-gray-500">/ ngày</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="showRentalModal(${product.id}, '${escapeHtml(product.ten_vay).replace(/'/g, "\\'")}', ${product.gia_thue})" 
+                                    class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Thuê
+                            </button>
+                            <a href="product-detail.php?id=${product.id}" 
+                               class="px-4 py-3 border-2 border-blue-600 text-blue-600 rounded-xl font-semibold hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Cập nhật số lượng sản phẩm hiển thị
+function updateProductCount() {
+    const countDisplay = document.getElementById('product-count-display');
+    const totalDisplay = document.getElementById('product-total-display');
+    if (countDisplay) countDisplay.textContent = filteredProducts.length;
+    if (totalDisplay) totalDisplay.textContent = allProducts.length;
+}
+
+// Reset tất cả bộ lọc
+function resetFilters() {
+    // Reset giá
+    if (priceFilter) {
+        priceFilter.value = 10000000;
+        priceDisplay.textContent = '10.000.000đ';
+    }
+    
+    // Reset checkboxes
+    document.querySelectorAll('.style-filter, .size-filter').forEach(cb => {
+        cb.checked = false;
+    });
+    
+    // Reset filtered products
+    filteredProducts = [...allProducts];
+    renderProducts();
+    updateProductCount();
+}
+
+// Escape HTML để tránh XSS
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Gắn sự kiện cho nút "Áp Dụng Lọc"
+document.addEventListener('DOMContentLoaded', function() {
+    const applyFilterBtn = document.getElementById('apply-filter-btn');
+    if (applyFilterBtn) {
+        applyFilterBtn.addEventListener('click', filterProducts);
+    }
+    
+    // Lọc realtime khi thay đổi checkbox
+    document.querySelectorAll('.style-filter, .size-filter').forEach(cb => {
+        cb.addEventListener('change', filterProducts);
+    });
+    
+    // Lọc realtime khi thay đổi giá (debounce)
+    let priceTimeout;
+    if (priceFilter) {
+        priceFilter.addEventListener('input', function() {
+            clearTimeout(priceTimeout);
+            priceTimeout = setTimeout(filterProducts, 300);
+        });
+    }
+    
+    // ========== MOBILE FILTER ==========
+    const mobileFilterModal = document.getElementById('mobile-filter-modal');
+    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+    const closeMobileFilter = document.getElementById('close-mobile-filter');
+    const applyMobileFilter = document.getElementById('apply-mobile-filter');
+    const resetMobileFilter = document.getElementById('reset-mobile-filter');
+    const mobilePriceFilter = document.getElementById('mobile-price-filter');
+    const mobilePriceDisplay = document.getElementById('mobile-price-display');
+    
+    // Mở mobile filter
+    if (mobileFilterBtn && mobileFilterModal) {
+        mobileFilterBtn.addEventListener('click', function() {
+            mobileFilterModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Đóng mobile filter
+    function closeMobileFilterModal() {
+        if (mobileFilterModal) {
+            mobileFilterModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    if (closeMobileFilter) {
+        closeMobileFilter.addEventListener('click', closeMobileFilterModal);
+    }
+    
+    // Click outside to close
+    if (mobileFilterModal) {
+        mobileFilterModal.addEventListener('click', function(e) {
+            if (e.target === mobileFilterModal) {
+                closeMobileFilterModal();
+            }
+        });
+    }
+    
+    // Cập nhật giá mobile
+    if (mobilePriceFilter && mobilePriceDisplay) {
+        mobilePriceFilter.addEventListener('input', function() {
+            mobilePriceDisplay.textContent = formatPrice(this.value);
+        });
+    }
+    
+    // Áp dụng filter mobile
+    if (applyMobileFilter) {
+        applyMobileFilter.addEventListener('click', function() {
+            // Sync mobile filters to desktop filters
+            if (priceFilter && mobilePriceFilter) {
+                priceFilter.value = mobilePriceFilter.value;
+                priceDisplay.textContent = mobilePriceDisplay.textContent;
+            }
+            
+            // Sync style checkboxes
+            document.querySelectorAll('.mobile-style-filter').forEach((mobileCb, index) => {
+                const desktopCb = document.querySelectorAll('.style-filter')[index];
+                if (desktopCb) desktopCb.checked = mobileCb.checked;
+            });
+            
+            // Sync size checkboxes
+            document.querySelectorAll('.mobile-size-filter').forEach((mobileCb, index) => {
+                const desktopCb = document.querySelectorAll('.size-filter')[index];
+                if (desktopCb) desktopCb.checked = mobileCb.checked;
+            });
+            
+            filterProducts();
+            closeMobileFilterModal();
+        });
+    }
+    
+    // Reset mobile filter
+    if (resetMobileFilter) {
+        resetMobileFilter.addEventListener('click', function() {
+            if (mobilePriceFilter) {
+                mobilePriceFilter.value = 10000000;
+                mobilePriceDisplay.textContent = '10.000.000đ';
+            }
+            document.querySelectorAll('.mobile-style-filter, .mobile-size-filter').forEach(cb => {
+                cb.checked = false;
+            });
+            resetFilters();
+            closeMobileFilterModal();
+        });
+    }
+    
+    // Toggle style cho size buttons trên mobile
+    document.querySelectorAll('.mobile-size-filter').forEach(cb => {
+        cb.addEventListener('change', function() {
+            const label = this.closest('label');
+            if (this.checked) {
+                label.classList.add('border-blue-500', 'bg-blue-50');
+            } else {
+                label.classList.remove('border-blue-500', 'bg-blue-50');
+            }
+        });
+    });
+});
 </script>
 
 <style>
@@ -581,6 +1091,21 @@ function quickView(productId) {
 
 .animate-scale-in {
     animation: scale-in 0.3s ease-out;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
 }
 </style>
 

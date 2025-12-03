@@ -16,15 +16,10 @@ if ($product_id > 0) {
     $product = $result->fetch_assoc();
     
     if ($product) {
-        // Lấy ảnh phụ từ bảng hinh_anh_vay_cuoi
-        $img_result = $conn->query("SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = $product_id ORDER BY sort_order ASC");
+        // Lấy ảnh từ bảng hinh_anh_vay_cuoi (ảnh chính trước, sau đó theo sort_order)
+        $img_result = $conn->query("SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = $product_id ORDER BY is_primary DESC, sort_order ASC");
         while ($img = $img_result->fetch_assoc()) {
             $images[] = $img['url'];
-        }
-        
-        // Thêm ảnh chính vào đầu danh sách nếu có
-        if (!empty($product['hinh_anh_chinh'])) {
-            array_unshift($images, $product['hinh_anh_chinh']);
         }
         
         // Nếu không có ảnh nào, dùng ảnh mặc định
@@ -40,6 +35,37 @@ if (!$product) {
     exit();
 }
 
+// Lấy số lượng đánh giá (reactions) cho sản phẩm này
+$review_count = 0;
+$avg_rating = 5; // Mặc định 5 sao
+$reaction_result = $conn->query("SELECT COUNT(*) as total FROM reactions WHERE target_type = 'product' AND target_id = $product_id");
+if ($reaction_result) {
+    $review_count = (int)$reaction_result->fetch_assoc()['total'];
+}
+
+// Tính rating dựa trên reactions (love = 5, like = 4, wow = 4, haha = 3, sad = 2, angry = 1)
+$rating_query = $conn->query("SELECT reaction_type, COUNT(*) as cnt FROM reactions WHERE target_type = 'product' AND target_id = $product_id GROUP BY reaction_type");
+if ($rating_query && $rating_query->num_rows > 0) {
+    $rating_map = ['love' => 5, 'like' => 4, 'wow' => 4, 'haha' => 3, 'sad' => 2, 'angry' => 1];
+    $total_score = 0;
+    $total_count = 0;
+    while ($r = $rating_query->fetch_assoc()) {
+        $score = $rating_map[$r['reaction_type']] ?? 3;
+        $total_score += $score * $r['cnt'];
+        $total_count += $r['cnt'];
+    }
+    if ($total_count > 0) {
+        $avg_rating = round($total_score / $total_count);
+    }
+}
+
+// Lấy số bình luận
+$comment_count = 0;
+$comment_result = $conn->query("SELECT COUNT(*) as total FROM comments WHERE target_type = 'product' AND target_id = $product_id AND status = 'approved'");
+if ($comment_result) {
+    $comment_count = (int)$comment_result->fetch_assoc()['total'];
+}
+
 // Chuẩn bị dữ liệu hiển thị
 $product_data = [
     'id' => $product['id'],
@@ -50,14 +76,14 @@ $product_data = [
     'stock' => $product['so_luong_ton'],
     'images' => $images,
     'description' => $product['mo_ta'] ?? 'Váy cưới cao cấp với thiết kế tinh tế, phù hợp cho ngày trọng đại của bạn.',
-    'sizes' => ['S', 'M', 'L', 'XL'],
-    'rating' => 5,
-    'reviews' => rand(20, 50)
+    'sizes' => ['S', 'M', 'L', 'XL'], // Có thể mở rộng thêm bảng sizes sau
+    'rating' => $avg_rating,
+    'reviews' => $review_count + $comment_count
 ];
 
 // Lấy sản phẩm liên quan
 $related_products = $conn->query("SELECT v.*, 
-    COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id LIMIT 1)) as anh_dai_dien
+    (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien
     FROM vay_cuoi v WHERE v.id != $product_id AND v.so_luong_ton > 0 ORDER BY RAND() LIMIT 4")->fetch_all(MYSQLI_ASSOC);
 
 $page_title = $product_data['name'];

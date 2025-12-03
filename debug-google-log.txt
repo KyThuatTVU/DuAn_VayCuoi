@@ -97,3 +97,55 @@ Google API Response: {
 
 Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
 Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 04:20:52 ===
+GET: Array
+(
+    [code] => 4/0Ab32j91zFvCKOZp9KGVzhrSYT7_yRx0DzSQvNx0_O7F_mNrQ3gnpjfgr-dfvuDSG5HuXLA
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.email openid https://www.googleapis.com/auth/userinfo.profile
+    [authuser] => 1
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [old_email] => vphamquang539@gmail.com
+    [admin_id] => 2
+    [admin_username] => nguyenhuynhkithuat84tv
+    [admin_name] => Thuật Thuật
+    [admin_email] => nguyenhuynhkithuat84tv@gmail.com
+    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [admin_logged_in] => 1
+)
+
+state: , is_admin_login: false
+
+Google API Response: {
+  "id": "105227688268935859438",
+  "email": "dothienvu84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thiên Vũ Đỗ",
+  "given_name": "Thiên Vũ",
+  "family_name": "Đỗ",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+Final avatar for user 6: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+SESSION after login: Array
+(
+    [old_email] => vphamquang539@gmail.com
+    [admin_id] => 2
+    [admin_username] => nguyenhuynhkithuat84tv
+    [admin_name] => Thuật Thuật
+    [admin_email] => nguyenhuynhkithuat84tv@gmail.com
+    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [admin_logged_in] => 1
+    [user_id] => 6
+    [user_name] => Thiên Vũ Đỗ
+    [user_email] => dothienvu84tv@gmail.com
+    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+    [logged_in] => 1
+    [success] => Đăng nhập thành công! Chào mừng Thiên Vũ Đỗ
+)
+
+
