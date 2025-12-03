@@ -40,6 +40,12 @@ $dia_chi = trim($_POST['dia_chi'] ?? '');
 $ghi_chu = trim($_POST['ghi_chu'] ?? '');
 $payment_method = $_POST['payment_method'] ?? 'qr_code';
 
+// Thông tin địa chỉ chi tiết
+$tinh_thanh = trim($_POST['tinh_thanh'] ?? '');
+$quan_huyen = trim($_POST['quan_huyen'] ?? '');
+$phuong_xa = trim($_POST['phuong_xa'] ?? '');
+$dia_chi_cu_the = trim($_POST['dia_chi_cu_the'] ?? '');
+
 // Validate
 if (empty($ho_ten) || empty($so_dien_thoai) || empty($dia_chi)) {
     echo json_encode([
@@ -93,25 +99,29 @@ try {
     // Tạo mã đơn hàng
     $ma_don_hang = 'DH' . date('YmdHis') . rand(100, 999);
     
-    // Tạo đơn hàng với đầy đủ thông tin
+    // Tạo đơn hàng với đầy đủ thông tin (bao gồm địa chỉ chi tiết)
     $insert_order = $conn->prepare("INSERT INTO don_hang 
-        (ma_don_hang, nguoi_dung_id, ho_ten, so_dien_thoai, dia_chi, ghi_chu, 
+        (ma_don_hang, nguoi_dung_id, ho_ten, so_dien_thoai, dia_chi, tinh_thanh, quan_huyen, phuong_xa, dia_chi_cu_the, ghi_chu, 
          tong_tien, trang_thai, phuong_thuc_thanh_toan, trang_thai_thanh_toan, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'pending', NOW())");
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, 'pending', NOW())");
     
     if (!$insert_order) {
         throw new Exception('Lỗi prepare order: ' . $conn->error);
     }
     
-    $insert_order->bind_param("sissssds", 
-        $ma_don_hang, 
-        $user_id, 
-        $ho_ten, 
-        $so_dien_thoai, 
-        $dia_chi, 
-        $ghi_chu, 
-        $total, 
-        $payment_method
+    $insert_order->bind_param("sissssssssds", 
+        $ma_don_hang,      // s - string
+        $user_id,          // i - integer
+        $ho_ten,           // s - string
+        $so_dien_thoai,    // s - string
+        $dia_chi,          // s - string
+        $tinh_thanh,       // s - string
+        $quan_huyen,       // s - string
+        $phuong_xa,        // s - string
+        $dia_chi_cu_the,   // s - string
+        $ghi_chu,          // s - string
+        $total,            // d - double
+        $payment_method    // s - string
     );
     
     if (!$insert_order->execute()) {

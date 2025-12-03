@@ -40,3 +40,24 @@ Array
 
 Database updated: Order #26 marked as paid
 
+2025-12-03 08:51:05 - Return Request:
+Array
+(
+    [partnerCode] => MOMO
+    [orderId] => MOMO_27_1764748251
+    [requestId] => MOMO_27_1764748251
+    [amount] => 10500000
+    [orderInfo] => Thanh toan don hang #DH20251203085051495
+    [orderType] => momo_wallet
+    [transId] => 1764748262285
+    [resultCode] => 1006
+    [message] => Giao dịch bị từ chối bởi người dùng.
+    [payType] => 
+    [responseTime] => 1764748262286
+    [extraData] => 
+    [signature] => dca65cb2636b42a38bf99085a988872dd6a1296c680d8663779b01e401500dd1
+)
+
+
+Database updated: Order #27 marked as failed
+

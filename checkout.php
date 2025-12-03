@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Lấy thông tin người dùng
+// Lấy thông tin người dùng (bao gồm địa chỉ chi tiết)
 $user_query = $conn->prepare("SELECT * FROM nguoi_dung WHERE id = ?");
 $user_query->bind_param("i", $user_id);
 $user_query->execute();
@@ -46,6 +46,12 @@ $total = $subtotal + $service_fee;
 
 // Kiểm tra giới hạn MoMo
 $momo_limit_exceeded = $total > 50000000;
+
+// Lấy thông tin địa chỉ đã lưu của user
+$user_province = $user['tinh_thanh'] ?? '';
+$user_district = $user['quan_huyen'] ?? '';
+$user_ward = $user['phuong_xa'] ?? '';
+$user_specific_address = $user['dia_chi_cu_the'] ?? '';
 
 require_once 'includes/header.php';
 ?>
@@ -91,10 +97,60 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     
-                    <div class="mt-4">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Địa chỉ nhận váy *</label>
-                        <textarea name="dia_chi" rows="3" required
-                                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"><?php echo htmlspecialchars($user['dia_chi'] ?? ''); ?></textarea>
+                    <!-- Địa chỉ Việt Nam -->
+                    <div class="mt-6">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">📍 Địa chỉ nhận váy</h3>
+                        
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <!-- Tỉnh/Thành phố -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Tỉnh/Thành phố *</label>
+                                <select name="tinh_thanh" id="province-select" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                        <?php echo !empty($user_province) ? 'data-selected="' . htmlspecialchars($user_province) . '"' : ''; ?>>
+                                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Quận/Huyện -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Quận/Huyện *</label>
+                                <select name="quan_huyen" id="district-select" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                        <?php echo !empty($user_district) ? 'data-selected="' . htmlspecialchars($user_district) . '"' : ''; ?>>
+                                    <option value="">-- Chọn Quận/Huyện --</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Phường/Xã -->
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phường/Xã *</label>
+                                <select name="phuong_xa" id="ward-select" required
+                                        class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+                                        <?php echo !empty($user_ward) ? 'data-selected="' . htmlspecialchars($user_ward) . '"' : ''; ?>>
+                                    <option value="">-- Chọn Phường/Xã --</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Địa chỉ cụ thể -->
+                        <div class="mt-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Địa chỉ cụ thể (Số nhà, tên đường...) *</label>
+                            <input type="text" name="dia_chi_cu_the" id="specific-address" 
+                                   value="<?php echo htmlspecialchars($user_specific_address); ?>" 
+                                   placeholder="Ví dụ: 123 Đường Nguyễn Văn A, Tòa nhà B, Tầng 5"
+                                   required
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                        </div>
+                        
+                        <!-- Địa chỉ đầy đủ (hidden, sẽ được tự động tạo) -->
+                        <input type="hidden" name="dia_chi" id="full-address" value="">
+                        
+                        <!-- Hiển thị địa chỉ đầy đủ -->
+                        <div class="mt-4 p-4 bg-blue-50 rounded-xl" id="address-preview" style="display: none;">
+                            <p class="text-sm text-gray-600 mb-1">📍 Địa chỉ đầy đủ:</p>
+                            <p class="font-semibold text-gray-800" id="address-preview-text"></p>
+                        </div>
                     </div>
                     
                     <div class="mt-4">
@@ -103,6 +159,7 @@ require_once 'includes/header.php';
                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"></textarea>
                     </div>
                 </div>
+
                 
                 <!-- Chi tiết đơn hàng -->
                 <div class="bg-white rounded-2xl shadow-lg p-6">
@@ -149,33 +206,116 @@ require_once 'includes/header.php';
                         </div>
                     </div>
                     
-                    <div class="bg-blue-50 rounded-xl p-4 mb-6">
-                        <h4 class="font-bold text-gray-800 mb-3">💳 Phương thức thanh toán</h4>
+                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 mb-6">
+                        <h4 class="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                            </svg>
+                            Phương thức thanh toán
+                        </h4>
                         
                         <!-- MoMo -->
-                        <label class="flex items-center gap-3 p-3 bg-white rounded-lg mb-2 border-2 border-transparent has-[:checked]:border-pink-500 transition-all <?php echo $momo_limit_exceeded ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'; ?>">
-                            <input type="radio" name="payment_method" value="momo" <?php echo !$momo_limit_exceeded ? 'checked' : 'disabled'; ?> class="w-5 h-5 text-pink-600">
-                            <div class="flex items-center gap-2 flex-1">
-                                <img src="https://developers.momo.vn/v3/assets/images/square-logo-f9a99607e5640a2372a7af2f0e22c7c6.png" alt="MoMo" class="h-6">
-                                <span class="font-semibold">Ví MoMo</span>
+                        <label class="payment-option flex items-center gap-4 p-4 bg-white rounded-xl mb-3 border-2 border-gray-100 hover:border-pink-300 hover:shadow-md transition-all <?php echo $momo_limit_exceeded ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'; ?>" data-method="momo">
+                            <input type="radio" name="payment_method" value="momo" <?php echo !$momo_limit_exceeded ? 'checked' : 'disabled'; ?> class="hidden peer">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center shadow-lg shadow-pink-200">
+                                <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5zm4 4h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-800">Ví MoMo</span>
+                                    <span class="px-2 py-0.5 bg-pink-100 text-pink-600 text-xs font-semibold rounded-full">Phổ biến</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-0.5">Thanh toán nhanh qua ví điện tử</p>
                                 <?php if ($momo_limit_exceeded): ?>
-                                <span class="text-xs text-red-600">(Vượt giới hạn 50 triệu)</span>
+                                <p class="text-xs text-red-500 mt-1">⚠️ Vượt giới hạn 50 triệu VNĐ</p>
                                 <?php endif; ?>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-pink-500 peer-checked:bg-pink-500 transition-all">
+                                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
                             </div>
                         </label>
                         
                         <!-- QR Code VietQR -->
-                        <label class="flex items-center gap-3 cursor-pointer p-3 bg-white rounded-lg border-2 border-transparent has-[:checked]:border-blue-500 transition-all">
-                            <input type="radio" name="payment_method" value="qr_code" <?php echo $momo_limit_exceeded ? 'checked' : ''; ?> class="w-5 h-5 text-blue-600">
-                            <div class="flex items-center gap-2 flex-1">
-                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <label class="payment-option flex items-center gap-4 p-4 bg-white rounded-xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-md cursor-pointer transition-all" data-method="qr_code">
+                            <input type="radio" name="payment_method" value="qr_code" <?php echo $momo_limit_exceeded ? 'checked' : ''; ?> class="hidden peer">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-200">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                                 </svg>
-                                <span class="font-semibold">Quét mã QR (VietQR)</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-800">Quét mã QR (VietQR)</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-0.5">Chuyển khoản qua Vietcombank</p>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-all">
+                                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
                             </div>
                         </label>
-                        <p class="text-sm text-gray-600 mt-2 ml-8">Chuyển khoản qua Vietcombank</p>
+                        
+                        <!-- COD - Thanh toán khi nhận hàng -->
+                        <label class="payment-option flex items-center gap-4 p-4 bg-white rounded-xl mt-3 border-2 border-gray-100 hover:border-green-300 hover:shadow-md cursor-pointer transition-all" data-method="cod">
+                            <input type="radio" name="payment_method" value="cod" class="hidden peer">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg shadow-green-200">
+                                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-gray-800">Thanh toán khi nhận hàng</span>
+                                    <span class="px-2 py-0.5 bg-green-100 text-green-600 text-xs font-semibold rounded-full">COD</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-0.5">Thanh toán bằng tiền mặt khi nhận váy</p>
+                            </div>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-green-500 peer-checked:bg-green-500 transition-all">
+                                <svg class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                        </label>
                     </div>
+                    
+                    <style>
+                        .payment-option:has(input:checked) {
+                            border-color: transparent;
+                            box-shadow: 0 0 0 2px var(--checked-color, #3b82f6);
+                        }
+                        .payment-option[data-method="momo"]:has(input:checked) {
+                            --checked-color: #ec4899;
+                            background: linear-gradient(to right, #fdf2f8, #ffffff);
+                        }
+                        .payment-option[data-method="qr_code"]:has(input:checked) {
+                            --checked-color: #3b82f6;
+                            background: linear-gradient(to right, #eff6ff, #ffffff);
+                        }
+                        .payment-option[data-method="cod"]:has(input:checked) {
+                            --checked-color: #22c55e;
+                            background: linear-gradient(to right, #f0fdf4, #ffffff);
+                        }
+                        .payment-option:has(input:checked) .w-6.h-6 {
+                            border-color: transparent;
+                        }
+                        .payment-option:has(input:checked) .w-6.h-6 svg {
+                            opacity: 1;
+                        }
+                        .payment-option[data-method="momo"]:has(input:checked) .w-6.h-6 {
+                            background-color: #ec4899;
+                        }
+                        .payment-option[data-method="qr_code"]:has(input:checked) .w-6.h-6 {
+                            background-color: #3b82f6;
+                        }
+                        .payment-option[data-method="cod"]:has(input:checked) .w-6.h-6 {
+                            background-color: #22c55e;
+                        }
+                    </style>
                     
                     <div class="bg-yellow-50 rounded-xl p-4 mb-6 text-sm text-gray-700">
                         <p class="font-semibold mb-2">📋 Lưu ý:</p>
@@ -187,8 +327,10 @@ require_once 'includes/header.php';
                         </ul>
                     </div>
                     
-                    <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white py-4 rounded-xl font-bold hover:shadow-lg transition-all">
-                        <i class="fas fa-wallet mr-2"></i>
+                    <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-pink-200 transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
                         <span id="btn-text">Thanh Toán MoMo</span>
                     </button>
                     
@@ -202,25 +344,223 @@ require_once 'includes/header.php';
     </div>
 </section>
 
+
 <script>
+// Biến lưu trữ dữ liệu địa chỉ
+let provincesData = [];
+let districtsData = [];
+let wardsData = [];
+
+// Lấy các element
+const provinceSelect = document.getElementById('province-select');
+const districtSelect = document.getElementById('district-select');
+const wardSelect = document.getElementById('ward-select');
+const specificAddress = document.getElementById('specific-address');
+const fullAddressInput = document.getElementById('full-address');
+const addressPreview = document.getElementById('address-preview');
+const addressPreviewText = document.getElementById('address-preview-text');
+
+// Load danh sách tỉnh/thành phố
+async function loadProvinces() {
+    try {
+        const response = await fetch('api/vietnam-address.php?action=provinces');
+        const data = await response.json();
+        
+        if (data.success) {
+            provincesData = data.data;
+            provinceSelect.innerHTML = '<option value="">-- Chọn Tỉnh/Thành phố --</option>';
+            
+            data.data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.code;
+                option.textContent = province.name;
+                option.dataset.name = province.name;
+                provinceSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có tỉnh được lưu, tự động chọn
+            const savedProvince = provinceSelect.dataset.selected;
+            if (savedProvince) {
+                provinceSelect.value = savedProvince;
+                await loadDistricts(savedProvince);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading provinces:', error);
+    }
+}
+
+// Load danh sách quận/huyện
+async function loadDistricts(provinceCode) {
+    try {
+        districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+        
+        const response = await fetch(`api/vietnam-address.php?action=districts&province_code=${provinceCode}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            districtsData = data.data;
+            districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+            
+            if (data.data.length === 0) {
+                districtSelect.innerHTML = '<option value="">Không có dữ liệu</option>';
+                return;
+            }
+            
+            data.data.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district.code;
+                option.textContent = district.name;
+                option.dataset.name = district.name;
+                districtSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có huyện được lưu, tự động chọn
+            const savedDistrict = districtSelect.dataset.selected;
+            if (savedDistrict) {
+                districtSelect.value = savedDistrict;
+                await loadWards(savedDistrict);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading districts:', error);
+        districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+    }
+}
+
+// Load danh sách phường/xã
+async function loadWards(districtCode) {
+    try {
+        wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+        
+        const response = await fetch(`api/vietnam-address.php?action=wards&district_code=${districtCode}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            wardsData = data.data;
+            wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+            
+            if (data.data.length === 0) {
+                wardSelect.innerHTML = '<option value="">Không có dữ liệu</option>';
+                return;
+            }
+            
+            data.data.forEach(ward => {
+                const option = document.createElement('option');
+                option.value = ward.code;
+                option.textContent = ward.name;
+                option.dataset.name = ward.name;
+                wardSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có xã được lưu, tự động chọn
+            const savedWard = wardSelect.dataset.selected;
+            if (savedWard) {
+                wardSelect.value = savedWard;
+                updateFullAddress();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading wards:', error);
+        wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+    }
+}
+
+// Cập nhật địa chỉ đầy đủ
+function updateFullAddress() {
+    const provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.dataset?.name || '';
+    const districtName = districtSelect.options[districtSelect.selectedIndex]?.dataset?.name || '';
+    const wardName = wardSelect.options[wardSelect.selectedIndex]?.dataset?.name || '';
+    const specific = specificAddress.value.trim();
+    
+    let fullAddress = '';
+    if (specific) fullAddress += specific;
+    if (wardName) fullAddress += (fullAddress ? ', ' : '') + wardName;
+    if (districtName) fullAddress += (fullAddress ? ', ' : '') + districtName;
+    if (provinceName) fullAddress += (fullAddress ? ', ' : '') + provinceName;
+    
+    fullAddressInput.value = fullAddress;
+    
+    // Hiển thị preview
+    if (fullAddress) {
+        addressPreview.style.display = 'block';
+        addressPreviewText.textContent = fullAddress;
+    } else {
+        addressPreview.style.display = 'none';
+    }
+}
+
+// Event listeners
+provinceSelect.addEventListener('change', async function() {
+    const provinceCode = this.value;
+    districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+    
+    if (provinceCode) {
+        await loadDistricts(provinceCode);
+    }
+    updateFullAddress();
+});
+
+districtSelect.addEventListener('change', async function() {
+    const districtCode = this.value;
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+    
+    if (districtCode) {
+        await loadWards(districtCode);
+    }
+    updateFullAddress();
+});
+
+wardSelect.addEventListener('change', function() {
+    updateFullAddress();
+});
+
+specificAddress.addEventListener('input', function() {
+    updateFullAddress();
+});
+
+// Khởi tạo
+document.addEventListener('DOMContentLoaded', function() {
+    loadProvinces();
+    
+    // Nếu đã có địa chỉ cụ thể, cập nhật preview
+    if (specificAddress.value) {
+        setTimeout(updateFullAddress, 1000);
+    }
+});
+
 // Cập nhật text nút khi thay đổi phương thức thanh toán
 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const btnText = document.getElementById('btn-text');
-        const btnIcon = document.querySelector('#submit-btn i');
+        const submitBtn = document.getElementById('submit-btn');
         
         if (this.value === 'momo') {
             btnText.textContent = 'Thanh Toán MoMo';
-            btnIcon.className = 'fas fa-wallet mr-2';
-        } else {
+            submitBtn.className = 'w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-pink-200 transition-all flex items-center justify-center gap-2';
+        } else if (this.value === 'qr_code') {
             btnText.textContent = 'Tạo Mã QR Thanh Toán';
-            btnIcon.className = 'fas fa-qrcode mr-2';
+            submitBtn.className = 'w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center justify-center gap-2';
+        } else if (this.value === 'cod') {
+            btnText.textContent = 'Đặt Hàng (COD)';
+            submitBtn.className = 'w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-green-200 transition-all flex items-center justify-center gap-2';
         }
     });
 });
 
 document.getElementById('checkout-form').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    // Validate địa chỉ
+    if (!provinceSelect.value || !districtSelect.value || !wardSelect.value || !specificAddress.value.trim()) {
+        alert('Vui lòng điền đầy đủ thông tin địa chỉ');
+        return;
+    }
+    
+    // Cập nhật địa chỉ đầy đủ trước khi submit
+    updateFullAddress();
     
     const formData = new FormData(this);
     const submitBtn = this.querySelector('button[type="submit"]');
@@ -269,9 +609,12 @@ document.getElementById('checkout-form').addEventListener('submit', function(e) 
                     throw new Error(momoData.message || 'Không thể tạo thanh toán MoMo');
                 }
             });
-        } else {
+        } else if (paymentMethod === 'qr_code') {
             // Chuyển đến trang QR Code
             window.location.href = 'payment-qr.php?order_id=' + orderId;
+        } else if (paymentMethod === 'cod') {
+            // COD - Chuyển đến trang thành công
+            window.location.href = 'order-success.php?order_id=' + orderId + '&method=cod';
         }
     })
     .catch(error => {
@@ -279,11 +622,14 @@ document.getElementById('checkout-form').addEventListener('submit', function(e) 
         alert('Có lỗi xảy ra: ' + error.message);
         submitBtn.disabled = false;
         
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-        if (paymentMethod === 'momo') {
-            submitBtn.innerHTML = '<i class="fas fa-wallet mr-2"></i><span id="btn-text">Thanh Toán MoMo</span>';
+        const currentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+        const icon = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>';
+        if (currentMethod === 'momo') {
+            submitBtn.innerHTML = icon + '<span id="btn-text">Thanh Toán MoMo</span>';
+        } else if (currentMethod === 'qr_code') {
+            submitBtn.innerHTML = icon + '<span id="btn-text">Tạo Mã QR Thanh Toán</span>';
         } else {
-            submitBtn.innerHTML = '<i class="fas fa-qrcode mr-2"></i><span id="btn-text">Tạo Mã QR Thanh Toán</span>';
+            submitBtn.innerHTML = icon + '<span id="btn-text">Đặt Hàng (COD)</span>';
         }
     });
 });

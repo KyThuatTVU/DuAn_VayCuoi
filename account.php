@@ -155,9 +155,43 @@ $stmt->close();
                             <input type="tel" id="so_dien_thoai" name="so_dien_thoai" value="<?php echo htmlspecialchars($user['so_dien_thoai'] ?? ''); ?>" pattern="[0-9]{10,11}">
                         </div>
 
+                        <!-- Địa chỉ Việt Nam -->
+                        <div class="form-group">
+                            <label for="tinh_thanh">Tỉnh/Thành phố</label>
+                            <select id="tinh_thanh" name="tinh_thanh" 
+                                    data-selected="<?php echo htmlspecialchars($user['tinh_thanh'] ?? ''); ?>">
+                                <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quan_huyen">Quận/Huyện</label>
+                            <select id="quan_huyen" name="quan_huyen"
+                                    data-selected="<?php echo htmlspecialchars($user['quan_huyen'] ?? ''); ?>">
+                                <option value="">-- Chọn Quận/Huyện --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phuong_xa">Phường/Xã</label>
+                            <select id="phuong_xa" name="phuong_xa"
+                                    data-selected="<?php echo htmlspecialchars($user['phuong_xa'] ?? ''); ?>">
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                        </div>
+
                         <div class="form-group full-width">
-                            <label for="dia_chi">Địa chỉ</label>
-                            <textarea id="dia_chi" name="dia_chi" rows="3"><?php echo htmlspecialchars($user['dia_chi'] ?? ''); ?></textarea>
+                            <label for="dia_chi_cu_the">Địa chỉ cụ thể (Số nhà, tên đường...)</label>
+                            <input type="text" id="dia_chi_cu_the" name="dia_chi_cu_the" 
+                                   value="<?php echo htmlspecialchars($user['dia_chi_cu_the'] ?? ''); ?>"
+                                   placeholder="Ví dụ: 123 Đường Nguyễn Văn A">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="dia_chi">Địa chỉ đầy đủ</label>
+                            <textarea id="dia_chi" name="dia_chi" rows="2" readonly 
+                                      style="background-color: #f5f5f5;"><?php echo htmlspecialchars($user['dia_chi'] ?? ''); ?></textarea>
+                            <small style="color: #666;">Địa chỉ này sẽ được tự động tạo từ các trường trên</small>
                         </div>
                     </div>
 
@@ -197,6 +231,168 @@ document.getElementById('avatar-input').addEventListener('change', function(e) {
         }
         reader.readAsDataURL(file);
     }
+});
+
+// ===== Địa chỉ Việt Nam =====
+const provinceSelect = document.getElementById('tinh_thanh');
+const districtSelect = document.getElementById('quan_huyen');
+const wardSelect = document.getElementById('phuong_xa');
+const specificAddress = document.getElementById('dia_chi_cu_the');
+const fullAddress = document.getElementById('dia_chi');
+
+// Load danh sách tỉnh/thành phố
+async function loadProvinces() {
+    try {
+        const response = await fetch('api/vietnam-address.php?action=provinces');
+        const data = await response.json();
+        
+        if (data.success) {
+            provinceSelect.innerHTML = '<option value="">-- Chọn Tỉnh/Thành phố --</option>';
+            
+            data.data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.code;
+                option.textContent = province.name;
+                option.dataset.name = province.name;
+                provinceSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có tỉnh được lưu, tự động chọn
+            const savedProvince = provinceSelect.dataset.selected;
+            if (savedProvince) {
+                provinceSelect.value = savedProvince;
+                await loadDistricts(savedProvince);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading provinces:', error);
+    }
+}
+
+// Load danh sách quận/huyện
+async function loadDistricts(provinceCode) {
+    try {
+        districtSelect.innerHTML = '<option value="">Đang tải...</option>';
+        wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+        
+        const response = await fetch(`api/vietnam-address.php?action=districts&province_code=${provinceCode}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+            
+            if (data.data.length === 0) {
+                districtSelect.innerHTML = '<option value="">Không có dữ liệu</option>';
+                return;
+            }
+            
+            data.data.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district.code;
+                option.textContent = district.name;
+                option.dataset.name = district.name;
+                districtSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có huyện được lưu, tự động chọn
+            const savedDistrict = districtSelect.dataset.selected;
+            if (savedDistrict) {
+                districtSelect.value = savedDistrict;
+                await loadWards(savedDistrict);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading districts:', error);
+        districtSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+    }
+}
+
+// Load danh sách phường/xã
+async function loadWards(districtCode) {
+    try {
+        wardSelect.innerHTML = '<option value="">Đang tải...</option>';
+        
+        const response = await fetch(`api/vietnam-address.php?action=wards&district_code=${districtCode}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+            
+            if (data.data.length === 0) {
+                wardSelect.innerHTML = '<option value="">Không có dữ liệu</option>';
+                return;
+            }
+            
+            data.data.forEach(ward => {
+                const option = document.createElement('option');
+                option.value = ward.code;
+                option.textContent = ward.name;
+                option.dataset.name = ward.name;
+                wardSelect.appendChild(option);
+            });
+            
+            // Nếu user đã có xã được lưu, tự động chọn
+            const savedWard = wardSelect.dataset.selected;
+            if (savedWard) {
+                wardSelect.value = savedWard;
+                updateFullAddress();
+            }
+        }
+    } catch (error) {
+        console.error('Error loading wards:', error);
+        wardSelect.innerHTML = '<option value="">Lỗi tải dữ liệu</option>';
+    }
+}
+
+// Cập nhật địa chỉ đầy đủ
+function updateFullAddress() {
+    const provinceName = provinceSelect.options[provinceSelect.selectedIndex]?.dataset?.name || '';
+    const districtName = districtSelect.options[districtSelect.selectedIndex]?.dataset?.name || '';
+    const wardName = wardSelect.options[wardSelect.selectedIndex]?.dataset?.name || '';
+    const specific = specificAddress.value.trim();
+    
+    let address = '';
+    if (specific) address += specific;
+    if (wardName) address += (address ? ', ' : '') + wardName;
+    if (districtName) address += (address ? ', ' : '') + districtName;
+    if (provinceName) address += (address ? ', ' : '') + provinceName;
+    
+    fullAddress.value = address;
+}
+
+// Event listeners
+provinceSelect.addEventListener('change', async function() {
+    const provinceCode = this.value;
+    districtSelect.innerHTML = '<option value="">-- Chọn Quận/Huyện --</option>';
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+    
+    if (provinceCode) {
+        await loadDistricts(provinceCode);
+    }
+    updateFullAddress();
+});
+
+districtSelect.addEventListener('change', async function() {
+    const districtCode = this.value;
+    wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
+    
+    if (districtCode) {
+        await loadWards(districtCode);
+    }
+    updateFullAddress();
+});
+
+wardSelect.addEventListener('change', function() {
+    updateFullAddress();
+});
+
+specificAddress.addEventListener('input', function() {
+    updateFullAddress();
+});
+
+// Khởi tạo
+document.addEventListener('DOMContentLoaded', function() {
+    loadProvinces();
 });
 </script>
 

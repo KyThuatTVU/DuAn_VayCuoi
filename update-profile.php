@@ -20,6 +20,12 @@ $email = sanitizeInput($_POST['email'] ?? '');
 $so_dien_thoai = sanitizeInput($_POST['so_dien_thoai'] ?? '');
 $dia_chi = sanitizeInput($_POST['dia_chi'] ?? '');
 
+// Thông tin địa chỉ chi tiết
+$tinh_thanh = sanitizeInput($_POST['tinh_thanh'] ?? '');
+$quan_huyen = sanitizeInput($_POST['quan_huyen'] ?? '');
+$phuong_xa = sanitizeInput($_POST['phuong_xa'] ?? '');
+$dia_chi_cu_the = sanitizeInput($_POST['dia_chi_cu_the'] ?? '');
+
 // Validate
 if (empty($ho_ten)) {
     $errors[] = "Vui lòng nhập họ tên";
@@ -96,13 +102,13 @@ if (!empty($errors)) {
 // Cập nhật thông tin
 try {
     if ($avt_path) {
-        // Cập nhật cả avatar
-        $stmt = $conn->prepare("UPDATE nguoi_dung SET ho_ten = ?, email = ?, so_dien_thoai = ?, dia_chi = ?, avt = ? WHERE id = ?");
-        $stmt->bind_param("sssssi", $ho_ten, $email, $so_dien_thoai, $dia_chi, $avt_path, $user_id);
+        // Cập nhật cả avatar và địa chỉ chi tiết
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET ho_ten = ?, email = ?, so_dien_thoai = ?, dia_chi = ?, tinh_thanh = ?, quan_huyen = ?, phuong_xa = ?, dia_chi_cu_the = ?, avt = ? WHERE id = ?");
+        $stmt->bind_param("sssssssssi", $ho_ten, $email, $so_dien_thoai, $dia_chi, $tinh_thanh, $quan_huyen, $phuong_xa, $dia_chi_cu_the, $avt_path, $user_id);
     } else {
-        // Chỉ cập nhật thông tin
-        $stmt = $conn->prepare("UPDATE nguoi_dung SET ho_ten = ?, email = ?, so_dien_thoai = ?, dia_chi = ? WHERE id = ?");
-        $stmt->bind_param("ssssi", $ho_ten, $email, $so_dien_thoai, $dia_chi, $user_id);
+        // Chỉ cập nhật thông tin và địa chỉ chi tiết
+        $stmt = $conn->prepare("UPDATE nguoi_dung SET ho_ten = ?, email = ?, so_dien_thoai = ?, dia_chi = ?, tinh_thanh = ?, quan_huyen = ?, phuong_xa = ?, dia_chi_cu_the = ? WHERE id = ?");
+        $stmt->bind_param("ssssssssi", $ho_ten, $email, $so_dien_thoai, $dia_chi, $tinh_thanh, $quan_huyen, $phuong_xa, $dia_chi_cu_the, $user_id);
     }
     
     if ($stmt->execute()) {
