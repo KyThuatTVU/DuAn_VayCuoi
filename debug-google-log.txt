@@ -1,0 +1,200 @@
+=== 2025-12-03 09:21:56 ===
+GET: Array
+(
+    [code] => 4/0Ab32j936sxWeYewfK1zGk6meNL29aPGba-chLiKeKwiLAtji4i1rASBCJRUGaJ87H-Rzhw
+    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+)
+
+state: , is_admin_login: false
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Final avatar for user 4: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+SESSION after login: Array
+(
+    [user_id] => 4
+    [user_name] => Thuật Thuật
+    [user_email] => nguyenhuynhkithuat84tv@gmail.com
+    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [logged_in] => 1
+    [success] => Đăng nhập thành công! Chào mừng Thuật Thuật
+)
+
+
+=== 2025-12-03 09:33:30 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j93hWIWl4sgEWC1D4yZwCnPvCBz-uuduh8U5lt1CKtDEWPzuQAweD4LtigRgbttt4w
+    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [user_id] => 7
+    [user_name] => Phạm Quang Vinh
+    [user_email] => vphamquang539@gmail.com
+    [user_avatar] => uploads/avatars/692fa0ce8bb69_1764729038.jpg
+    [logged_in] => 1
+    [success] => Đăng nhập thành công! Chào mừng Phạm Quang Vinh
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 09:55:29 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j93Vn4TK8AkkGNdM-Xxb_pekI-cHYtskHYMyUYuP1P--lnKRDQB7hpx1dv1NC04j8g
+    [scope] => email profile openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+    [authuser] => 1
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [success] => Đăng nhập thành công! Chào mừng Phạm Quang Vinh
+    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "105227688268935859438",
+  "email": "dothienvu84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thiên Vũ Đỗ",
+  "given_name": "Thiên Vũ",
+  "family_name": "Đỗ",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+=== 2025-12-03 09:55:37 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j91RXdkoIlIG8cc0KPUq0H7S-bmAMRrLE7FecBOJVDIwCSM11xnoAFR1Ivn-xqm5GQ
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [success] => Đăng nhập thành công! Chào mừng Phạm Quang Vinh
+    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 10:00:37 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j9179JSwZ1w98yifLMLwMOVPtTZ8D4FfJAaT1IyiI-g1IZybTuF5fArcBtpq38m_ZA
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [admin_avatar] => https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+    [success] => Đăng nhập thành công! Chào mừng Phạm Quang Vinh
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 10:02:04 ===
+GET: Array
+(
+    [state] => admin_login
+    [code] => 4/0Ab32j90Ypjtk7S-0Lrzg_G9HMzVrq_oBalI7Er0w00V_ByJfjq4sJBiW3Kb8MwWidfNTFA
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.profile openid https://www.googleapis.com/auth/userinfo.email
+    [authuser] => 0
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+    [user_id] => 7
+    [user_name] => Phạm Quang Vinh
+    [user_email] => vphamquang539@gmail.com
+    [user_avatar] => uploads/avatars/692fa0ce8bb69_1764729038.jpg
+    [logged_in] => 1
+    [success] => Đăng nhập thành công! Chào mừng Phạm Quang Vinh
+    [google_login_type] => admin
+)
+
+state: admin_login, is_admin_login: true
+
+Google API Response: {
+  "id": "102458705850277446461",
+  "email": "nguyenhuynhkithuat84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thuật Thuật",
+  "given_name": "Thuật",
+  "family_name": "Thuật",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c

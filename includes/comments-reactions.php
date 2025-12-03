@@ -374,6 +374,28 @@
     font-weight: 600;
 }
 
+.author-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    font-size: 10px;
+    border-radius: 10px;
+    margin-left: 6px;
+    font-weight: 600;
+}
+
+.comment-item.is-author {
+    background: linear-gradient(135deg, #fdf2f8 0%, #f5f3ff 100%) !important;
+    border-left: 3px solid #ec4899 !important;
+    border-radius: 8px !important;
+    padding: 16px !important;
+}
+
+.comment-avatar.author-avatar {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%) !important;
+}
+
 .reply-count {
     font-size: 12px;
     color: #6b7280;
@@ -678,34 +700,53 @@ function renderComments(comments) {
 
 // Render single comment
 function renderComment(comment, isReply = false) {
-    const avatar = comment.avt 
-        ? `<img src="${comment.avt}" alt="${comment.ho_ten}">` 
-        : comment.ho_ten.charAt(0).toUpperCase();
+    const isAdmin = comment.is_author || comment.is_admin_reply == 1;
+    const isOwner = COMMENTS_CONFIG.userId === comment.nguoi_dung_id && !isAdmin;
     
-    const isOwner = COMMENTS_CONFIG.userId === comment.nguoi_dung_id;
+    // Xác định tên hiển thị và avatar
+    let displayName, avatar;
+    if (isAdmin) {
+        displayName = 'Admin';
+        avatar = '<i class="fas fa-user-shield" style="font-size: 16px;"></i>';
+    } else {
+        displayName = comment.ho_ten;
+        avatar = comment.avt 
+            ? `<img src="${comment.avt}" alt="${comment.ho_ten}">` 
+            : comment.ho_ten.charAt(0).toUpperCase();
+    }
+    
+    // Nút xóa chỉ cho chủ bình luận (người dùng thường)
     const deleteBtn = isOwner 
         ? `<button class="comment-action-btn" onclick="deleteComment(${comment.id})">🗑️ Xóa</button>` 
         : '';
     
     // Hiển thị nút trả lời cho tất cả người dùng (kể cả chưa đăng nhập)
-    const replyBtn = `<button class="comment-action-btn" onclick="showReplyForm(${comment.id}, '${escapeHtml(comment.ho_ten)}')">💬 Trả lời</button>`;
+    const replyBtn = `<button class="comment-action-btn" onclick="showReplyForm(${comment.id}, '${escapeHtml(displayName)}')">💬 Trả lời</button>`;
     
     const replies = comment.replies && comment.replies.length > 0
         ? `<div class="comment-replies">${comment.replies.map(reply => renderComment(reply, true)).join('')}</div>`
         : '';
     
-    const replyIndicator = isReply 
-        ? `<span class="reply-indicator">↳ Trả lời ${comment.parent_author || ''}</span>` 
-        : '';
+    // Badge: Admin = "Tác giả", Người dùng = "Bạn" (nếu là chính họ)
+    let badge = '';
+    if (isAdmin) {
+        badge = '<span class="author-badge">Tác giả</span>';
+    } else if (isOwner) {
+        badge = '<span class="owner-badge">Bạn</span>';
+    }
+    
+    // Style đặc biệt cho bình luận của Admin
+    const adminClass = isAdmin ? 'is-author' : '';
+    const avatarClass = isAdmin ? 'author-avatar' : '';
     
     return `
-        <div class="comment-item ${isReply ? 'is-reply' : ''}" data-comment-id="${comment.id}">
+        <div class="comment-item ${isReply ? 'is-reply' : ''} ${adminClass}" data-comment-id="${comment.id}">
             <div class="comment-header">
-                <div class="comment-avatar">${avatar}</div>
+                <div class="comment-avatar ${avatarClass}">${avatar}</div>
                 <div class="comment-info">
                     <div class="comment-author">
-                        ${comment.ho_ten}
-                        ${isOwner ? '<span class="owner-badge">Bạn</span>' : ''}
+                        ${displayName}
+                        ${badge}
                     </div>
                     <div class="comment-date">${formatDate(comment.created_at)}</div>
                 </div>

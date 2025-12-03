@@ -24,9 +24,9 @@ if ($action === 'get') {
         exit();
     }
     
-    $sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email
+    $sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email, bl.is_admin_reply, bl.admin_id
             FROM binh_luan_bai_viet bl
-            JOIN nguoi_dung nd ON bl.nguoi_dung_id = nd.id
+            LEFT JOIN nguoi_dung nd ON bl.nguoi_dung_id = nd.id
             WHERE bl.bai_viet_id = ? AND bl.parent_id IS NULL
             ORDER BY bl.created_at DESC";
     
@@ -37,10 +37,15 @@ if ($action === 'get') {
     
     $comments = [];
     while ($row = $result->fetch_assoc()) {
+        // Nếu là admin reply, đánh dấu is_author = true (frontend sẽ hiển thị "Admin")
+        if ($row['is_admin_reply'] == 1) {
+            $row['is_author'] = true;
+        }
+        
         // Lấy replies
-        $reply_sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email
+        $reply_sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email, bl.is_admin_reply, bl.admin_id
                       FROM binh_luan_bai_viet bl
-                      JOIN nguoi_dung nd ON bl.nguoi_dung_id = nd.id
+                      LEFT JOIN nguoi_dung nd ON bl.nguoi_dung_id = nd.id
                       WHERE bl.parent_id = ?
                       ORDER BY bl.created_at ASC";
         $reply_stmt = $conn->prepare($reply_sql);
@@ -50,6 +55,10 @@ if ($action === 'get') {
         
         $replies = [];
         while ($reply = $reply_result->fetch_assoc()) {
+            // Nếu là admin reply, đánh dấu is_author = true (frontend sẽ hiển thị "Admin")
+            if ($reply['is_admin_reply'] == 1) {
+                $reply['is_author'] = true;
+            }
             $replies[] = $reply;
         }
         

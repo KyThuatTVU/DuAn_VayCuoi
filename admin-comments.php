@@ -332,6 +332,51 @@ function deleteComment(id, type) {
         document.getElementById('deleteForm').submit();
     }
 }
+
+// Admin trả lời bình luận
+async function submitAdminReply(event, commentId, type) {
+    event.preventDefault();
+    
+    const content = document.getElementById('adminReplyContent').value.trim();
+    if (!content) {
+        alert('Vui lòng nhập nội dung trả lời');
+        return;
+    }
+    
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang gửi...';
+    
+    try {
+        const formData = new FormData();
+        formData.append('action', 'admin_reply');
+        formData.append('comment_id', commentId);
+        formData.append('type', type);
+        formData.append('noi_dung', content);
+        
+        const response = await fetch('api/admin-comment-details.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ ' + data.message);
+            // Reload modal content
+            viewReplies(commentId, type);
+        } else {
+            alert('❌ ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Có lỗi xảy ra, vui lòng thử lại');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+}
 </script>
 
 <style>
