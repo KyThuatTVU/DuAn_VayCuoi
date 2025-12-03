@@ -98,6 +98,9 @@ $current_file = basename($_SERVER['PHP_SELF']);
                 <a href="admin-blogs.php" class="sidebar-link <?php echo $current_file == 'admin-blogs.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-newspaper w-5"></i> Tin tức
                 </a>
+                <a href="admin-comments.php" class="sidebar-link <?php echo $current_file == 'admin-comments.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-comments w-5"></i> Bình luận
+                </a>
                 <a href="admin-payments.php" class="sidebar-link <?php echo $current_file == 'admin-payments.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if (isset($payment_stats) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>

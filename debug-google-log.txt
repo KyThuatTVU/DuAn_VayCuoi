@@ -263,3 +263,41 @@ Google API Response: {
 
 Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
 Admin avatar: https://lh3.googleusercontent.com/a/ACg8ocIo90HHFVO_TpBzGlbr-kcFij7f4VyqjWwWZYUSGqJIjRzSHp85=s96-c
+=== 2025-12-03 02:45:49 ===
+GET: Array
+(
+    [code] => 4/0Ab32j90efMbRyNtWNfB3uzKEEAu75pz-bFXQd5tRQOws8_K1w3vHFy65VThv8f5MoXPftA
+    [scope] => email profile https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid
+    [authuser] => 1
+    [prompt] => none
+)
+
+SESSION before: Array
+(
+)
+
+state: , is_admin_login: false
+
+Google API Response: {
+  "id": "105227688268935859438",
+  "email": "dothienvu84tv@gmail.com",
+  "verified_email": true,
+  "name": "Thiên Vũ Đỗ",
+  "given_name": "Thiên Vũ",
+  "family_name": "Đỗ",
+  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c"
+}
+
+Avatar URL from Google: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+Final avatar for user 6: https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+SESSION after login: Array
+(
+    [user_id] => 6
+    [user_name] => Thiên Vũ Đỗ
+    [user_email] => dothienvu84tv@gmail.com
+    [user_avatar] => https://lh3.googleusercontent.com/a/ACg8ocJtGsRrsTVGZKZl9h9Ug3fZgeVQ9O8hVafBB1jaWnRpKAW6rA=s96-c
+    [logged_in] => 1
+    [success] => Đăng nhập thành công! Chào mừng Thiên Vũ Đỗ
+)
+
+
