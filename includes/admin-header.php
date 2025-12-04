@@ -38,6 +38,9 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
                     <a href="admin-payments.php" class="px-3 py-2 rounded-md text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) === 'admin-payments.php' ? 'bg-teal-100 text-teal-700' : 'text-gray-600 hover:bg-gray-100'; ?>">
                         <i class="fas fa-credit-card mr-1"></i>Thanh toán
                     </a>
+                    <a href="admin-settings.php" class="px-3 py-2 rounded-md text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) === 'admin-settings.php' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'; ?>">
+                        <i class="fas fa-cog mr-1"></i>Cài đặt
+                    </a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -45,7 +48,7 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
                     <i class="fas fa-user mr-2"></i>
                     <?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?>
                 </span>
-                <a href="index.php" target="_blank" class="text-gray-500 hover:text-gray-700" title="Xem trang chủ">
+                <a href="index.php?admin_preview=1" target="_blank" class="text-gray-500 hover:text-gray-700" title="Xem trang chủ">
                     <i class="fas fa-external-link-alt"></i>
                 </a>
                 <a href="admin-logout.php" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
@@ -66,6 +69,7 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
             <a href="admin-blogs.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Tin tức</a>
             <a href="admin-bookings.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Lịch hẹn</a>
             <a href="admin-payments.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Thanh toán</a>
+            <a href="admin-settings.php" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-100">Cài đặt</a>
         </div>
     </div>
 </nav>

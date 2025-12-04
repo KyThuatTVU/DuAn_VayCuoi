@@ -265,8 +265,11 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if(isset($payment_stats['total_pending']) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
                 </a>
+                <a href="admin-settings.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-cog w-5"></i> Cài đặt
+                </a>
                 <div class="border-t border-navy-700 mt-4 pt-4">
-                    <a href="index.php" target="_blank" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded">
+                    <a href="index.php?admin_preview=1" target="_blank" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded">
                         <i class="fas fa-external-link-alt w-5"></i> Xem website
                     </a>
                     <a href="admin-logout.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">

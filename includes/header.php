@@ -4,8 +4,14 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Kiểm tra trạng thái user (nếu đã đăng nhập)
-require_once __DIR__ . '/check-user-status.php';
+// Kiểm tra nếu admin đang xem preview website
+// Khi có tham số admin_preview, hiển thị website như khách chưa đăng nhập
+$is_admin_preview = isset($_GET['admin_preview']) && $_GET['admin_preview'] == '1' && isset($_SESSION['admin_logged_in']);
+
+// Kiểm tra trạng thái user (nếu đã đăng nhập và không phải admin preview)
+if (!$is_admin_preview) {
+    require_once __DIR__ . '/check-user-status.php';
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -34,12 +40,21 @@ require_once __DIR__ . '/check-user-status.php';
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
-    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
     <!-- User Status Checker - Kiểm tra tài khoản bị khóa realtime -->
     <script src="assets/js/user-status-checker.js" defer></script>
     <?php endif; ?>
 </head>
 <body>
+    <?php if ($is_admin_preview): ?>
+    <!-- Admin Preview Banner -->
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-2 px-4 text-center text-sm font-medium sticky top-0 z-[100]">
+        <i class="fas fa-eye mr-2"></i>
+        Bạn đang xem website ở chế độ Admin Preview (không hiển thị thông tin đăng nhập user)
+        <a href="admin-dashboard.php" class="ml-4 underline hover:no-underline">← Quay lại Admin</a>
+    </div>
+    <?php endif; ?>
+    
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container">
@@ -156,7 +171,7 @@ require_once __DIR__ . '/check-user-status.php';
                         </svg>
                     </button>
                     
-                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
                     <!-- Notification Bell -->
                     <div class="relative" id="notificationWrapper">
                         <button class="relative flex items-center justify-center w-11 h-11 rounded-full hover:bg-gray-100 transition-colors" id="notificationBtn" title="Thông báo">
@@ -197,7 +212,7 @@ require_once __DIR__ . '/check-user-status.php';
                         </svg>
                         <span class="cart-count absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 items-center justify-center hidden">0</span>
                     </a>
-                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
                         <!-- User đã đăng nhập -->
                         <div class="relative group">
                             <button class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-primary/30 rounded-full hover:border-primary transition-all">
@@ -385,7 +400,7 @@ require_once __DIR__ . '/check-user-status.php';
             </nav>
 
             <!-- Mobile Auth Buttons -->
-            <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+            <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
             <div class="mt-6 space-y-2 pt-6 border-t border-gray-200">
                 <a href="notifications.php" class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-base text-gray-700 hover:bg-gray-100 transition-all">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -511,7 +526,7 @@ require_once __DIR__ . '/check-user-status.php';
     })();
     </script>
 
-    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
     <!-- Notification System -->
     <style>
     .notification-dropdown.show {
