@@ -7,43 +7,51 @@ document.addEventListener('DOMContentLoaded', function() {
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
 
-    console.log('Mobile Menu Elements:', {
-        toggle: mobileMenuToggle,
-        close: mobileMenuClose,
-        menu: mobileMenu,
-        overlay: mobileMenuOverlay
-    });
-
     function openMobileMenu() {
-        console.log('Opening mobile menu');
         if (mobileMenu) {
             mobileMenu.classList.remove('translate-x-full');
+            mobileMenu.classList.add('active');
         }
         if (mobileMenuOverlay) {
             mobileMenuOverlay.classList.remove('invisible', 'opacity-0');
+            mobileMenuOverlay.classList.add('active');
         }
         document.body.style.overflow = 'hidden';
+        
+        // Toggle button animation
+        if (mobileMenuToggle) {
+            mobileMenuToggle.classList.add('active');
+        }
     }
 
     function closeMobileMenu() {
-        console.log('Closing mobile menu');
         if (mobileMenu) {
             mobileMenu.classList.add('translate-x-full');
+            mobileMenu.classList.remove('active');
         }
         if (mobileMenuOverlay) {
             mobileMenuOverlay.classList.add('invisible', 'opacity-0');
+            mobileMenuOverlay.classList.remove('active');
         }
         document.body.style.overflow = '';
+        
+        // Toggle button animation
+        if (mobileMenuToggle) {
+            mobileMenuToggle.classList.remove('active');
+        }
     }
 
     if (mobileMenuToggle) {
         mobileMenuToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Mobile menu toggle clicked');
-            openMobileMenu();
+            e.stopPropagation();
+            
+            if (mobileMenu && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
         });
-    } else {
-        console.error('Mobile menu toggle button not found!');
     }
 
     if (mobileMenuClose) {
@@ -56,6 +64,24 @@ document.addEventListener('DOMContentLoaded', function() {
     if (mobileMenuOverlay) {
         mobileMenuOverlay.addEventListener('click', closeMobileMenu);
     }
+    
+    // Close mobile menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu && mobileMenu.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close mobile menu on window resize (if going to desktop)
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (window.innerWidth >= 1024 && mobileMenu && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            }
+        }, 100);
+    });
 
     // Mobile Submenu Toggle
     const mobileSubmenuToggles = document.querySelectorAll('.mobile-submenu-toggle');
@@ -88,18 +114,77 @@ document.addEventListener('DOMContentLoaded', function() {
     // Back to Top Button
     const backToTop = document.querySelector('.back-to-top');
     if (backToTop) {
+        // Throttle scroll event for better performance
+        let scrollTimeout;
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 300) {
-                backToTop.classList.add('show');
-                backToTop.style.display = 'flex';
-            } else {
-                backToTop.classList.remove('show');
-                backToTop.style.display = 'none';
-            }
-        });
+            if (scrollTimeout) return;
+            scrollTimeout = setTimeout(function() {
+                scrollTimeout = null;
+                if (window.scrollY > 300) {
+                    backToTop.classList.add('show');
+                    backToTop.style.display = 'flex';
+                } else {
+                    backToTop.classList.remove('show');
+                    backToTop.style.display = 'none';
+                }
+            }, 100);
+        }, { passive: true });
 
         backToTop.addEventListener('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+    
+    // Mobile Filter Modal
+    const mobileFilterBtn = document.getElementById('mobile-filter-btn');
+    const mobileFilterModal = document.getElementById('mobile-filter-modal');
+    const closeMobileFilter = document.getElementById('close-mobile-filter');
+    
+    if (mobileFilterBtn && mobileFilterModal) {
+        mobileFilterBtn.addEventListener('click', function() {
+            mobileFilterModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+        
+        if (closeMobileFilter) {
+            closeMobileFilter.addEventListener('click', function() {
+                mobileFilterModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+        }
+        
+        // Close on overlay click
+        mobileFilterModal.addEventListener('click', function(e) {
+            if (e.target === mobileFilterModal) {
+                mobileFilterModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
+    }
+    
+    // Sync mobile and desktop filters
+    const priceFilter = document.getElementById('price-filter');
+    const mobilePriceFilter = document.getElementById('mobile-price-filter');
+    const priceDisplay = document.getElementById('price-display');
+    const mobilePriceDisplay = document.getElementById('mobile-price-display');
+    
+    function formatPriceDisplay(value) {
+        return new Intl.NumberFormat('vi-VN').format(value) + 'đ';
+    }
+    
+    if (priceFilter && priceDisplay) {
+        priceFilter.addEventListener('input', function() {
+            priceDisplay.textContent = formatPriceDisplay(this.value);
+            if (mobilePriceFilter) mobilePriceFilter.value = this.value;
+            if (mobilePriceDisplay) mobilePriceDisplay.textContent = formatPriceDisplay(this.value);
+        });
+    }
+    
+    if (mobilePriceFilter && mobilePriceDisplay) {
+        mobilePriceFilter.addEventListener('input', function() {
+            mobilePriceDisplay.textContent = formatPriceDisplay(this.value);
+            if (priceFilter) priceFilter.value = this.value;
+            if (priceDisplay) priceDisplay.textContent = formatPriceDisplay(this.value);
         });
     }
 

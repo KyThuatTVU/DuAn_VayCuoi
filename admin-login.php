@@ -18,6 +18,7 @@ $page_title = 'Đăng Nhập Admin';
     <title><?php echo $page_title . ' - ' . SITE_NAME; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/admin-responsive.css">
     <style>
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
@@ -28,6 +29,16 @@ $page_title = 'Đăng Nhập Admin';
         }
         .gradient-bg {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        /* Mobile responsive for login */
+        @media (max-width: 639px) {
+            .min-h-screen.flex.items-center { padding: 1rem !important; }
+            .max-w-md { max-width: 100% !important; }
+            .bg-white\\/80.backdrop-blur-lg { padding: 1.5rem !important; border-radius: 1.5rem !important; }
+            .text-4xl { font-size: 1.75rem !important; }
+            .w-20.h-20 { width: 4rem !important; height: 4rem !important; }
+            .w-20.h-20 i { font-size: 1.75rem !important; }
+            .fixed.-top-40.-right-40, .fixed.-bottom-40.-left-40, .fixed.top-1\\/2.left-1\\/2 { display: none; }
         }
     </style>
 </head>

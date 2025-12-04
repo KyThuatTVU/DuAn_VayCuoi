@@ -73,7 +73,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-56 bg-navy-900 fixed h-full overflow-y-auto sidebar-scroll z-50">
+        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto sidebar-scroll z-50">
             <!-- Profile -->
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
@@ -84,8 +84,8 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                         <i class="fas fa-user text-3xl text-accent-500"></i>
                     <?php endif; ?>
                 </div>
-                <h3 class="text-white font-semibold text-base truncate px-2"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?></h3>
-                <p class="text-navy-300 text-xs truncate px-2"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@vaycuoi.com'); ?></p>
+                <h3 class="text-white font-semibold text-base truncate px-1"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?></h3>
+                <p class="text-navy-300 text-xs break-all px-1 leading-relaxed"><?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@vaycuoi.com'); ?></p>
             </div>
 
             <!-- Menu -->
@@ -135,7 +135,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-56">
+        <main class="flex-1 ml-64">
             <!-- Header -->
             <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
                 <div>

@@ -1,0 +1,1022 @@
+/* ===================================
+   ADMIN PANEL RESPONSIVE STYLES
+   Wedding Dress Website
+   =================================== */
+
+/* ===================================
+   ADMIN SIDEBAR RESPONSIVE
+   =================================== */
+
+/* Desktop - Sidebar visible */
+@media (min-width: 1024px) {
+    .admin-sidebar {
+        position: fixed;
+        left: 0;
+        width: 16rem; /* w-64 */
+    }
+    
+    .admin-main {
+        margin-left: 16rem;
+    }
+    
+    .admin-mobile-toggle,
+    .admin-sidebar-overlay {
+        display: none !important;
+    }
+}
+
+/* Tablet & Mobile - Sidebar hidden by default */
+@media (max-width: 1023.98px) {
+    /* Sidebar off-canvas */
+    aside.w-64,
+    .admin-sidebar {
+        position: fixed !important;
+        left: -100% !important;
+        top: 0 !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        width: 280px !important;
+        max-width: 85vw !important;
+        z-index: 1000 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    aside.w-64.active,
+    .admin-sidebar.active {
+        left: 0 !important;
+    }
+    
+    /* Remove margin from main content */
+    main.ml-64,
+    .admin-main,
+    .ml-64 {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Admin header compact */
+    header.sticky {
+        padding: 0.75rem 1rem !important;
+    }
+    
+    header h1 {
+        font-size: 1.25rem !important;
+    }
+    
+    header p.text-sm {
+        font-size: 0.75rem !important;
+        display: none;
+    }
+    
+    /* Header flex adjustments */
+    header .flex.items-center.justify-between {
+        gap: 0.5rem;
+    }
+    
+    /* Filter form compact */
+    header form {
+        display: none;
+    }
+    
+    /* Show mobile toggle button */
+    .admin-mobile-toggle {
+        display: flex !important;
+    }
+}
+
+/* ===================================
+   ADMIN MOBILE TOGGLE BUTTON
+   =================================== */
+.admin-mobile-toggle {
+    display: none;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: linear-gradient(135deg, #102a43 0%, #243b53 100%);
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(16, 42, 67, 0.4);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-mobile-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(16, 42, 67, 0.5);
+}
+
+.admin-mobile-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ===================================
+   ADMIN SIDEBAR OVERLAY
+   =================================== */
+.admin-sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.admin-sidebar-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ===================================
+   ADMIN STATS CARDS RESPONSIVE
+   =================================== */
+@media (max-width: 1279.98px) {
+    /* 4 columns to 2 columns */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    /* 5 columns to 3 columns */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-5 {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* 2 columns on tablet */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-5 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    /* Stat card compact */
+    .stat-card,
+    .card.stat-card {
+        padding: 1rem !important;
+    }
+    
+    .stat-card .text-2xl {
+        font-size: 1.25rem !important;
+    }
+    
+    .stat-card .text-xl {
+        font-size: 1.125rem !important;
+    }
+    
+    .stat-card .text-sm,
+    .stat-card .text-xs {
+        font-size: 0.75rem !important;
+    }
+    
+    /* Icon size */
+    .stat-card .w-12.h-12 {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+    }
+    
+    .stat-card .w-10.h-10 {
+        width: 2rem !important;
+        height: 2rem !important;
+    }
+}
+
+@media (max-width: 479.98px) {
+    /* Single column on very small screens */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4,
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-5 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ===================================
+   ADMIN CHARTS RESPONSIVE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Charts full width */
+    .lg\:col-span-2 {
+        grid-column: span 1 !important;
+    }
+    
+    .grid.grid-cols-1.lg\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .grid.grid-cols-1.lg\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Chart container height */
+    .chart-container {
+        height: 250px !important;
+    }
+}
+
+@media (max-width: 639.98px) {
+    .chart-container {
+        height: 200px !important;
+    }
+    
+    /* Chart card padding */
+    .bg-white.rounded-2xl.p-6 {
+        padding: 1rem !important;
+    }
+    
+    /* Chart title */
+    .bg-white.rounded-2xl h3 {
+        font-size: 1rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN TABLES RESPONSIVE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Table scroll */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+    
+    table th,
+    table td {
+        padding: 0.75rem 0.5rem !important;
+        font-size: 0.8125rem !important;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Card-style table for mobile */
+    .admin-table-responsive {
+        display: block !important;
+    }
+    
+    .admin-table-responsive thead {
+        display: none !important;
+    }
+    
+    .admin-table-responsive tbody {
+        display: block !important;
+    }
+    
+    .admin-table-responsive tr {
+        display: block !important;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .admin-table-responsive td {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0 !important;
+        border-bottom: 1px solid #f3f4f6;
+        text-align: right;
+    }
+    
+    .admin-table-responsive td:last-child {
+        border-bottom: none;
+    }
+    
+    .admin-table-responsive td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #374151;
+        text-align: left;
+        flex: 1;
+    }
+    
+    .admin-table-responsive td > * {
+        flex: 1;
+        text-align: right;
+    }
+}
+
+/* ===================================
+   ADMIN FORMS RESPONSIVE
+   =================================== */
+@media (max-width: 767.98px) {
+    /* Form grid single column */
+    .grid.grid-cols-2,
+    .grid.md\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Form inputs */
+    input, select, textarea {
+        padding: 0.75rem !important;
+        font-size: 1rem !important;
+    }
+    
+    /* Form labels */
+    label {
+        font-size: 0.875rem !important;
+        margin-bottom: 0.375rem !important;
+    }
+    
+    /* Button groups */
+    .flex.gap-4,
+    .flex.gap-3 {
+        flex-direction: column;
+        gap: 0.75rem !important;
+    }
+    
+    .flex.gap-4 button,
+    .flex.gap-3 button,
+    .flex.gap-4 a,
+    .flex.gap-3 a {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ===================================
+   ADMIN MODALS RESPONSIVE
+   =================================== */
+@media (max-width: 767.98px) {
+    /* Modal full width on mobile */
+    .fixed.inset-0 > div:not(.admin-sidebar):not(.admin-sidebar-overlay) {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 1rem auto !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        border-radius: 1rem !important;
+    }
+    
+    /* Modal padding */
+    .fixed.inset-0 > div .p-6,
+    .fixed.inset-0 > div .p-8 {
+        padding: 1rem !important;
+    }
+    
+    /* Modal title */
+    .fixed.inset-0 > div h2,
+    .fixed.inset-0 > div h3 {
+        font-size: 1.125rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN CONTENT SPACING
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Content padding */
+    .p-6 {
+        padding: 1rem !important;
+    }
+    
+    /* Space between sections */
+    .space-y-6 > * + * {
+        margin-top: 1rem !important;
+    }
+    
+    /* Gap adjustments */
+    .gap-6 {
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 639.98px) {
+    .p-6 {
+        padding: 0.75rem !important;
+    }
+    
+    .space-y-6 > * + * {
+        margin-top: 0.75rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN SIDEBAR PROFILE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Profile section compact */
+    aside .p-4.text-center {
+        padding: 1rem !important;
+    }
+    
+    aside .w-16.h-16 {
+        width: 3rem !important;
+        height: 3rem !important;
+    }
+    
+    aside .text-base {
+        font-size: 0.875rem !important;
+    }
+    
+    aside .text-xs {
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN NAVIGATION LINKS
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Nav links */
+    .sidebar-link {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    .sidebar-link i {
+        width: 1.25rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    /* Badge */
+    .sidebar-link .bg-accent-500 {
+        font-size: 0.625rem !important;
+        padding: 0.125rem 0.375rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN ORDER DETAIL RESPONSIVE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Order detail grid */
+    .lg\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Order info cards */
+    .lg\:col-span-2 {
+        grid-column: span 1 !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Order items list */
+    .order-items .flex {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .order-items img {
+        width: 100%;
+        max-width: 150px;
+        margin: 0 auto;
+    }
+}
+
+/* ===================================
+   ADMIN DASHBOARD QUICK ACTIONS
+   =================================== */
+@media (max-width: 767.98px) {
+    /* Quick action buttons */
+    .grid.grid-cols-2.md\:grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    /* Action button compact */
+    .grid.grid-cols-2.md\:grid-cols-4 > * {
+        padding: 0.75rem !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-4 .text-lg {
+        font-size: 0.875rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN RECENT ORDERS LIST
+   =================================== */
+@media (max-width: 767.98px) {
+    /* Recent orders compact */
+    .recent-orders .flex.items-center {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .recent-orders .flex.items-center > * {
+        width: 100%;
+    }
+}
+
+/* ===================================
+   ADMIN SETTINGS PAGE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Settings tabs */
+    .flex.border-b {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+    }
+    
+    .flex.border-b button {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Settings form */
+    .settings-form .grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Image upload */
+    .settings-form .w-32.h-32 {
+        width: 6rem !important;
+        height: 6rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN LOGIN PAGE RESPONSIVE
+   =================================== */
+@media (max-width: 639.98px) {
+    /* Login container */
+    .min-h-screen.flex.items-center {
+        padding: 1rem !important;
+    }
+    
+    /* Login card */
+    .max-w-md {
+        max-width: 100% !important;
+    }
+    
+    .bg-white\\/80.backdrop-blur-lg {
+        padding: 1.5rem !important;
+        border-radius: 1.5rem !important;
+    }
+    
+    /* Login header */
+    .text-4xl {
+        font-size: 1.75rem !important;
+    }
+    
+    /* Login icon */
+    .w-20.h-20 {
+        width: 4rem !important;
+        height: 4rem !important;
+    }
+    
+    .w-20.h-20 i {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN PAYMENTS PAGE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Payment stats */
+    .payment-stats .grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 639.98px) {
+    .payment-stats .grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ===================================
+   ADMIN COMMENTS PAGE
+   =================================== */
+@media (max-width: 767.98px) {
+    /* Comment cards */
+    .comment-card {
+        padding: 1rem !important;
+    }
+    
+    .comment-card .flex.items-start {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .comment-card img {
+        width: 3rem !important;
+        height: 3rem !important;
+    }
+}
+
+/* ===================================
+   ADMIN BOOKINGS PAGE
+   =================================== */
+@media (max-width: 1023.98px) {
+    /* Calendar view */
+    .booking-calendar {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .booking-calendar table {
+        min-width: 500px;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Booking list view */
+    .booking-list .flex.items-center {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
+
+/* ===================================
+   PRINT STYLES FOR ADMIN
+   =================================== */
+@media print {
+    aside,
+    .admin-mobile-toggle,
+    .admin-sidebar-overlay,
+    header button,
+    header form {
+        display: none !important;
+    }
+    
+    main {
+        margin-left: 0 !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+    }
+    
+    .chart-container {
+        page-break-inside: avoid;
+    }
+}
+
+/* ===================================
+   ADMIN MOBILE ENHANCEMENTS
+   =================================== */
+
+/* Mobile Header Improvements */
+@media (max-width: 767.98px) {
+    /* Compact header on mobile */
+    header.sticky {
+        padding: 0.5rem 0.75rem !important;
+    }
+    
+    header h1 {
+        font-size: 1rem !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+    
+    header p.text-sm,
+    header p.text-navy-500 {
+        display: none !important;
+    }
+    
+    /* Header actions compact */
+    header .flex.items-center.gap-4 {
+        gap: 0.5rem !important;
+    }
+    
+    header button.relative {
+        width: 2.25rem;
+        height: 2.25rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    header .w-10.h-10 {
+        width: 2rem !important;
+        height: 2rem !important;
+    }
+}
+
+/* Admin Sidebar Mobile Improvements */
+@media (max-width: 1023.98px) {
+    /* Sidebar slide animation */
+    aside.w-64 {
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    /* Sidebar header compact */
+    aside .p-4.text-center {
+        padding: 0.75rem !important;
+    }
+    
+    aside .w-16.h-16 {
+        width: 2.5rem !important;
+        height: 2.5rem !important;
+    }
+    
+    aside .text-base {
+        font-size: 0.8125rem !important;
+    }
+    
+    aside .text-xs {
+        font-size: 0.625rem !important;
+    }
+    
+    /* Sidebar links compact */
+    aside nav a {
+        padding: 0.625rem 0.875rem !important;
+        font-size: 0.8125rem !important;
+    }
+    
+    aside nav a i {
+        width: 1rem !important;
+        font-size: 0.8125rem !important;
+    }
+    
+    /* Badge smaller */
+    aside nav a .bg-accent-500 {
+        font-size: 0.5625rem !important;
+        padding: 0.125rem 0.25rem !important;
+        min-width: 1rem;
+    }
+}
+
+/* Admin Cards Mobile */
+@media (max-width: 639.98px) {
+    /* Card padding */
+    .bg-white.rounded-2xl {
+        border-radius: 1rem !important;
+    }
+    
+    .bg-white.rounded-2xl.p-6 {
+        padding: 0.875rem !important;
+    }
+    
+    /* Card headers */
+    .bg-white.rounded-2xl h3 {
+        font-size: 0.9375rem !important;
+    }
+    
+    /* Stat cards grid */
+    .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+        gap: 0.75rem !important;
+    }
+    
+    /* Stat card content */
+    .stat-card .flex.items-center {
+        gap: 0.75rem !important;
+    }
+    
+    .stat-card .w-12.h-12,
+    .stat-card .w-10.h-10 {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+    }
+    
+    .stat-card .w-12.h-12 i,
+    .stat-card .w-10.h-10 i {
+        font-size: 0.875rem !important;
+    }
+    
+    .stat-card p.text-2xl,
+    .stat-card .text-2xl {
+        font-size: 1.125rem !important;
+    }
+    
+    .stat-card p.text-sm,
+    .stat-card .text-sm {
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* Admin Tables Mobile Card View */
+@media (max-width: 767.98px) {
+    /* Convert table to cards */
+    .admin-table-mobile {
+        display: block !important;
+    }
+    
+    .admin-table-mobile thead {
+        display: none !important;
+    }
+    
+    .admin-table-mobile tbody {
+        display: flex !important;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .admin-table-mobile tr {
+        display: block !important;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 0.875rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .admin-table-mobile td {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.375rem 0 !important;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.8125rem !important;
+    }
+    
+    .admin-table-mobile td:last-child {
+        border-bottom: none;
+        padding-top: 0.625rem !important;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+    
+    .admin-table-mobile td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #374151;
+        font-size: 0.75rem;
+    }
+    
+    /* Action buttons in table */
+    .admin-table-mobile td button,
+    .admin-table-mobile td a {
+        padding: 0.375rem 0.625rem !important;
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* Admin Forms Mobile */
+@media (max-width: 639.98px) {
+    /* Form inputs larger touch targets */
+    .admin-form input,
+    .admin-form select,
+    .admin-form textarea {
+        min-height: 44px !important;
+        padding: 0.625rem 0.875rem !important;
+        font-size: 16px !important;
+        border-radius: 0.625rem !important;
+    }
+    
+    /* Form labels */
+    .admin-form label {
+        font-size: 0.8125rem !important;
+        margin-bottom: 0.375rem !important;
+    }
+    
+    /* Form buttons */
+    .admin-form button[type="submit"] {
+        min-height: 44px !important;
+        font-size: 0.9375rem !important;
+    }
+    
+    /* Form grid single column */
+    .admin-form .grid.grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Admin Modal Mobile */
+@media (max-width: 639.98px) {
+    /* Full screen modal on mobile */
+    .admin-modal {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        max-height: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        overflow-y: auto !important;
+    }
+    
+    .admin-modal .p-6,
+    .admin-modal .p-8 {
+        padding: 1rem !important;
+    }
+    
+    .admin-modal h2,
+    .admin-modal h3 {
+        font-size: 1.125rem !important;
+    }
+    
+    /* Modal close button */
+    .admin-modal .absolute.top-4.right-4 {
+        top: 0.75rem !important;
+        right: 0.75rem !important;
+    }
+}
+
+/* Admin Quick Actions Mobile */
+@media (max-width: 639.98px) {
+    .grid.grid-cols-2.md\:grid-cols-4 {
+        gap: 0.5rem !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-4 > * {
+        padding: 0.625rem !important;
+        border-radius: 0.75rem !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-4 .text-lg {
+        font-size: 0.75rem !important;
+    }
+    
+    .grid.grid-cols-2.md\:grid-cols-4 i {
+        font-size: 1rem !important;
+    }
+}
+
+/* Admin Charts Mobile */
+@media (max-width: 639.98px) {
+    .chart-container {
+        height: 180px !important;
+    }
+    
+    /* Chart legend smaller */
+    .chart-container + div,
+    .chart-legend {
+        font-size: 0.6875rem !important;
+    }
+}
+
+/* Admin Pagination Mobile */
+@media (max-width: 639.98px) {
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.25rem !important;
+    }
+    
+    .pagination button,
+    .pagination a {
+        min-width: 2rem !important;
+        height: 2rem !important;
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Admin Floating Toggle Button Improvements */
+.admin-mobile-toggle {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.125rem;
+    bottom: 1rem;
+    right: 1rem;
+}
+
+@media (max-width: 479.98px) {
+    .admin-mobile-toggle {
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1rem;
+        bottom: 0.75rem;
+        right: 0.75rem;
+    }
+}
+
+/* Admin Safe Area Support */
+@supports (padding: max(0px)) {
+    @media (max-width: 1023.98px) {
+        aside.w-64 {
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+        }
+        
+        .admin-mobile-toggle {
+            bottom: max(1rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+            right: max(1rem, env(safe-area-inset-right));
+        }
+    }
+}
+
+/* Admin Touch Optimizations */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    aside nav a,
+    header button,
+    .admin-table-mobile td button,
+    .admin-table-mobile td a {
+        min-height: 44px;
+    }
+    
+    /* Remove hover effects on touch */
+    .card:hover {
+        transform: none !important;
+    }
+    
+    .card:active {
+        transform: scale(0.98) !important;
+    }
+}

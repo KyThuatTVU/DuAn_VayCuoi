@@ -236,13 +236,25 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Update header cart badge
                 const cartBadge = document.querySelector('.cart-count');
                 if (cartBadge) {
                     cartBadge.textContent = data.count;
                     if (data.count > 0) {
-                        cartBadge.style.display = 'block';
+                        cartBadge.style.display = 'flex';
                     } else {
                         cartBadge.style.display = 'none';
+                    }
+                }
+                
+                // Update mobile bottom nav cart badge
+                const mobileCartBadge = document.querySelector('.mobile-bottom-nav .cart-badge');
+                if (mobileCartBadge) {
+                    if (data.count > 0) {
+                        mobileCartBadge.textContent = data.count > 99 ? '99+' : data.count;
+                        mobileCartBadge.style.display = 'flex';
+                    } else {
+                        mobileCartBadge.style.display = 'none';
                     }
                 }
             }
@@ -252,6 +264,10 @@
             const cartBadge = document.querySelector('.cart-count');
             if (cartBadge) {
                 cartBadge.style.display = 'none';
+            }
+            const mobileCartBadge = document.querySelector('.mobile-bottom-nav .cart-badge');
+            if (mobileCartBadge) {
+                mobileCartBadge.style.display = 'none';
             }
         });
     }

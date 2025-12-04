@@ -40,12 +40,18 @@ if (!$is_admin_preview) {
     <link rel="stylesheet" href="assets/css/header.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
+    <!-- Mobile Enhancements -->
+    <script src="assets/js/mobile-enhancements.js" defer></script>
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
     <!-- User Status Checker - Kiểm tra tài khoản bị khóa realtime -->
     <script src="assets/js/user-status-checker.js" defer></script>
     <?php endif; ?>
+    <!-- Mobile viewport fix for iOS -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#7ec8e3">
 </head>
-<body>
+<body class="antialiased">
     <?php if ($is_admin_preview): ?>
     <!-- Admin Preview Banner -->
     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-2 px-4 text-center text-sm font-medium sticky top-0 z-[100]">

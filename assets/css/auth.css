@@ -534,3 +534,182 @@
         transform: translateY(0);
     }
 }
+
+/* =
+==================================
+   MOBILE ENHANCEMENTS FOR AUTH PAGES
+   =================================== */
+
+/* Extra small devices */
+@media (max-width: 375px) {
+    .auth-container {
+        padding: 20px 12px;
+    }
+    
+    .auth-box {
+        padding: 28px 18px;
+        border-radius: 16px;
+    }
+    
+    .auth-header h2 {
+        font-size: 22px;
+    }
+    
+    .auth-header p {
+        font-size: 13px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        padding: 12px 14px;
+        font-size: 16px; /* Prevents iOS zoom */
+    }
+    
+    .btn-submit {
+        padding: 14px 18px;
+        font-size: 14px;
+    }
+    
+    .btn-social {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .auth-footer p {
+        font-size: 13px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .form-group input,
+    .form-group textarea,
+    .btn-submit,
+    .btn-social {
+        min-height: 48px;
+    }
+    
+    .toggle-password {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
+    
+    /* Better tap feedback */
+    .btn-submit:active,
+    .btn-social:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+    .auth-container {
+        padding-top: max(30px, env(safe-area-inset-top));
+        padding-bottom: max(30px, env(safe-area-inset-bottom));
+        padding-left: max(15px, env(safe-area-inset-left));
+        padding-right: max(15px, env(safe-area-inset-right));
+    }
+}
+
+/* Landscape mode on mobile */
+@media (max-width: 896px) and (orientation: landscape) {
+    .auth-container {
+        padding: 20px 15px;
+    }
+    
+    .auth-box {
+        padding: 25px 30px;
+    }
+    
+    .auth-header {
+        margin-bottom: 25px;
+    }
+    
+    .auth-header h2 {
+        font-size: 24px;
+        margin-bottom: 4px;
+    }
+    
+    .form-group {
+        margin-bottom: 16px;
+    }
+    
+    .auth-divider {
+        margin: 20px 0;
+    }
+    
+    .social-login {
+        margin-bottom: 20px;
+    }
+}
+
+/* Focus states for accessibility */
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.btn-submit:focus-visible,
+.btn-social:focus-visible {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .auth-box {
+        animation: none;
+    }
+    
+    .alert {
+        animation: none;
+    }
+    
+    .btn-submit.loading::after {
+        animation: none;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    /* Uncomment to enable dark mode
+    .auth-container {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    }
+    
+    .auth-box {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    
+    .auth-header h2 {
+        color: #f9fafb;
+    }
+    
+    .auth-header p {
+        color: #9ca3af;
+    }
+    
+    .form-group label {
+        color: #d1d5db;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+    
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #6b7280;
+    }
+    */
+}

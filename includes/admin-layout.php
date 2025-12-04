@@ -45,17 +45,23 @@ $current_file = basename($_SERVER['PHP_SELF']);
             }
         }
     </script>
+    <link rel="stylesheet" href="assets/css/admin-responsive.css">
+    <script src="assets/js/admin-mobile.js" defer></script>
     <style>
         .sidebar-link { transition: all 0.2s; }
         .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.1); border-left: 3px solid #ed8936; }
         .card { transition: all 0.3s; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        /* Custom scrollbar for sidebar */
+        aside::-webkit-scrollbar { width: 4px; }
+        aside::-webkit-scrollbar-track { background: transparent; }
+        aside::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-56 bg-navy-900 fixed h-full overflow-y-auto z-50">
+        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto z-50">
             <!-- Profile -->
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
@@ -66,8 +72,8 @@ $current_file = basename($_SERVER['PHP_SELF']);
                         <i class="fas fa-user text-3xl text-accent-500"></i>
                     <?php endif; ?>
                 </div>
-                <h3 class="text-white font-semibold text-base truncate px-2"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?></h3>
-                <p class="text-navy-300 text-xs truncate px-2" title="<?php echo htmlspecialchars($_SESSION['admin_email'] ?? ''); ?>">
+                <h3 class="text-white font-semibold text-base truncate px-1"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?></h3>
+                <p class="text-navy-300 text-xs break-all px-1 leading-relaxed" title="<?php echo htmlspecialchars($_SESSION['admin_email'] ?? ''); ?>">
                     <?php echo htmlspecialchars($_SESSION['admin_email'] ?? 'admin@vaycuoi.com'); ?>
                 </p>
             </div>
@@ -120,21 +126,27 @@ $current_file = basename($_SERVER['PHP_SELF']);
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-56">
+        <main class="flex-1 ml-64">
             <!-- Header -->
             <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                <div>
-                    <h1 class="text-2xl font-bold text-navy-900"><?php echo $page_title ?? 'Admin'; ?></h1>
-                    <p class="text-navy-500 text-sm"><?php echo $page_subtitle ?? 'Quản lý hệ thống'; ?></p>
+                <div class="flex items-center gap-3">
+                    <!-- Mobile menu toggle in header -->
+                    <button class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors" id="headerMenuToggle" aria-label="Toggle Menu">
+                        <i class="fas fa-bars text-navy-700"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-2xl font-bold text-navy-900"><?php echo $page_title ?? 'Admin'; ?></h1>
+                        <p class="text-navy-500 text-sm hidden sm:block"><?php echo $page_subtitle ?? 'Quản lý hệ thống'; ?></p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button class="relative text-navy-500 hover:text-navy-700">
-                        <i class="fas fa-bell text-xl"></i>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button class="relative text-navy-500 hover:text-navy-700 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-bell text-lg sm:text-xl"></i>
                         <?php if ($pending_orders + $new_contacts > 0): ?>
-                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"><?php echo $pending_orders + $new_contacts; ?></span>
+                        <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"><?php echo $pending_orders + $new_contacts; ?></span>
                         <?php endif; ?>
                     </button>
-                    <div class="w-10 h-10 rounded-full overflow-hidden bg-navy-200">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-navy-200">
                         <?php if (!empty($_SESSION['admin_avatar'])): ?>
                             <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full flex items-center justify-center" style="display:none;">
@@ -151,3 +163,54 @@ $current_file = basename($_SERVER['PHP_SELF']);
 
             <!-- Page Content -->
             <div class="p-6">
+
+    <!-- Admin Mobile Toggle Button -->
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Admin Sidebar Overlay -->
+    <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+    
+    <script>
+    // Admin Mobile Menu Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.querySelector('aside.w-64');
+        const toggle = document.getElementById('adminMobileToggle');
+        const overlay = document.getElementById('adminSidebarOverlay');
+        
+        if (toggle && sidebar && overlay) {
+            toggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+                const icon = toggle.querySelector('i');
+                if (sidebar.classList.contains('active')) {
+                    icon.classList.remove('fa-bars');
+                    icon.classList.add('fa-times');
+                } else {
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+            
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                const icon = toggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+            
+            // Close on escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                    const icon = toggle.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        }
+    });
+    </script>
