@@ -18,12 +18,12 @@ switch ($choice) {
     }
     "2" {
         git config user.name "1ThaoVy"
-        git config user.email "thaoVy@gmail.com"  # Thay bằng email thật của ThaoVy
+        git config user.email "1ThaoVy@users.noreply.github.com"
         Write-Host "`nĐã chuyển sang: 1ThaoVy" -ForegroundColor Yellow
     }
     "3" {
         git config user.name "NguyenNhatTruong26101997"
-        git config user.email "truong@gmail.com"  # Thay bằng email thật của Trường
+        git config user.email "NguyenNhatTruong26101997@users.noreply.github.com"
         Write-Host "`nĐã chuyển sang: NguyenNhatTruong26101997" -ForegroundColor Magenta
     }
     default {
