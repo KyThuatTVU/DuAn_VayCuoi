@@ -210,23 +210,80 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
         .card { transition: all 0.3s; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
         .stat-card { background: linear-gradient(135deg, #fff 0%, #f8fafc 100%); }
-        .chart-container { position: relative; }
+        /* Chart container improvements */
+        .chart-container { 
+            position: relative; 
+            width: 100%;
+            min-height: 280px;
+        }
+        .chart-container canvas {
+            max-width: 100% !important;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #102a43;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .chart-title i {
+            font-size: 1.1rem;
+        }
         /* Custom scrollbar for sidebar */
         .sidebar-scroll::-webkit-scrollbar { width: 4px; }
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
         .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        /* Desktop chart sizes */
+        @media (min-width: 1024px) {
+            .chart-container { min-height: 320px; }
+            .chart-container.chart-sm { min-height: 260px; }
+            .chart-container.chart-doughnut { min-height: 200px; }
+            .chart-card { padding: 1.75rem; }
+            .chart-title { font-size: 1.125rem; }
+        }
+        /* Tablet chart responsive */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .chart-container { min-height: 280px; }
+            .chart-container.chart-sm { min-height: 240px; }
+            .chart-container.chart-doughnut { min-height: 180px; }
+        }
         /* Mobile chart responsive */
         @media (max-width: 767.98px) {
-            .chart-container { height: 180px !important; }
-            .card.stat-card { padding: 0.875rem !important; }
+            .chart-container { min-height: 200px; }
+            .chart-container.chart-sm { min-height: 180px; }
+            .chart-container.chart-doughnut { min-height: 150px; }
+            .chart-card { padding: 0.875rem; border-radius: 0.75rem; }
+            .chart-title { font-size: 0.875rem; margin-bottom: 0.625rem; }
+            .chart-title i { font-size: 1rem; }
+            .card.stat-card { padding: 0.75rem !important; }
             .stat-card .text-2xl { font-size: 1.125rem !important; }
             .stat-card .text-xl { font-size: 1rem !important; }
             .stat-card .w-12.h-12 { width: 2.25rem !important; height: 2.25rem !important; }
             .stat-card .w-10.h-10 { width: 2rem !important; height: 2rem !important; }
+            /* Mobile grid adjustments */
+            .grid { gap: 0.75rem !important; }
+            /* Stats cards 2 columns on mobile */
+            .grid.grid-cols-2 { grid-template-columns: repeat(2, 1fr) !important; }
+            .grid.grid-cols-3 { grid-template-columns: repeat(2, 1fr) !important; }
         }
         @media (max-width: 479.98px) {
-            .chart-container { height: 150px !important; }
+            .chart-container { min-height: 160px; }
+            .chart-container.chart-sm { min-height: 150px; }
+            .chart-container.chart-doughnut { min-height: 130px; }
+            .chart-card { padding: 0.75rem; }
+            .chart-title { font-size: 0.8125rem; }
+            /* Smaller stat cards */
+            .stat-card .text-2xl { font-size: 1rem !important; }
+            .stat-card .text-xl { font-size: 0.875rem !important; }
         }
     </style>
 </head>
@@ -337,64 +394,64 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
             </header>
 
             <!-- Content -->
-            <div class="p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
+            <div class="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6 max-w-full overflow-x-hidden">
                 <!-- Stats Cards Row 1 -->
-                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-6">
                     <!-- Doanh thu hôm nay -->
-                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-green-500">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="min-w-0">
-                                <p class="text-navy-500 text-sm font-medium">Hôm nay</p>
-                                <p class="text-2xl font-bold text-navy-900 mt-1"><?php echo number_format($today_revenue/1000000, 1); ?>M</p>
-                                <p class="text-xs text-green-600 mt-1"><i class="fas fa-calendar-day mr-1"></i>VNĐ</p>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-6 shadow-sm border-l-2 sm:border-l-4 border-green-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm font-medium truncate">Hôm nay</p>
+                                <p class="text-base sm:text-lg lg:text-2xl font-bold text-navy-900 mt-0.5"><?php echo number_format($today_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs text-green-600 mt-0.5 hidden sm:block"><i class="fas fa-calendar-day mr-1"></i>VNĐ</p>
                             </div>
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-sun text-green-500 text-xl"></i>
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-sun text-green-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Doanh thu tuần -->
-                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-blue-500">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="min-w-0">
-                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tuần này</p>
-                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($week_revenue/1000000, 1); ?>M</p>
-                                <p class="text-[10px] sm:text-xs text-blue-600 mt-0.5 sm:mt-1 hidden sm:block"><i class="fas fa-calendar-week mr-1"></i>VNĐ</p>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-6 shadow-sm border-l-2 sm:border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm font-medium truncate">Tuần này</p>
+                                <p class="text-base sm:text-lg lg:text-2xl font-bold text-navy-900 mt-0.5"><?php echo number_format($week_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs text-blue-600 mt-0.5 hidden sm:block"><i class="fas fa-calendar-week mr-1"></i>VNĐ</p>
                             </div>
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-calendar-week text-blue-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Doanh thu tháng -->
-                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-accent-500">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="min-w-0">
-                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tháng này</p>
-                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($month_revenue/1000000, 1); ?>M</p>
-                                <p class="text-[10px] sm:text-xs <?php echo $growth_percent >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-0.5 sm:mt-1 truncate">
-                                    <i class="fas fa-<?php echo $growth_percent >= 0 ? 'arrow-up' : 'arrow-down'; ?> mr-0.5 sm:mr-1"></i>
-                                    <span class="hidden sm:inline"><?php echo abs($growth_percent); ?>% vs tháng trước</span>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-6 shadow-sm border-l-2 sm:border-l-4 border-accent-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm font-medium truncate">Tháng này</p>
+                                <p class="text-base sm:text-lg lg:text-2xl font-bold text-navy-900 mt-0.5"><?php echo number_format($month_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs <?php echo $growth_percent >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-0.5 truncate">
+                                    <i class="fas fa-<?php echo $growth_percent >= 0 ? 'arrow-up' : 'arrow-down'; ?> mr-0.5"></i>
+                                    <span class="hidden sm:inline"><?php echo abs($growth_percent); ?>% vs trước</span>
                                     <span class="sm:hidden"><?php echo abs($growth_percent); ?>%</span>
                                 </p>
                             </div>
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-accent-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-accent-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-chart-line text-accent-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tổng doanh thu -->
-                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-purple-500">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="min-w-0">
-                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tổng doanh thu</p>
-                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($total_revenue/1000000, 1); ?>M</p>
-                                <p class="text-[10px] sm:text-xs text-purple-600 mt-0.5 sm:mt-1 hidden sm:block"><i class="fas fa-coins mr-1"></i>VNĐ</p>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2.5 sm:p-3 lg:p-6 shadow-sm border-l-2 sm:border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm font-medium truncate">Tổng doanh thu</p>
+                                <p class="text-base sm:text-lg lg:text-2xl font-bold text-navy-900 mt-0.5"><?php echo number_format($total_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs text-purple-600 mt-0.5 hidden sm:block"><i class="fas fa-coins mr-1"></i>VNĐ</p>
                             </div>
-                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                            <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
                                 <i class="fas fa-dollar-sign text-purple-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
@@ -402,102 +459,109 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 </div>
 
                 <!-- Stats Cards Row 2 -->
-                <!-- Stats Cards Row 2 -->
-                <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-6">
-                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-navy-600">
+                <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+                    <div class="card stat-card rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 shadow-sm border-l-2 sm:border-l-4 border-navy-600">
                         <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <div class="min-w-0">
                                 <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Đơn hàng</p>
                                 <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_orders); ?></p>
                             </div>
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-navy-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-shopping-bag text-navy-600 text-xs sm:text-sm lg:text-base"></i>
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-navy-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-shopping-bag text-navy-600 text-[10px] sm:text-xs lg:text-base"></i>
                             </div>
                         </div>
                     </div>
 
-                    <a href="admin-payments.php" class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-green-500 hover:shadow-lg">
+                    <a href="admin-payments.php" class="card stat-card rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 shadow-sm border-l-2 sm:border-l-4 border-green-500 hover:shadow-lg">
                         <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <div class="min-w-0">
                                 <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Thanh toán</p>
                                 <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($payment_stats['total_success']); ?></p>
                             </div>
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-green-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-credit-card text-green-500 text-xs sm:text-sm lg:text-base"></i>
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-green-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-credit-card text-green-500 text-[10px] sm:text-xs lg:text-base"></i>
                             </div>
                         </div>
                     </a>
 
-                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-blue-500">
+                    <div class="card stat-card rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 shadow-sm border-l-2 sm:border-l-4 border-blue-500">
                         <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <div class="min-w-0">
                                 <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Khách hàng</p>
                                 <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_users); ?></p>
                             </div>
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-blue-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-users text-blue-500 text-xs sm:text-sm lg:text-base"></i>
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-blue-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-users text-blue-500 text-[10px] sm:text-xs lg:text-base"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-pink-500">
+                    <div class="card stat-card rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 shadow-sm border-l-2 sm:border-l-4 border-pink-500">
                         <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <div class="min-w-0">
                                 <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Váy cưới</p>
                                 <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_dresses); ?></p>
                             </div>
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-pink-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-tshirt text-pink-500 text-xs sm:text-sm lg:text-base"></i>
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-pink-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-tshirt text-pink-500 text-[10px] sm:text-xs lg:text-base"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-yellow-500">
+                    <div class="card stat-card rounded-lg sm:rounded-xl p-2 sm:p-3 lg:p-4 shadow-sm border-l-2 sm:border-l-4 border-yellow-500">
                         <div class="flex items-center justify-between gap-1 sm:gap-2">
                             <div class="min-w-0">
                                 <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Lịch hẹn</p>
                                 <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($pending_bookings); ?></p>
                             </div>
-                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-yellow-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-calendar-check text-yellow-500 text-xs sm:text-sm lg:text-base"></i>
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-yellow-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-calendar-check text-yellow-500 text-[10px] sm:text-xs lg:text-base"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Charts Row 1: Doanh thu & Trạng thái đơn hàng -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6">
                     <!-- Biểu đồ doanh thu 12 tháng -->
-                    <div class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm">
+                    <div class="lg:col-span-2 chart-card">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
-                            <h3 class="text-sm sm:text-base lg:text-lg font-bold text-navy-900">
-                                <i class="fas fa-chart-bar text-accent-500 mr-1 sm:mr-2"></i>Doanh thu 12 tháng
+                            <h3 class="chart-title">
+                                <i class="fas fa-chart-bar text-accent-500"></i>
+                                <span>Doanh thu 12 tháng</span>
                             </h3>
-                            <div class="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs lg:text-sm">
-                                <span class="flex items-center gap-1 sm:gap-2"><span class="w-2 h-2 sm:w-3 sm:h-3 bg-navy-600 rounded"></span> <span class="hidden xs:inline">Doanh thu</span><span class="xs:hidden">DT</span></span>
-                                <span class="flex items-center gap-1 sm:gap-2"><span class="w-2 h-2 sm:w-3 sm:h-3 bg-accent-500 rounded"></span> <span class="hidden xs:inline">Đơn hàng</span><span class="xs:hidden">ĐH</span></span>
+                            <div class="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs lg:text-sm">
+                                <span class="flex items-center gap-1 sm:gap-2">
+                                    <span class="w-2 h-2 sm:w-3 sm:h-3 bg-navy-600 rounded"></span>
+                                    <span>Doanh thu</span>
+                                </span>
+                                <span class="flex items-center gap-1 sm:gap-2">
+                                    <span class="w-2 h-2 sm:w-3 sm:h-3 bg-accent-500 rounded"></span>
+                                    <span>Đơn hàng</span>
+                                </span>
                             </div>
                         </div>
-                        <div class="chart-container" style="height: 200px;">
+                        <div class="chart-container">
                             <canvas id="revenueChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Biểu đồ trạng thái đơn hàng -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm">
-                        <h3 class="text-sm sm:text-base lg:text-lg font-bold text-navy-900 mb-3 sm:mb-4">
-                            <i class="fas fa-chart-pie text-accent-500 mr-1 sm:mr-2"></i>Trạng thái đơn hàng
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-pie text-accent-500"></i>
+                            <span>Trạng thái đơn hàng</span>
                         </h3>
-                        <div class="relative chart-container" style="height: 150px;">
+                        <div class="relative chart-container chart-doughnut flex items-center justify-center">
                             <canvas id="orderStatusChart"></canvas>
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <div class="text-center">
-                                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-navy-900"><?php echo $completed_percent; ?>%</p>
-                                    <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm">Hoàn thành</p>
+                                    <p class="text-2xl lg:text-3xl font-bold text-navy-900"><?php echo $completed_percent; ?>%</p>
+                                    <p class="text-navy-500 text-xs lg:text-sm">Hoàn thành</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-3 sm:mt-4 grid grid-cols-2 gap-1.5 sm:gap-2">
+                        <div class="mt-4 grid grid-cols-2 gap-2">
                             <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm p-1.5 sm:p-2 bg-green-50 rounded-md sm:rounded-lg">
                                 <span class="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full flex-shrink-0"></span>
                                 <span class="text-navy-600 truncate">Hoàn thành</span>
@@ -523,119 +587,191 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 </div>
 
                 <!-- Charts Row 2: Doanh thu theo ngày & So sánh năm -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-6">
                     <!-- Biểu đồ doanh thu theo ngày trong tháng -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-calendar-alt text-accent-500 mr-2"></i>Doanh thu tháng <?php echo $selected_month; ?>/<?php echo $selected_year; ?>
-                        </h3>
-                        <div class="chart-container" style="height: 250px;">
+                    <div class="chart-card">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-3 sm:mb-4">
+                            <h3 class="chart-title">
+                                <i class="fas fa-calendar-alt text-blue-500"></i>
+                                <span class="truncate">Doanh thu T<?php echo $selected_month; ?>/<?php echo $selected_year; ?></span>
+                            </h3>
+                            <span class="text-[10px] sm:text-xs text-navy-500 bg-gray-100 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full hidden sm:inline-block">
+                                Theo ngày
+                            </span>
+                        </div>
+                        <div class="chart-container">
                             <canvas id="dailyRevenueChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Biểu đồ so sánh năm -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-exchange-alt text-accent-500 mr-2"></i>So sánh <?php echo $current_year; ?> vs <?php echo $last_year; ?>
-                        </h3>
-                        <div class="chart-container" style="height: 250px;">
+                    <div class="chart-card">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-3 sm:mb-4">
+                            <h3 class="chart-title">
+                                <i class="fas fa-exchange-alt text-purple-500"></i>
+                                <span class="truncate">So sánh năm</span>
+                            </h3>
+                            <div class="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs">
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 sm:w-3 sm:h-3 bg-accent-500 rounded"></span>
+                                    <span><?php echo $current_year; ?></span>
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <span class="w-2 h-2 sm:w-3 sm:h-3 bg-navy-600 rounded"></span>
+                                    <span><?php echo $last_year; ?></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chart-container">
                             <canvas id="yearCompareChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Charts Row 3: Top váy cưới & Phương thức thanh toán & Khách hàng mới -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-6">
                     <!-- Top váy cưới -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-crown text-yellow-500 mr-2"></i>Top váy được thuê
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-crown text-yellow-500"></i>
+                            <span class="truncate">Top váy được thuê</span>
                         </h3>
-                        <div class="chart-container" style="height: 220px;">
+                        <div class="chart-container chart-sm">
                             <canvas id="topDressesChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Phương thức thanh toán -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-wallet text-green-500 mr-2"></i>Phương thức thanh toán
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-wallet text-green-500"></i>
+                            <span class="truncate">Phương thức thanh toán</span>
                         </h3>
-                        <div class="chart-container" style="height: 220px;">
+                        <div class="chart-container chart-sm flex items-center justify-center">
                             <canvas id="paymentMethodChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Khách hàng mới -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-user-plus text-blue-500 mr-2"></i>Khách hàng mới
+                    <div class="chart-card sm:col-span-2 lg:col-span-1">
+                        <h3 class="chart-title">
+                            <i class="fas fa-user-plus text-blue-500"></i>
+                            <span class="truncate">Khách hàng mới</span>
                         </h3>
-                        <div class="chart-container" style="height: 220px;">
+                        <div class="chart-container chart-sm">
                             <canvas id="newUsersChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Charts Row 4: Trạng thái thanh toán & Lịch hẹn -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-6">
                     <!-- Trạng thái thanh toán -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-money-check-alt text-purple-500 mr-2"></i>Trạng thái thanh toán
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-money-check-alt text-purple-500"></i>
+                            <span class="truncate">Trạng thái thanh toán</span>
                         </h3>
-                        <div class="chart-container" style="height: 220px;">
+                        <div class="chart-container chart-sm flex items-center justify-center">
                             <canvas id="paymentStatusChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Lịch hẹn theo trạng thái -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-calendar-check text-teal-500 mr-2"></i>Lịch hẹn thử váy
+                    <div class="chart-card">
+                        <h3 class="chart-title">
+                            <i class="fas fa-calendar-check text-teal-500"></i>
+                            <span class="truncate">Lịch hẹn thử váy</span>
                         </h3>
-                        <div class="chart-container" style="height: 220px;">
+                        <div class="chart-container chart-sm flex items-center justify-center">
                             <canvas id="bookingStatusChart"></canvas>
                         </div>
                     </div>
                 </div>
 
                 <!-- Bottom Row: Đơn hàng gần đây & Top váy chi tiết -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-6">
                     <!-- Đơn hàng gần đây -->
-                    <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-navy-900">
-                                <i class="fas fa-clock text-accent-500 mr-2"></i>Đơn hàng gần đây
+                    <div class="lg:col-span-2 chart-card">
+                        <div class="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+                            <h3 class="chart-title">
+                                <i class="fas fa-clock text-accent-500"></i>
+                                <span>Đơn hàng gần đây</span>
                             </h3>
-                            <a href="admin-orders.php" class="text-accent-500 text-sm hover:underline">Xem tất cả →</a>
+                            <a href="admin-orders.php" class="text-accent-500 text-xs sm:text-sm font-medium hover:text-accent-600 transition flex items-center gap-1 whitespace-nowrap">
+                                <span>Xem tất cả</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </a>
                         </div>
-                        <div class="overflow-x-auto">
+                        
+                        <!-- Mobile: Card View -->
+                        <div class="md:hidden space-y-3">
+                            <?php foreach ($recent_orders as $order): 
+                                $status_class = match($order['trang_thai']) {
+                                    'pending' => 'bg-yellow-100 text-yellow-700',
+                                    'processing' => 'bg-blue-100 text-blue-700',
+                                    'completed' => 'bg-green-100 text-green-700',
+                                    'cancelled' => 'bg-red-100 text-red-700',
+                                    default => 'bg-gray-100 text-gray-700'
+                                };
+                                $status_text = match($order['trang_thai']) {
+                                    'pending' => 'Chờ xử lý',
+                                    'processing' => 'Đang xử lý',
+                                    'completed' => 'Hoàn thành',
+                                    'cancelled' => 'Đã hủy',
+                                    default => $order['trang_thai']
+                                };
+                            ?>
+                            <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                                <div class="flex items-start justify-between gap-2 mb-2">
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-sm font-semibold text-navy-900 truncate"><?php echo htmlspecialchars($order['ho_ten']); ?></p>
+                                        <p class="text-xs text-navy-400 font-mono truncate"><?php echo htmlspecialchars($order['ma_don_hang'] ?? '#'.$order['id']); ?></p>
+                                    </div>
+                                    <span class="text-[10px] px-2 py-1 rounded-full font-medium flex-shrink-0 <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-navy-500"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></span>
+                                    <span class="font-bold text-accent-500"><?php echo number_format($order['tong_tien']); ?>đ</span>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                            <?php if (empty($recent_orders)): ?>
+                            <div class="py-8 text-center">
+                                <i class="fas fa-inbox text-3xl text-gray-300 mb-2"></i>
+                                <p class="text-navy-500 text-sm">Chưa có đơn hàng nào</p>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Desktop: Table View -->
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="text-left text-navy-500 text-sm border-b">
-                                        <th class="pb-3 font-medium">Mã đơn</th>
-                                        <th class="pb-3 font-medium">Khách hàng</th>
-                                        <th class="pb-3 font-medium">Tổng tiền</th>
-                                        <th class="pb-3 font-medium">Trạng thái</th>
-                                        <th class="pb-3 font-medium">Ngày tạo</th>
+                                    <tr class="text-left text-navy-500 text-sm border-b border-gray-100">
+                                        <th class="pb-3 font-semibold">Mã đơn</th>
+                                        <th class="pb-3 font-semibold">Khách hàng</th>
+                                        <th class="pb-3 font-semibold text-right">Tổng tiền</th>
+                                        <th class="pb-3 font-semibold text-center">Trạng thái</th>
+                                        <th class="pb-3 font-semibold text-right">Ngày tạo</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-100">
+                                <tbody class="divide-y divide-gray-50">
                                     <?php foreach ($recent_orders as $order): ?>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="py-3 text-sm font-medium text-navy-900"><?php echo htmlspecialchars($order['ma_don_hang'] ?? '#'.$order['id']); ?></td>
-                                        <td class="py-3 text-sm text-navy-600"><?php echo htmlspecialchars($order['ho_ten']); ?></td>
-                                        <td class="py-3 text-sm font-bold text-accent-500"><?php echo number_format($order['tong_tien']); ?>đ</td>
-                                        <td class="py-3">
+                                    <tr class="hover:bg-gray-50/50 transition-colors">
+                                        <td class="py-3.5 text-sm font-medium text-navy-900">
+                                            <code class="bg-gray-100 px-2 py-1 rounded text-xs"><?php echo htmlspecialchars($order['ma_don_hang'] ?? '#'.$order['id']); ?></code>
+                                        </td>
+                                        <td class="py-3.5 text-sm text-navy-600 font-medium"><?php echo htmlspecialchars($order['ho_ten']); ?></td>
+                                        <td class="py-3.5 text-sm font-bold text-accent-500 text-right"><?php echo number_format($order['tong_tien']); ?>đ</td>
+                                        <td class="py-3.5 text-center">
                                             <?php
                                             $status_class = match($order['trang_thai']) {
-                                                'pending' => 'bg-yellow-100 text-yellow-700',
-                                                'processing' => 'bg-blue-100 text-blue-700',
-                                                'completed' => 'bg-green-100 text-green-700',
-                                                'cancelled' => 'bg-red-100 text-red-700',
-                                                default => 'bg-gray-100 text-gray-700'
+                                                'pending' => 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+                                                'processing' => 'bg-blue-100 text-blue-700 border border-blue-200',
+                                                'completed' => 'bg-green-100 text-green-700 border border-green-200',
+                                                'cancelled' => 'bg-red-100 text-red-700 border border-red-200',
+                                                default => 'bg-gray-100 text-gray-700 border border-gray-200'
                                             };
                                             $status_text = match($order['trang_thai']) {
                                                 'pending' => 'Chờ xử lý',
@@ -645,13 +781,20 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                                                 default => $order['trang_thai']
                                             };
                                             ?>
-                                            <span class="text-xs px-2 py-1 rounded-full <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
+                                            <span class="text-xs px-2 py-1 rounded-full font-medium <?php echo $status_class; ?>"><?php echo $status_text; ?></span>
                                         </td>
-                                        <td class="py-3 text-sm text-navy-500"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
+                                        <td class="py-3.5 text-sm text-navy-500 text-right"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
                                     </tr>
                                     <?php endforeach; ?>
                                     <?php if (empty($recent_orders)): ?>
-                                    <tr><td colspan="5" class="py-8 text-center text-navy-500">Chưa có đơn hàng nào</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="py-12 text-center">
+                                            <div class="flex flex-col items-center gap-2">
+                                                <i class="fas fa-inbox text-3xl text-gray-300"></i>
+                                                <p class="text-navy-500">Chưa có đơn hàng nào</p>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <?php endif; ?>
                                 </tbody>
                             </table>
@@ -659,28 +802,32 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     </div>
 
                     <!-- Top váy chi tiết -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-star text-yellow-500 mr-2"></i>Chi tiết top váy
+                    <div class="chart-card">
+                        <h3 class="chart-title mb-3 sm:mb-4">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span>Chi tiết top váy</span>
                         </h3>
-                        <div class="space-y-3">
+                        <div class="space-y-2 sm:space-y-3">
                             <?php foreach ($top_dresses as $index => $dress): ?>
-                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                                <div class="w-8 h-8 bg-gradient-to-br from-accent-400 to-accent-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                            <div class="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-gradient-to-r from-gray-50 to-white rounded-lg sm:rounded-xl border border-gray-100 hover:border-accent-200 hover:shadow-sm transition-all group">
+                                <div class="w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-accent-400 to-accent-600 rounded-lg flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-sm flex-shrink-0">
                                     <?php echo $index + 1; ?>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-navy-900 truncate"><?php echo htmlspecialchars($dress['ten_vay']); ?></p>
-                                    <p class="text-xs text-navy-500"><?php echo htmlspecialchars($dress['ma_vay']); ?></p>
+                                    <p class="text-xs sm:text-sm font-semibold text-navy-900 truncate"><?php echo htmlspecialchars($dress['ten_vay']); ?></p>
+                                    <p class="text-[10px] sm:text-xs text-navy-400 font-mono"><?php echo htmlspecialchars($dress['ma_vay']); ?></p>
                                 </div>
-                                <div class="text-right">
-                                    <p class="text-sm font-bold text-accent-500"><?php echo $dress['rentals']; ?> lượt</p>
-                                    <p class="text-xs text-navy-500"><?php echo number_format($dress['total_revenue']/1000); ?>K</p>
+                                <div class="text-right flex-shrink-0">
+                                    <p class="text-xs sm:text-sm font-bold text-accent-500"><?php echo $dress['rentals']; ?> lượt</p>
+                                    <p class="text-[10px] sm:text-xs text-navy-400"><?php echo number_format($dress['total_revenue']/1000); ?>K</p>
                                 </div>
                             </div>
                             <?php endforeach; ?>
                             <?php if (empty($top_dresses)): ?>
-                            <p class="text-center text-navy-500 py-4">Chưa có dữ liệu</p>
+                            <div class="py-6 sm:py-8 text-center">
+                                <i class="fas fa-tshirt text-2xl sm:text-3xl text-gray-300 mb-2"></i>
+                                <p class="text-navy-500 text-xs sm:text-sm">Chưa có dữ liệu</p>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -704,7 +851,17 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
 
         // Chart defaults
         Chart.defaults.font.family = 'system-ui, -apple-system, sans-serif';
+        Chart.defaults.font.size = 12;
         Chart.defaults.plugins.legend.display = false;
+        Chart.defaults.animation.duration = 750;
+        Chart.defaults.animation.easing = 'easeInOutQuart';
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(16, 42, 67, 0.9)';
+        Chart.defaults.plugins.tooltip.titleColor = '#fff';
+        Chart.defaults.plugins.tooltip.bodyColor = '#e2e8f0';
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.displayColors = true;
+        Chart.defaults.plugins.tooltip.boxPadding = 4;
 
         // Color palette
         const colors = {
@@ -719,9 +876,22 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
             teal: '#14b8a6',
             indigo: '#6366f1'
         };
+        
+        // Gradient helpers
+        function createGradient(ctx, color1, color2) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, color1);
+            gradient.addColorStop(1, color2);
+            return gradient;
+        }
 
         // 1. Revenue Chart (Bar + Line)
-        new Chart(document.getElementById('revenueChart'), {
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueGradient = revenueCtx.createLinearGradient(0, 0, 0, 300);
+        revenueGradient.addColorStop(0, colors.primary);
+        revenueGradient.addColorStop(1, 'rgba(51, 78, 104, 0.6)');
+        
+        new Chart(revenueCtx, {
             type: 'bar',
             data: {
                 labels: monthlyData.map(d => d.month),
@@ -729,26 +899,60 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     {
                         label: 'Doanh thu (triệu)',
                         data: monthlyData.map(d => d.revenue / 1000000),
-                        backgroundColor: colors.primary,
-                        borderRadius: 6,
-                        barPercentage: 0.6
+                        backgroundColor: revenueGradient,
+                        borderRadius: 8,
+                        barPercentage: 0.65,
+                        yAxisID: 'y'
                     },
                     {
                         label: 'Đơn hàng',
                         data: monthlyData.map(d => d.orders),
                         backgroundColor: colors.accent,
-                        borderRadius: 6,
-                        barPercentage: 0.6
+                        borderRadius: 8,
+                        barPercentage: 0.65,
+                        yAxisID: 'y1'
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: 'top' } },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                if (ctx.dataset.label === 'Doanh thu (triệu)') {
+                                    return `Doanh thu: ${ctx.parsed.y.toFixed(1)}M VNĐ`;
+                                }
+                                return `Đơn hàng: ${ctx.parsed.y}`;
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#f0f0f0' }, beginAtZero: true }
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: { 
+                        type: 'linear',
+                        position: 'left',
+                        grid: { color: 'rgba(0,0,0,0.05)' }, 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Doanh thu (triệu)', font: { size: 11 } }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        grid: { display: false },
+                        beginAtZero: true,
+                        title: { display: true, text: 'Đơn hàng', font: { size: 11 } }
+                    }
                 }
             }
         });
@@ -761,8 +965,11 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 datasets: [{
                     data: [orderStats.completed, orderStats.pending, orderStats.processing, orderStats.cancelled],
                     backgroundColor: [colors.green, colors.yellow, colors.blue, colors.red],
-                    borderWidth: 0,
-                    cutout: '70%'
+                    hoverBackgroundColor: ['#059669', '#d97706', '#2563eb', '#dc2626'],
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    cutout: '68%',
+                    hoverOffset: 6
                 }]
             },
             options: {
@@ -773,41 +980,76 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
         });
 
         // 3. Daily Revenue Chart (Area)
-        new Chart(document.getElementById('dailyRevenueChart'), {
+        const dailyCtx = document.getElementById('dailyRevenueChart').getContext('2d');
+        const dailyGradient = dailyCtx.createLinearGradient(0, 0, 0, 280);
+        dailyGradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
+        dailyGradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
+        
+        new Chart(dailyCtx, {
             type: 'line',
             data: {
                 labels: dailyRevenue.map(d => d.day),
                 datasets: [{
                     label: 'Doanh thu',
                     data: dailyRevenue.map(d => d.revenue / 1000000),
-                    borderColor: colors.accent,
-                    backgroundColor: 'rgba(237, 137, 54, 0.1)',
+                    borderColor: colors.blue,
+                    backgroundColor: dailyGradient,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 2,
-                    pointHoverRadius: 6
+                    pointRadius: 0,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: colors.blue,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    borderWidth: 2.5
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
                 plugins: { 
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: (ctx) => `${ctx.parsed.y.toFixed(1)}M VNĐ`
+                            title: (ctx) => `Ngày ${ctx[0].label}`,
+                            label: (ctx) => `Doanh thu: ${ctx.parsed.y.toFixed(2)}M VNĐ`
                         }
                     }
                 },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#f0f0f0' }, beginAtZero: true }
+                    x: { 
+                        grid: { display: false },
+                        ticks: { 
+                            maxTicksLimit: 15,
+                            font: { size: 10 }
+                        }
+                    },
+                    y: { 
+                        grid: { color: 'rgba(0,0,0,0.05)' }, 
+                        beginAtZero: true,
+                        ticks: { 
+                            callback: (val) => val.toFixed(1) + 'M',
+                            font: { size: 10 }
+                        }
+                    }
                 }
             }
         });
 
         // 4. Year Comparison Chart (Line)
-        new Chart(document.getElementById('yearCompareChart'), {
+        const yearCtx = document.getElementById('yearCompareChart').getContext('2d');
+        const yearGradient1 = yearCtx.createLinearGradient(0, 0, 0, 280);
+        yearGradient1.addColorStop(0, 'rgba(237, 137, 54, 0.25)');
+        yearGradient1.addColorStop(1, 'rgba(237, 137, 54, 0.02)');
+        const yearGradient2 = yearCtx.createLinearGradient(0, 0, 0, 280);
+        yearGradient2.addColorStop(0, 'rgba(51, 78, 104, 0.2)');
+        yearGradient2.addColorStop(1, 'rgba(51, 78, 104, 0.02)');
+        
+        new Chart(yearCtx, {
             type: 'line',
             data: {
                 labels: yearlyComparison.map(d => d.month),
@@ -816,51 +1058,108 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                         label: '<?php echo $current_year; ?>',
                         data: yearlyComparison.map(d => d.current / 1000000),
                         borderColor: colors.accent,
-                        backgroundColor: 'rgba(237, 137, 54, 0.1)',
+                        backgroundColor: yearGradient1,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: colors.accent,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        borderWidth: 2.5
                     },
                     {
                         label: '<?php echo $last_year; ?>',
                         data: yearlyComparison.map(d => d.last / 1000000),
                         borderColor: colors.primary,
-                        backgroundColor: 'rgba(51, 78, 104, 0.1)',
+                        backgroundColor: yearGradient2,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: colors.primary,
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        borderWidth: 2.5,
+                        borderDash: [5, 5]
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: 'top' } },
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}M VNĐ`
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#f0f0f0' }, beginAtZero: true }
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: { 
+                        grid: { color: 'rgba(0,0,0,0.05)' }, 
+                        beginAtZero: true,
+                        ticks: { 
+                            callback: (val) => val.toFixed(0) + 'M',
+                            font: { size: 10 }
+                        }
+                    }
                 }
             }
         });
 
         // 5. Top Dresses Chart (Horizontal Bar)
+        const topDressesColors = [
+            'rgba(237, 137, 54, 0.85)', 
+            'rgba(51, 78, 104, 0.85)', 
+            'rgba(59, 130, 246, 0.85)', 
+            'rgba(16, 185, 129, 0.85)', 
+            'rgba(139, 92, 246, 0.85)'
+        ];
         new Chart(document.getElementById('topDressesChart'), {
             type: 'bar',
             data: {
-                labels: topDresses.map(d => d.ten_vay.length > 15 ? d.ten_vay.substring(0, 15) + '...' : d.ten_vay),
+                labels: topDresses.map(d => d.ten_vay.length > 18 ? d.ten_vay.substring(0, 18) + '...' : d.ten_vay),
                 datasets: [{
                     label: 'Lượt thuê',
                     data: topDresses.map(d => d.rentals),
-                    backgroundColor: [colors.accent, colors.primary, colors.blue, colors.green, colors.purple],
-                    borderRadius: 6
+                    backgroundColor: topDressesColors,
+                    hoverBackgroundColor: [colors.accent, colors.primary, colors.blue, colors.green, colors.purple],
+                    borderRadius: 8,
+                    barThickness: 24
                 }]
             },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.parsed.x} lượt thuê`
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { color: '#f0f0f0' }, beginAtZero: true },
-                    y: { grid: { display: false } }
+                    x: { 
+                        grid: { color: 'rgba(0,0,0,0.05)' }, 
+                        beginAtZero: true,
+                        ticks: { stepSize: 1, font: { size: 10 } }
+                    },
+                    y: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    }
                 }
             }
         });
@@ -873,46 +1172,89 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
             'cash': 'Tiền mặt',
             'vnpay': 'VNPay'
         };
+        const paymentColors = [colors.green, colors.pink, colors.blue, colors.yellow, colors.purple, colors.teal];
         new Chart(document.getElementById('paymentMethodChart'), {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: paymentMethods.map(p => paymentLabels[p.method] || p.method),
                 datasets: [{
                     data: paymentMethods.map(p => p.count),
-                    backgroundColor: [colors.green, colors.pink, colors.blue, colors.yellow, colors.purple],
-                    borderWidth: 2,
-                    borderColor: '#fff'
+                    backgroundColor: paymentColors.slice(0, paymentMethods.length),
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    hoverOffset: 8,
+                    cutout: '50%'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { 
-                    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 10 } }
+                    legend: { 
+                        display: true, 
+                        position: 'bottom', 
+                        labels: { 
+                            boxWidth: 14, 
+                            padding: 12, 
+                            usePointStyle: true, 
+                            pointStyle: 'circle',
+                            font: { size: 11 }
+                        } 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                const percent = Math.round((ctx.parsed / total) * 100);
+                                return `${ctx.label}: ${ctx.parsed} (${percent}%)`;
+                            }
+                        }
+                    }
                 }
             }
         });
 
         // 7. New Users Chart (Bar)
-        new Chart(document.getElementById('newUsersChart'), {
+        const usersCtx = document.getElementById('newUsersChart').getContext('2d');
+        const usersGradient = usersCtx.createLinearGradient(0, 0, 0, 250);
+        usersGradient.addColorStop(0, colors.blue);
+        usersGradient.addColorStop(1, 'rgba(59, 130, 246, 0.5)');
+        
+        new Chart(usersCtx, {
             type: 'bar',
             data: {
                 labels: newUsersMonthly.map(d => d.month),
                 datasets: [{
                     label: 'Khách hàng mới',
                     data: newUsersMonthly.map(d => d.count),
-                    backgroundColor: colors.blue,
-                    borderRadius: 6,
-                    barPercentage: 0.7
+                    backgroundColor: usersGradient,
+                    hoverBackgroundColor: colors.blue,
+                    borderRadius: 8,
+                    barPercentage: 0.7,
+                    maxBarThickness: 50
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.parsed.y} khách hàng mới`
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { grid: { color: '#f0f0f0' }, beginAtZero: true, ticks: { stepSize: 1 } }
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    },
+                    y: { 
+                        grid: { color: 'rgba(0,0,0,0.05)' }, 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1, font: { size: 10 } }
+                    }
                 }
             }
         });
@@ -937,15 +1279,40 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 datasets: [{
                     data: paymentStatusStats.map(p => p.count),
                     backgroundColor: paymentStatusStats.map(p => paymentStatusColors[p.status] || colors.primary),
-                    borderWidth: 0,
-                    cutout: '60%'
+                    hoverBackgroundColor: paymentStatusStats.map(p => {
+                        const c = paymentStatusColors[p.status] || colors.primary;
+                        return c;
+                    }),
+                    borderWidth: 3,
+                    borderColor: '#fff',
+                    cutout: '55%',
+                    hoverOffset: 8
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { 
-                    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 10 } }
+                    legend: { 
+                        display: true, 
+                        position: 'bottom', 
+                        labels: { 
+                            boxWidth: 14, 
+                            padding: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 11 }
+                        } 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                const percent = Math.round((ctx.parsed / total) * 100);
+                                return `${ctx.label}: ${ctx.parsed} đơn (${percent}%)`;
+                            }
+                        }
+                    }
                 }
             }
         });
@@ -969,19 +1336,52 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 labels: bookingStats.map(b => bookingStatusLabels[b.status] || b.status),
                 datasets: [{
                     data: bookingStats.map(b => b.count),
-                    backgroundColor: bookingStats.map(b => bookingStatusColors[b.status] || colors.primary).map(c => c + '99'),
+                    backgroundColor: bookingStats.map(b => {
+                        const color = bookingStatusColors[b.status] || colors.primary;
+                        return color + 'cc';
+                    }),
                     borderColor: bookingStats.map(b => bookingStatusColors[b.status] || colors.primary),
-                    borderWidth: 2
+                    borderWidth: 2,
+                    hoverBorderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: { 
-                    legend: { display: true, position: 'bottom', labels: { boxWidth: 12, padding: 10 } }
+                    legend: { 
+                        display: true, 
+                        position: 'bottom', 
+                        labels: { 
+                            boxWidth: 14, 
+                            padding: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            font: { size: 11 }
+                        } 
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => `${ctx.label}: ${ctx.parsed.r} lịch hẹn`
+                        }
+                    }
                 },
                 scales: {
-                    r: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    r: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            stepSize: 1,
+                            display: true,
+                            font: { size: 10 },
+                            backdropColor: 'transparent'
+                        },
+                        grid: {
+                            color: 'rgba(0,0,0,0.08)'
+                        },
+                        pointLabels: {
+                            display: false
+                        }
+                    }
                 }
             }
         });
