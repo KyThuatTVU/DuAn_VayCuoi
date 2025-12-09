@@ -47,7 +47,7 @@ require_once 'includes/header.php';
                     <!-- Main Heading -->
                     <h2 class="text-4xl md:text-5xl font-bold leading-tight">
                         Giảm Giá Lên Đến
-                        <span class="block text-6xl md:text-7xl text-yellow-300 mt-2 animate-bounce">30%</span>
+                        <span class="block text-6xl md:text-7xl text-purple-600 mt-2 animate-bounce">30%</span>
                     </h2>
                     
                     <!-- Description -->
