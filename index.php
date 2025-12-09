@@ -23,19 +23,19 @@ require_once 'includes/header.php';
 ?>
 
 <!-- Promotional Banner -->
-<section class="relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-4">
+<section class="relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-2">
     <div class="container mx-auto px-4">
         <!-- Banner chính với animation -->
-        <div class="relative bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-3xl shadow-2xl overflow-hidden">
+        <div class="relative bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 rounded-2xl shadow-xl overflow-hidden">
             <!-- Background pattern -->
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                 <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/2 translate-y-1/2"></div>
             </div>
             
-            <div class="relative grid md:grid-cols-2 gap-8 items-center p-8 md:p-12">
+            <div class="relative grid md:grid-cols-2 gap-4 items-center p-4 md:p-6">
                 <!-- Left Content -->
-                <div class="text-white space-y-6 z-10">
+                <div class="text-white space-y-3 z-10">
                     <!-- Badge -->
                     <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/30">
                         <svg class="w-5 h-5 text-yellow-300 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
@@ -45,23 +45,23 @@ require_once 'includes/header.php';
                     </div>
                     
                     <!-- Main Heading -->
-                    <h2 class="text-4xl md:text-5xl font-bold leading-tight">
+                    <h2 class="text-2xl md:text-3xl font-bold leading-tight">
                         Giảm Giá Lên Đến
-                        <span class="block text-6xl md:text-7xl text-purple-600 mt-2 animate-bounce">30%</span>
+                        <span class="block text-4xl md:text-5xl text-purple-600 mt-1 animate-bounce">30%</span>
                     </h2>
                     
                     <!-- Description -->
-                    <p class="text-lg md:text-xl text-white/90 leading-relaxed">
+                    <p class="text-sm md:text-base text-white/90 leading-relaxed">
                         Cho tất cả các mẫu váy cưới cao cấp. Đặt lịch ngay hôm nay để nhận ưu đãi!
                     </p>
                     
                     <!-- Promo Code -->
-                    <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl p-4 max-w-md">
+                    <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl p-2 max-w-sm">
                         <div class="flex-1">
-                            <p class="text-sm text-white/80 mb-1">Mã giảm giá:</p>
-                            <p class="text-2xl font-bold tracking-wider">WEDDING2024</p>
+                            <p class="text-xs text-white/80">Mã giảm giá:</p>
+                            <p class="text-lg font-bold tracking-wider">WEDDING2024</p>
                         </div>
-                        <button onclick="copyPromoCode()" class="bg-white text-pink-600 px-6 py-3 rounded-xl font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
+                        <button onclick="copyPromoCode()" class="bg-white text-pink-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
@@ -69,15 +69,15 @@ require_once 'includes/header.php';
                     </div>
                     
                     <!-- CTA Buttons -->
-                    <div class="flex flex-wrap gap-4 pt-4">
-                        <a href="products.php" class="inline-flex items-center gap-2 bg-white text-pink-600 px-8 py-4 rounded-full font-bold text-lg hover:bg-pink-50 transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <a href="products.php" class="inline-flex items-center gap-1 bg-white text-pink-600 px-4 py-2 rounded-full font-semibold text-sm hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl">
                             <span>Xem Bộ Sưu Tập</span>
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                             </svg>
                         </a>
-                        <a href="booking.php" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm text-white border-2 border-white px-8 py-4 rounded-full font-bold text-lg hover:bg-white/20 transition-all transform hover:scale-105">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="booking.php" class="inline-flex items-center gap-1 bg-white/10 backdrop-blur-sm text-white border border-white px-4 py-2 rounded-full font-semibold text-sm hover:bg-white/20 transition-all transform hover:scale-105">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
                             <span>Đặt Lịch Thử</span>
@@ -85,8 +85,8 @@ require_once 'includes/header.php';
                     </div>
                     
                     <!-- Countdown Timer -->
-                    <div class="flex items-center gap-2 text-sm">
-                        <svg class="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="flex items-center gap-1 text-xs">
+                        <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                         </svg>
                         <span class="text-white/90">Ưu đãi kết thúc trong: <strong class="text-yellow-300">3 ngày 12 giờ</strong></span>
