@@ -253,93 +253,108 @@ include 'includes/admin-layout.php';
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Khách hàng</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">SĐT</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Trạng thái</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Đơn hàng</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Tổng chi</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Ngày ĐK</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Thao tác</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-navy-600 uppercase tracking-wider">Khách hàng</th>
+                <th class="px-4 py-4 text-left text-xs font-semibold text-navy-600 uppercase tracking-wider">Email</th>
+                <th class="px-4 py-4 text-left text-xs font-semibold text-navy-600 uppercase tracking-wider">SĐT</th>
+                <th class="px-4 py-4 text-center text-xs font-semibold text-navy-600 uppercase tracking-wider">Trạng thái</th>
+                <th class="px-4 py-4 text-center text-xs font-semibold text-navy-600 uppercase tracking-wider">Đơn hàng</th>
+                <th class="px-4 py-4 text-right text-xs font-semibold text-navy-600 uppercase tracking-wider">Tổng chi</th>
+                <th class="px-4 py-4 text-center text-xs font-semibold text-navy-600 uppercase tracking-wider">Ngày ĐK</th>
+                <th class="px-6 py-4 text-center text-xs font-semibold text-navy-600 uppercase tracking-wider">Thao tác</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-100">
             <?php foreach ($users as $user): ?>
             <tr class="hover:bg-gray-50 transition">
-                <td class="px-6 py-4">
+                <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-navy-100 overflow-hidden flex items-center justify-center">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-navy-100 to-navy-200 overflow-hidden flex items-center justify-center flex-shrink-0 shadow-sm">
                             <?php if (!empty($user['avt'])): ?>
                                 <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover" referrerpolicy="no-referrer">
                             <?php else: ?>
                                 <i class="fas fa-user text-navy-400"></i>
                             <?php endif; ?>
                         </div>
-                        <div>
-                            <p class="font-medium text-navy-900"><?php echo htmlspecialchars($user['ho_ten']); ?></p>
-                            <p class="text-xs text-navy-500">#<?php echo $user['id']; ?></p>
+                        <div class="min-w-0">
+                            <p class="font-semibold text-navy-900 truncate"><?php echo htmlspecialchars($user['ho_ten']); ?></p>
+                            <p class="text-xs text-navy-400">#<?php echo $user['id']; ?></p>
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 text-sm text-navy-600"><?php echo htmlspecialchars($user['email']); ?></td>
-                <td class="px-6 py-4 text-sm text-navy-600"><?php echo htmlspecialchars($user['so_dien_thoai'] ?? '-'); ?></td>
-                <td class="px-6 py-4">
+                <td class="px-4 py-4 text-sm text-navy-600 max-w-[200px] truncate"><?php echo htmlspecialchars($user['email']); ?></td>
+                <td class="px-4 py-4 text-sm text-navy-600 whitespace-nowrap"><?php echo htmlspecialchars($user['so_dien_thoai'] ?? '-'); ?></td>
+                <td class="px-4 py-4 text-center">
                     <?php 
                     $status = $user['status'] ?? 'active';
                     $status_classes = [
-                        'active' => 'bg-green-100 text-green-700',
-                        'locked' => 'bg-red-100 text-red-700',
-                        'disabled' => 'bg-gray-100 text-gray-700'
+                        'active' => 'bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border border-green-200',
+                        'locked' => 'bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border border-red-200',
+                        'disabled' => 'bg-gradient-to-r from-gray-50 to-slate-50 text-gray-600 border border-gray-200'
                     ];
                     $status_labels = [
                         'active' => 'Hoạt động',
                         'locked' => 'Đã khóa',
                         'disabled' => 'Vô hiệu hóa'
                     ];
+                    $status_icons = [
+                        'active' => 'fa-check-circle',
+                        'locked' => 'fa-lock',
+                        'disabled' => 'fa-ban'
+                    ];
                     ?>
-                    <span class="px-3 py-1 rounded-full text-xs font-medium <?php echo $status_classes[$status] ?? $status_classes['active']; ?>">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold <?php echo $status_classes[$status] ?? $status_classes['active']; ?> shadow-sm">
+                        <i class="fas <?php echo $status_icons[$status] ?? 'fa-check-circle'; ?> text-[10px]"></i>
                         <?php echo $status_labels[$status] ?? 'Hoạt động'; ?>
                     </span>
                     <?php if ($status === 'locked' && !empty($user['locked_reason'])): ?>
-                    <div class="mt-1 text-xs text-red-500" title="<?php echo htmlspecialchars($user['locked_reason']); ?>">
+                    <div class="mt-1.5 text-xs text-red-500 max-w-[120px] mx-auto truncate" title="<?php echo htmlspecialchars($user['locked_reason']); ?>">
                         <i class="fas fa-info-circle"></i> 
-                        <?php echo htmlspecialchars(mb_substr($user['locked_reason'], 0, 25)); ?><?php echo mb_strlen($user['locked_reason']) > 25 ? '...' : ''; ?>
+                        <?php echo htmlspecialchars(mb_substr($user['locked_reason'], 0, 20)); ?><?php echo mb_strlen($user['locked_reason']) > 20 ? '...' : ''; ?>
                     </div>
                     <?php endif; ?>
                 </td>
-                <td class="px-6 py-4">
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"><?php echo $user['order_count']; ?></span>
+                <td class="px-4 py-4 text-center">
+                    <span class="inline-flex items-center justify-center w-9 h-9 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-700 rounded-full text-sm font-bold shadow-sm border border-blue-200"><?php echo $user['order_count']; ?></span>
                 </td>
-                <td class="px-6 py-4 font-bold text-green-600">
-                    <?php echo number_format($user['total_spent'] ?? 0); ?>đ
+                <td class="px-4 py-4 text-right whitespace-nowrap">
+                    <span class="font-bold <?php echo ($user['total_spent'] ?? 0) > 0 ? 'text-green-600' : 'text-gray-400'; ?>">
+                        <?php echo number_format($user['total_spent'] ?? 0); ?><span class="text-xs">đ</span>
+                    </span>
                 </td>
-                <td class="px-6 py-4 text-sm text-navy-500">
+                <td class="px-4 py-4 text-center text-sm text-navy-500 whitespace-nowrap">
+                    <i class="far fa-calendar-alt text-navy-300 mr-1"></i>
                     <?php echo date('d/m/Y', strtotime($user['created_at'])); ?>
                 </td>
                 <td class="px-6 py-4">
-                    <div class="flex items-center gap-2">
-                        <a href="admin-user-detail.php?id=<?php echo $user['id']; ?>" class="text-accent-500 hover:text-accent-600" title="Xem chi tiết">
+                    <div class="flex items-center justify-center gap-1">
+                        <a href="admin-user-detail.php?id=<?php echo $user['id']; ?>" 
+                           class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-accent-500 hover:bg-accent-50 hover:text-accent-600 transition-all" 
+                           title="Xem chi tiết">
                             <i class="fas fa-eye"></i>
                         </a>
                         
                         <?php if (($user['status'] ?? 'active') === 'active'): ?>
                             <button onclick="lockUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
-                                    class="text-orange-500 hover:text-orange-600" title="Khóa tài khoản">
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-orange-500 hover:bg-orange-50 hover:text-orange-600 transition-all" 
+                                    title="Khóa tài khoản">
                                 <i class="fas fa-lock"></i>
                             </button>
                             <button onclick="disableUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
-                                    class="text-gray-500 hover:text-gray-600" title="Vô hiệu hóa">
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-600 transition-all" 
+                                    title="Vô hiệu hóa">
                                 <i class="fas fa-ban"></i>
                             </button>
                         <?php else: ?>
                             <button onclick="activateUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
-                                    class="text-green-500 hover:text-green-600" title="Kích hoạt lại">
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-green-500 hover:bg-green-50 hover:text-green-600 transition-all" 
+                                    title="Kích hoạt lại">
                                 <i class="fas fa-unlock"></i>
                             </button>
                         <?php endif; ?>
                         
                         <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" 
-                                class="text-red-500 hover:text-red-600" title="Xóa">
+                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 transition-all" 
+                                title="Xóa">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
