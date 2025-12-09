@@ -34,11 +34,11 @@ $page_title = 'Đăng Nhập Admin';
         @media (max-width: 639px) {
             .min-h-screen.flex.items-center { padding: 1rem !important; }
             .max-w-md { max-width: 100% !important; }
-            .bg-white\\/80.backdrop-blur-lg { padding: 1.5rem !important; border-radius: 1.5rem !important; }
+            .login-card { padding: 1.5rem !important; border-radius: 1.5rem !important; }
             .text-4xl { font-size: 1.75rem !important; }
-            .w-20.h-20 { width: 4rem !important; height: 4rem !important; }
-            .w-20.h-20 i { font-size: 1.75rem !important; }
-            .fixed.-top-40.-right-40, .fixed.-bottom-40.-left-40, .fixed.top-1\\/2.left-1\\/2 { display: none; }
+            .admin-icon { width: 4rem !important; height: 4rem !important; }
+            .admin-icon i { font-size: 1.75rem !important; }
+            .bg-decoration { display: none; }
         }
     </style>
 </head>

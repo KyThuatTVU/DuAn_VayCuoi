@@ -1,3 +1,16 @@
 {
-    "html.autoClosingTags": false
+    "html.autoClosingTags": false,
+    
+    // Tắt các cảnh báo type errors của Intelephense
+    "intelephense.diagnostics.typeErrors": false,
+    "intelephense.diagnostics.argumentCount": false,
+    
+    // Cấu hình PHP version
+    "intelephense.environment.phpVersion": "8.2.0",
+    
+    // Encoding UTF-8 cho tiếng Việt
+    "files.encoding": "utf8",
+    "[php]": {
+        "files.encoding": "utf8"
+    }
 }

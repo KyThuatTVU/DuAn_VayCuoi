@@ -135,12 +135,12 @@ try {
         unset($_SESSION['otp_sent_time']);
         
         $_SESSION['success'] = "Đăng ký thành công! Vui lòng đăng nhập.";
+        $stmt->close();
         redirect('login.php');
     } else {
+        $stmt->close();
         throw new Exception("Không thể tạo tài khoản");
     }
-    
-    $stmt->close();
 } catch (Exception $e) {
     $_SESSION['otp_errors'] = ["Lỗi: " . $e->getMessage()];
     redirect('verify-otp.php');

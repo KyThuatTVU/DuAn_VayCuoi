@@ -4,16 +4,18 @@ require_once 'includes/config.php';
 
 // Lấy sản phẩm nổi bật từ database (8 sản phẩm mới nhất còn hàng)
 $featured_products = [];
-$sql = "SELECT v.*, 
-        (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien
-        FROM vay_cuoi v 
-        WHERE v.so_luong_ton > 0 
-        ORDER BY v.created_at DESC 
-        LIMIT 8";
-$result = $conn->query($sql);
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $featured_products[] = $row;
+if ($conn) {
+    $sql = "SELECT v.*, 
+            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien
+            FROM vay_cuoi v 
+            WHERE v.so_luong_ton > 0 
+            ORDER BY v.created_at DESC 
+            LIMIT 8";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $featured_products[] = $row;
+        }
     }
 }
 

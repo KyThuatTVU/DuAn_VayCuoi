@@ -14,22 +14,18 @@ if (!defined('SITE_URL')) define('SITE_URL', getenv('SITE_URL') ?: 'http://local
 if (!defined('ADMIN_EMAIL')) define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'admin@vaycuoi.com');
 
 // Connect to database
-$conn = null;
-try {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    
-    if ($conn->connect_error) {
-        throw new Exception("Kết nối thất bại: " . $conn->connect_error);
-    }
-    
-    $conn->set_charset("utf8mb4");
-} catch (Exception $e) {
+/** @var mysqli $conn */
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+if ($conn->connect_error) {
     // Chỉ hiển thị lỗi khi không phải trang auth
     $current_page = basename($_SERVER['PHP_SELF']);
-    if (!in_array($current_page, ['login.php', 'register.php'])) {
-        die("Lỗi kết nối database: " . $e->getMessage());
+    if (!in_array($current_page, ['login.php', 'register.php', 'forgot-password.php'])) {
+        die("Lỗi kết nối database: " . $conn->connect_error);
     }
 }
+
+$conn->set_charset("utf8mb4");
 
 // Helper functions
 function formatPrice($price) {
