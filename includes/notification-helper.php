@@ -125,4 +125,132 @@ function notifyPromotion($conn, $user_id, $title, $content, $link = null) {
         $link
     );
 }
+
+// ============================================================
+// ADMIN NOTIFICATIONS
+// ============================================================
+
+/**
+ * Tạo thông báo cho admin
+ * @param mysqli $conn Database connection
+ * @param string $type Loại: new_order, new_user, new_contact, new_booking, account_locked
+ * @param string $title Tiêu đề
+ * @param string $content Nội dung
+ * @param int|null $reference_id ID tham chiếu
+ * @param string|null $reference_type Loại: order, user, contact, booking
+ * @return bool
+ */
+function createAdminNotification($conn, $type, $title, $content, $reference_id = null, $reference_type = null) {
+    // Kiểm tra bảng có tồn tại không
+    $check = $conn->query("SHOW TABLES LIKE 'admin_notifications'");
+    if (!$check || $check->num_rows === 0) {
+        // Tự tạo bảng nếu chưa có
+        $conn->query("CREATE TABLE IF NOT EXISTS admin_notifications (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            type VARCHAR(50) NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            content TEXT NOT NULL,
+            reference_id BIGINT NULL,
+            reference_type VARCHAR(50) NULL,
+            is_read TINYINT(1) DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_is_read (is_read),
+            INDEX idx_created_at (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    }
+    
+    $sql = "INSERT INTO admin_notifications (type, title, content, reference_id, reference_type) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) return false;
+    
+    $stmt->bind_param("sssis", $type, $title, $content, $reference_id, $reference_type);
+    return $stmt->execute();
+}
+
+/**
+ * Thông báo khi có đơn hàng mới
+ */
+function notifyNewOrder($conn, $order_id, $order_code, $customer_name, $total) {
+    $total_formatted = number_format($total) . 'đ';
+    return createAdminNotification(
+        $conn,
+        'new_order',
+        'Đơn hàng mới #' . $order_code,
+        "Khách hàng $customer_name vừa đặt đơn hàng mới với tổng giá trị $total_formatted",
+        $order_id,
+        'order'
+    );
+}
+
+/**
+ * Thông báo khi có khách hàng đăng ký mới
+ */
+function notifyNewUser($conn, $user_id, $user_name, $user_email) {
+    return createAdminNotification(
+        $conn,
+        'new_user',
+        'Khách hàng mới đăng ký',
+        "Khách hàng $user_name ($user_email) vừa đăng ký tài khoản",
+        $user_id,
+        'user'
+    );
+}
+
+/**
+ * Thông báo khi có liên hệ mới
+ */
+function notifyNewContact($conn, $contact_id, $name, $subject) {
+    return createAdminNotification(
+        $conn,
+        'new_contact',
+        'Liên hệ mới từ ' . $name,
+        "Chủ đề: $subject",
+        $contact_id,
+        'contact'
+    );
+}
+
+/**
+ * Thông báo khi có lịch hẹn mới
+ */
+function notifyNewBooking($conn, $booking_id, $name, $phone, $date, $time) {
+    return createAdminNotification(
+        $conn,
+        'new_booking',
+        'Lịch hẹn mới từ ' . $name,
+        "Khách hàng $name ($phone) đặt lịch thử váy ngày $date lúc $time",
+        $booking_id,
+        'booking'
+    );
+}
+
+/**
+ * Thông báo khi tài khoản bị khóa do đăng nhập sai nhiều lần
+ */
+function notifyAccountLocked($conn, $user_id, $user_email, $reason) {
+    return createAdminNotification(
+        $conn,
+        'account_locked',
+        'Tài khoản bị khóa tự động',
+        "Tài khoản $user_email đã bị khóa. Lý do: $reason",
+        $user_id,
+        'user'
+    );
+}
+
+/**
+ * Thông báo khi có thanh toán mới
+ */
+function notifyNewPayment($conn, $payment_id, $order_code, $amount, $method) {
+    $amount_formatted = number_format($amount) . 'đ';
+    $method_text = $method === 'momo' ? 'MoMo' : ($method === 'bank' ? 'Chuyển khoản' : $method);
+    return createAdminNotification(
+        $conn,
+        'new_payment',
+        'Thanh toán mới #' . $order_code,
+        "Nhận thanh toán $amount_formatted qua $method_text",
+        $payment_id,
+        'payment'
+    );
+}
 ?>

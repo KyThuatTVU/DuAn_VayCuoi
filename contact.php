@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 $page_title = 'Liên Hệ';
 
 // Xử lý form submit
@@ -75,6 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 
                 if ($stmt->execute()) {
+                    $contact_id = $conn->insert_id;
+                    
+                    // Gửi thông báo cho admin
+                    notifyNewContact($conn, $contact_id, $name, $subject);
+                    
                     $success_message = 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.';
                     // Reset form data sau khi gửi thành công
                     $_POST = array();

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 
 // Kiểm tra request method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -118,6 +119,11 @@ try {
     );
     
     if ($stmt->execute()) {
+        $new_user_id = $conn->insert_id;
+        
+        // Gửi thông báo cho admin
+        notifyNewUser($conn, $new_user_id, $otp_data['ho_ten'], $otp_data['email']);
+        
         // Đánh dấu OTP đã xác nhận
         $stmt2 = $conn->prepare("UPDATE otp_verification SET is_verified = 1 WHERE id = ?");
         $stmt2->bind_param("i", $otp_data['id']);

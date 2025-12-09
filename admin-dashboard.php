@@ -36,6 +36,23 @@ $new_contacts = $result->fetch_assoc()['total'];
 $result = $conn->query("SELECT COUNT(*) as total FROM dat_lich_thu_vay WHERE status = 'pending'");
 $pending_bookings = $result->fetch_assoc()['total'];
 
+// Lấy thông báo admin
+$admin_notifications = [];
+$unread_notifications = 0;
+$check_notif_table = $conn->query("SHOW TABLES LIKE 'admin_notifications'");
+if ($check_notif_table && $check_notif_table->num_rows > 0) {
+    $notif_result = $conn->query("SELECT * FROM admin_notifications ORDER BY created_at DESC LIMIT 10");
+    if ($notif_result) {
+        while ($row = $notif_result->fetch_assoc()) {
+            $admin_notifications[] = $row;
+        }
+    }
+    $unread_result = $conn->query("SELECT COUNT(*) as cnt FROM admin_notifications WHERE is_read = 0");
+    if ($unread_result) {
+        $unread_notifications = $unread_result->fetch_assoc()['cnt'];
+    }
+}
+
 // Thống kê thanh toán
 $payment_stats = $conn->query("SELECT 
     COUNT(*) as total_payments,
@@ -340,6 +357,10 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if(isset($payment_stats['total_pending']) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
                 </a>
+                <a href="admin-notifications.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-bell w-5"></i> Thông báo
+                    <?php if($unread_notifications > 0): ?><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $unread_notifications; ?></span><?php endif; ?>
+                </a>
                 <a href="admin-settings.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-cog w-5"></i> Cài đặt
                 </a>
@@ -384,14 +405,78 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                             <i class="fas fa-filter"></i>
                         </button>
                     </form>
-                    <button class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100">
-                        <i class="fas fa-bell text-base sm:text-lg lg:text-xl"></i>
-                        <?php if($pending_orders + $new_contacts > 0): ?>
-                        <span class="absolute top-0 right-0 sm:top-0 sm:right-0 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center text-[10px]"><?php echo min(99, $pending_orders + $new_contacts); ?></span>
-                        <?php endif; ?>
-                    </button>
+                    
+                    <!-- Notification Dropdown -->
+                    <div class="relative" id="notificationDropdown">
+                        <button onclick="toggleNotificationDropdown(event)" class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition">
+                            <i class="fas fa-bell text-base sm:text-lg lg:text-xl"></i>
+                            <?php if($unread_notifications > 0): ?>
+                            <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"><?php echo min(99, $unread_notifications); ?></span>
+                            <?php endif; ?>
+                        </button>
+                    </div>
                 </div>
             </header>
+            
+            <!-- Notification Dropdown Menu (Outside header for proper positioning) -->
+            <div id="notificationMenu" class="hidden fixed bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] w-80" style="max-height: 500px;">
+                <div class="p-3 border-b border-gray-100 flex items-center justify-between bg-gray-50 rounded-t-xl">
+                    <h3 class="font-semibold text-gray-800 text-sm">Thông báo</h3>
+                    <?php if($unread_notifications > 0): ?>
+                    <button onclick="markAllAsRead()" class="text-xs text-accent-500 hover:text-accent-600 font-medium">Đánh dấu đã đọc</button>
+                    <?php endif; ?>
+                </div>
+                <div class="overflow-y-auto" style="max-height: 400px;">
+                    <?php if (empty($admin_notifications)): ?>
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-bell-slash text-4xl text-gray-300 mb-3"></i>
+                        <p class="text-sm">Không có thông báo nào</p>
+                    </div>
+                    <?php else: ?>
+                    <?php foreach ($admin_notifications as $notif): 
+                        $icon_class = 'fa-bell';
+                        $bg_class = 'bg-gray-100 text-gray-600';
+                        if ($notif['type'] === 'account_locked') {
+                            $icon_class = 'fa-lock';
+                            $bg_class = 'bg-red-100 text-red-600';
+                        } elseif ($notif['type'] === 'new_order') {
+                            $icon_class = 'fa-shopping-bag';
+                            $bg_class = 'bg-green-100 text-green-600';
+                        } elseif ($notif['type'] === 'new_contact') {
+                            $icon_class = 'fa-envelope';
+                            $bg_class = 'bg-blue-100 text-blue-600';
+                        }
+                        $time_ago = '';
+                        $diff = time() - strtotime($notif['created_at']);
+                        if ($diff < 60) $time_ago = 'Vừa xong';
+                        elseif ($diff < 3600) $time_ago = floor($diff/60) . ' phút trước';
+                        elseif ($diff < 86400) $time_ago = floor($diff/3600) . ' giờ trước';
+                        else $time_ago = floor($diff/86400) . ' ngày trước';
+                    ?>
+                    <div class="p-3 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer <?php echo $notif['is_read'] ? 'opacity-60' : ''; ?>" onclick="handleNotificationClick(<?php echo $notif['id']; ?>, '<?php echo $notif['reference_type']; ?>', <?php echo $notif['reference_id'] ?? 'null'; ?>)">
+                        <div class="flex gap-3">
+                            <div class="w-9 h-9 rounded-full <?php echo $bg_class; ?> flex items-center justify-center flex-shrink-0">
+                                <i class="fas <?php echo $icon_class; ?> text-sm"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-medium text-gray-900 text-sm <?php echo $notif['is_read'] ? '' : 'font-semibold'; ?> truncate"><?php echo htmlspecialchars($notif['title']); ?></p>
+                                <p class="text-gray-500 text-xs mt-0.5 line-clamp-2"><?php echo htmlspecialchars($notif['content']); ?></p>
+                                <p class="text-gray-400 text-xs mt-1"><?php echo $time_ago; ?></p>
+                            </div>
+                            <?php if (!$notif['is_read']): ?>
+                            <div class="w-2 h-2 bg-accent-500 rounded-full flex-shrink-0 mt-2"></div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <?php if (!empty($admin_notifications)): ?>
+                <div class="p-3 border-t border-gray-100 text-center bg-white rounded-b-xl">
+                    <a href="admin-notifications.php" class="text-sm text-accent-500 hover:text-accent-600 font-medium">Xem tất cả thông báo</a>
+                </div>
+                <?php endif; ?>
+            </div>
 
             <!-- Content -->
             <div class="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4 lg:space-y-6 max-w-full overflow-x-hidden">
@@ -1341,6 +1426,87 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 }
             }
         });
+        
+        // ========== NOTIFICATION DROPDOWN ==========
+        function toggleNotificationDropdown(event) {
+            event.stopPropagation();
+            const button = document.querySelector('#notificationDropdown button');
+            const menu = document.getElementById('notificationMenu');
+            const isHidden = menu.classList.contains('hidden');
+            
+            if (isHidden) {
+                // Tính vị trí của button
+                const rect = button.getBoundingClientRect();
+                
+                // Đặt vị trí dropdown
+                menu.style.top = (rect.bottom + 8) + 'px';
+                menu.style.right = (window.innerWidth - rect.right) + 'px';
+                menu.style.left = 'auto';
+                
+                menu.classList.remove('hidden');
+                
+                // Kiểm tra nếu tràn bên phải
+                setTimeout(() => {
+                    const menuRect = menu.getBoundingClientRect();
+                    if (menuRect.right > window.innerWidth - 10) {
+                        menu.style.right = '10px';
+                    }
+                    if (menuRect.left < 10) {
+                        menu.style.left = '10px';
+                        menu.style.right = 'auto';
+                    }
+                }, 0);
+            } else {
+                menu.classList.add('hidden');
+            }
+        }
+        
+        // Đóng dropdown khi click ra ngoài
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const menu = document.getElementById('notificationMenu');
+            if (dropdown && menu && !dropdown.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // Đóng khi scroll
+        window.addEventListener('scroll', function() {
+            const menu = document.getElementById('notificationMenu');
+            if (menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+            }
+        });
+        
+        // Xử lý click vào thông báo
+        function handleNotificationClick(id, refType, refId) {
+            // Đánh dấu đã đọc
+            fetch('api/admin-notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=mark_read&id=' + id
+            });
+            
+            // Chuyển hướng
+            if (refType === 'user' && refId) {
+                window.location.href = 'admin-user-detail.php?id=' + refId;
+            } else if (refType === 'order' && refId) {
+                window.location.href = 'admin-order-detail.php?id=' + refId;
+            } else {
+                window.location.href = 'admin-notifications.php';
+            }
+        }
+        
+        // Đánh dấu tất cả đã đọc
+        function markAllAsRead() {
+            fetch('api/admin-notifications.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'action=mark_all_read'
+            }).then(() => {
+                location.reload();
+            });
+        }
     </script>
     
     <!-- Admin Mobile Toggle Button -->

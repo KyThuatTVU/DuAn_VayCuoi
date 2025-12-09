@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 
 // Số lần đăng nhập sai tối đa trước khi khóa tài khoản
 define('MAX_LOGIN_ATTEMPTS', 5);
@@ -86,21 +87,11 @@ function lockAccount($conn, $user_id, $reason) {
 }
 
 /**
- * Tạo thông báo cho admin
+ * Tạo thông báo cho admin khi tài khoản bị khóa
  */
-function notifyAdminAccountLocked($conn, $user_id, $email, $ho_ten) {
-    // Kiểm tra bảng có tồn tại không
-    $check = $conn->query("SHOW TABLES LIKE 'admin_notifications'");
-    if (!$check || $check->num_rows === 0) {
-        return false;
-    }
-    
-    $title = "Tài khoản bị khóa do đăng nhập sai nhiều lần";
-    $content = "Tài khoản của người dùng \"$ho_ten\" (Email: $email) đã bị khóa tự động do nhập sai mật khẩu " . MAX_LOGIN_ATTEMPTS . " lần liên tiếp. Vui lòng kiểm tra và mở khóa nếu cần thiết.";
-    
-    $stmt = $conn->prepare("INSERT INTO admin_notifications (type, title, content, reference_id, reference_type) VALUES ('account_locked', ?, ?, ?, 'user')");
-    $stmt->bind_param("ssi", $title, $content, $user_id);
-    return $stmt->execute();
+function notifyAdminAccountLockedLogin($conn, $user_id, $email, $ho_ten) {
+    $reason = "Đăng nhập sai mật khẩu " . MAX_LOGIN_ATTEMPTS . " lần liên tiếp";
+    return notifyAccountLocked($conn, $user_id, $email, $reason);
 }
 
 /**
@@ -194,7 +185,7 @@ try {
                 lockAccount($conn, $user['id'], $lock_reason);
                 
                 // Thông báo cho admin
-                notifyAdminAccountLocked($conn, $user['id'], $user['email'], $user['ho_ten']);
+                notifyAdminAccountLockedLogin($conn, $user['id'], $user['email'], $user['ho_ten']);
                 
                 // Log khóa tài khoản
                 logLoginAttempt($conn, $user['id'], $email, 'locked', $lock_reason);

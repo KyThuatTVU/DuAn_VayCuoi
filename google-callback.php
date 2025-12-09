@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 
 // DEBUG: Ghi log để kiểm tra
 $debug_log = "=== " . date('Y-m-d H:i:s') . " ===\n";
@@ -217,6 +218,9 @@ if ($result->num_rows > 0) {
     
     if ($stmt->execute()) {
         $user_id = $conn->insert_id;
+        
+        // Gửi thông báo cho admin về người dùng mới
+        notifyNewUser($conn, $user_id, $ho_ten, $email);
         
         // Set session
         $_SESSION['user_id'] = $user_id;

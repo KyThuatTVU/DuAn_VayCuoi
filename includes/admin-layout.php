@@ -9,6 +9,7 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
 $pending_orders = 0;
 $new_contacts = 0;
 $pending_bookings = 0;
+$unread_notifications = 0;
 
 if ($conn) {
     $result = $conn->query("SELECT COUNT(*) as total FROM don_hang WHERE trang_thai = 'pending'");
@@ -19,6 +20,13 @@ if ($conn) {
     
     $result = $conn->query("SELECT COUNT(*) as total FROM dat_lich_thu_vay WHERE status = 'pending'");
     if ($result) $pending_bookings = $result->fetch_assoc()['total'];
+    
+    // Lấy số thông báo chưa đọc
+    $check_notif = $conn->query("SHOW TABLES LIKE 'admin_notifications'");
+    if ($check_notif && $check_notif->num_rows > 0) {
+        $result = $conn->query("SELECT COUNT(*) as total FROM admin_notifications WHERE is_read = 0");
+        if ($result) $unread_notifications = $result->fetch_assoc()['total'];
+    }
 }
 
 // Xác định trang hiện tại
@@ -121,6 +129,10 @@ $current_file = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if (isset($payment_stats) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
                 </a>
+                <a href="admin-notifications.php" class="sidebar-link <?php echo $current_file == 'admin-notifications.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-bell w-5"></i> Thông báo
+                    <?php if ($unread_notifications > 0): ?><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $unread_notifications; ?></span><?php endif; ?>
+                </a>
                 <a href="admin-settings.php" class="sidebar-link <?php echo $current_file == 'admin-settings.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-cog w-5"></i> Cài đặt
                 </a>
@@ -150,12 +162,12 @@ $current_file = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-                    <button class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+                    <a href="admin-notifications.php" class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
                         <i class="fas fa-bell text-base sm:text-lg lg:text-xl"></i>
-                        <?php if ($pending_orders + $new_contacts > 0): ?>
-                        <span class="absolute top-0 right-0 sm:top-1 sm:right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center text-[10px]"><?php echo min(99, $pending_orders + $new_contacts); ?></span>
+                        <?php if ($unread_notifications > 0): ?>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"><?php echo min(99, $unread_notifications); ?></span>
                         <?php endif; ?>
-                    </button>
+                    </a>
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-navy-200 flex-shrink-0">
                         <?php if (!empty($_SESSION['admin_avatar'])): ?>
                             <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

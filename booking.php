@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/notification-helper.php';
 $page_title = 'Đặt Lịch Thử Váy';
 
 // Xử lý form submit
@@ -27,6 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("isssissis", $user_id, $name, $phone, $email, $vay_id, $scheduled_date, $scheduled_time, $number_of_persons, $note);
         
         if ($stmt->execute()) {
+            $booking_id = $conn->insert_id;
+            
+            // Gửi thông báo cho admin
+            notifyNewBooking($conn, $booking_id, $name, $phone, $scheduled_date, $scheduled_time);
+            
             $success_message = 'Đặt lịch thành công! Chúng tôi sẽ liên hệ với bạn sớm nhất.';
         } else {
             $error_message = 'Có lỗi xảy ra. Vui lòng thử lại!';

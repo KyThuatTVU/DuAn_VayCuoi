@@ -8,6 +8,7 @@ ob_start();
 
 session_start();
 require_once '../includes/config.php';
+require_once '../includes/notification-helper.php';
 
 // Xóa bất kỳ output nào trước đó
 ob_clean();
@@ -207,6 +208,9 @@ try {
         'order_id' => $order_id,
         'ma_don_hang' => $ma_don_hang
     ]);
+    
+    // Gửi thông báo cho admin
+    notifyNewOrder($conn, $order_id, $ma_don_hang, $ho_ten, $total);
     
 } catch (Exception $e) {
     if ($conn) {
