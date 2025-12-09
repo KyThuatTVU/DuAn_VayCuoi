@@ -140,46 +140,46 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
         <!-- Main Content -->
         <main class="flex-1 ml-64">
             <!-- Header -->
-            <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+            <header class="bg-white shadow-sm px-6 max-sm:px-4 py-4 max-sm:py-3 flex items-center sticky top-0 z-40">
                 <!-- Mobile Menu Toggle -->
-                <button id="headerMenuToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-3">
+                <button id="headerMenuToggle" class="hidden max-lg:flex p-2 rounded-lg hover:bg-gray-100 mr-3 items-center justify-center">
                     <i class="fas fa-bars text-navy-700 text-xl"></i>
                 </button>
-                <div class="flex-1">
-                    <h1 class="text-2xl font-bold text-navy-900">Cài Đặt Hệ Thống</h1>
-                    <p class="text-navy-500 text-sm hidden sm:block">Quản lý thông tin liên hệ, giờ làm việc và các cài đặt khác</p>
+                <div class="min-w-0 flex-1">
+                    <h1 class="text-2xl max-sm:text-lg font-bold text-navy-900 truncate">Cài Đặt Hệ Thống</h1>
+                    <p class="text-navy-500 text-sm max-sm:text-xs max-sm:hidden">Quản lý thông tin liên hệ, giờ làm việc và các cài đặt khác</p>
                 </div>
             </header>
 
             <!-- Content -->
-            <div class="p-6">
+            <div class="p-6 max-sm:p-4">
                 <!-- Alert Messages -->
                 <?php if ($success_message): ?>
-                <div class="mb-6 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-r-lg flex items-center">
-                    <i class="fas fa-check-circle mr-3 text-xl"></i>
-                    <span><?php echo $success_message; ?></span>
+                <div class="mb-6 max-sm:mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 max-sm:p-3 rounded-r-lg flex items-center">
+                    <i class="fas fa-check-circle mr-3 max-sm:mr-2 text-xl max-sm:text-base"></i>
+                    <span class="max-sm:text-sm"><?php echo $success_message; ?></span>
                 </div>
                 <?php endif; ?>
 
                 <?php if ($error_message): ?>
-                <div class="mb-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-r-lg flex items-center">
-                    <i class="fas fa-exclamation-circle mr-3 text-xl"></i>
-                    <span><?php echo $error_message; ?></span>
+                <div class="mb-6 max-sm:mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 max-sm:p-3 rounded-r-lg flex items-center">
+                    <i class="fas fa-exclamation-circle mr-3 max-sm:mr-2 text-xl max-sm:text-base"></i>
+                    <span class="max-sm:text-sm"><?php echo $error_message; ?></span>
                 </div>
                 <?php endif; ?>
 
-                <div class="flex flex-col lg:flex-row gap-6">
+                <div class="flex flex-col lg:flex-row gap-6 max-sm:gap-4">
                     <!-- Settings Tabs -->
                     <div class="lg:w-64 flex-shrink-0">
                         <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div class="p-4 bg-gradient-to-r from-accent-500 to-accent-600">
-                                <h3 class="text-white font-semibold">Danh mục cài đặt</h3>
+                            <div class="p-4 max-sm:p-3 bg-gradient-to-r from-accent-500 to-accent-600">
+                                <h3 class="text-white font-semibold max-sm:text-sm">Danh mục cài đặt</h3>
                             </div>
-                            <nav class="p-2">
+                            <nav class="p-2 max-sm:flex max-sm:flex-row max-sm:overflow-x-auto max-sm:gap-2 max-sm:p-3 max-sm:-mx-0">
                                 <?php foreach ($groups as $group): ?>
                                 <a href="?tab=<?php echo $group; ?>" 
-                                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition <?php echo $current_tab === $group ? 'bg-accent-50 text-accent-700 font-medium' : 'text-gray-600 hover:bg-gray-50'; ?>">
-                                    <i class="<?php echo getGroupIcon($group); ?> w-5"></i>
+                                   class="flex items-center gap-3 px-4 py-3 rounded-lg transition max-sm:whitespace-nowrap max-sm:flex-shrink-0 max-sm:px-3 max-sm:py-2 max-sm:text-sm max-sm:rounded-full <?php echo $current_tab === $group ? 'bg-accent-50 text-accent-700 font-medium' : 'text-gray-600 hover:bg-gray-50'; ?>">
+                                    <i class="<?php echo getGroupIcon($group); ?> w-5 max-sm:w-4"></i>
                                     <span><?php echo getGroupLabel($group); ?></span>
                                 </a>
                                 <?php endforeach; ?>
@@ -188,22 +188,22 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                     </div>
 
                     <!-- Settings Form -->
-                    <div class="flex-1">
+                    <div class="flex-1 min-w-0">
                         <form method="POST" class="bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div class="p-6 border-b bg-gradient-to-r from-gray-50 to-white">
-                                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                            <div class="p-6 max-sm:p-4 border-b bg-gradient-to-r from-gray-50 to-white">
+                                <h2 class="text-xl max-sm:text-lg font-bold text-gray-800 flex items-center gap-2">
                                     <i class="<?php echo getGroupIcon($current_tab); ?> text-accent-500"></i>
                                     <?php echo getGroupLabel($current_tab); ?>
                                 </h2>
                             </div>
 
-                            <div class="p-6 space-y-6">
+                            <div class="p-6 max-sm:p-4 space-y-6 max-sm:space-y-4">
                                 <?php 
                                 $settings = getSettingsByGroup($conn, $current_tab);
                                 foreach ($settings as $setting): 
                                 ?>
                                 <div class="group">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2 max-sm:text-xs">
                                         <?php echo htmlspecialchars($setting['setting_label']); ?>
                                     </label>
                                     
@@ -211,21 +211,21 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                                     <textarea 
                                         name="settings[<?php echo $setting['setting_key']; ?>]"
                                         rows="3"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition"
+                                        class="w-full px-4 py-3 max-sm:px-3 max-sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition text-base"
                                     ><?php echo htmlspecialchars($setting['setting_value']); ?></textarea>
                                     
                                     <?php else: ?>
                                     <div class="relative">
                                         <?php if ($setting['setting_type'] === 'email'): ?>
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <span class="absolute left-4 max-sm:left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                             <i class="fas fa-envelope"></i>
                                         </span>
                                         <?php elseif ($setting['setting_type'] === 'phone'): ?>
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <span class="absolute left-4 max-sm:left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                             <i class="fas fa-phone"></i>
                                         </span>
                                         <?php elseif ($setting['setting_type'] === 'url'): ?>
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                        <span class="absolute left-4 max-sm:left-3 top-1/2 -translate-y-1/2 text-gray-400">
                                             <i class="fas fa-link"></i>
                                         </span>
                                         <?php endif; ?>
@@ -234,24 +234,24 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                                             type="<?php echo $setting['setting_type'] === 'phone' ? 'tel' : $setting['setting_type']; ?>"
                                             name="settings[<?php echo $setting['setting_key']; ?>]"
                                             value="<?php echo htmlspecialchars($setting['setting_value']); ?>"
-                                            class="w-full px-4 py-3 <?php echo in_array($setting['setting_type'], ['email', 'phone', 'url']) ? 'pl-12' : ''; ?> border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition"
+                                            class="w-full px-4 py-3 max-sm:px-3 max-sm:py-2 <?php echo in_array($setting['setting_type'], ['email', 'phone', 'url']) ? 'pl-12 max-sm:pl-10' : ''; ?> border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition text-base"
                                         >
                                     </div>
                                     <?php endif; ?>
                                     
-                                    <p class="mt-1 text-xs text-gray-500">
+                                    <p class="mt-1 text-xs text-gray-500 max-sm:text-[10px]">
                                         Key: <code class="bg-gray-100 px-1 rounded"><?php echo $setting['setting_key']; ?></code>
                                     </p>
                                 </div>
                                 <?php endforeach; ?>
                             </div>
 
-                            <div class="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
-                                <p class="text-sm text-gray-500">
+                            <div class="px-6 py-4 max-sm:px-4 max-sm:py-3 bg-gray-50 border-t flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
+                                <p class="text-sm text-gray-500 text-center sm:text-left">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Thay đổi sẽ được áp dụng ngay trên toàn bộ website
                                 </p>
-                                <button type="submit" class="bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center gap-2">
+                                <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700 text-white px-6 py-3 rounded-lg font-semibold transition flex items-center justify-center gap-2">
                                     <i class="fas fa-save"></i>
                                     Lưu Cài Đặt
                                 </button>
@@ -261,32 +261,32 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                         <!-- Preview Section -->
                         <?php if ($current_tab === 'contact' || $current_tab === 'working'): ?>
                         <div class="mt-6 bg-white rounded-xl shadow-sm overflow-hidden">
-                            <div class="p-4 bg-gray-800 text-white">
-                                <h3 class="font-semibold flex items-center gap-2">
+                            <div class="p-4 max-sm:p-3 bg-gray-800 text-white">
+                                <h3 class="font-semibold flex items-center gap-2 max-sm:text-sm">
                                     <i class="fas fa-eye"></i>
                                     Xem trước (Footer)
                                 </h3>
                             </div>
-                            <div class="p-6 bg-gray-900 text-gray-300">
-                                <h4 class="text-white font-bold mb-4 flex items-center gap-2">
-                                    <div class="w-1 h-5 bg-pink-500 rounded"></div>
+                            <div class="p-6 max-sm:p-4 bg-gray-900 text-gray-300">
+                                <h4 class="text-white font-bold mb-4 max-sm:mb-3 flex items-center gap-2 max-sm:text-sm">
+                                    <div class="w-1 h-5 max-sm:h-4 bg-pink-500 rounded"></div>
                                     Liên Hệ
                                 </h4>
-                                <div class="space-y-3 text-sm">
-                                    <p class="flex items-start gap-3">
-                                        <i class="fas fa-map-marker-alt text-pink-500 mt-1"></i>
-                                        <span><?php echo nl2br(htmlspecialchars(getSetting($conn, 'contact_address'))); ?></span>
+                                <div class="space-y-3 max-sm:space-y-2 text-sm max-sm:text-xs">
+                                    <p class="flex items-start gap-3 max-sm:gap-2">
+                                        <i class="fas fa-map-marker-alt text-pink-500 mt-1 max-sm:mt-0.5"></i>
+                                        <span class="break-words"><?php echo nl2br(htmlspecialchars(getSetting($conn, 'contact_address'))); ?></span>
                                     </p>
-                                    <p class="flex items-center gap-3">
+                                    <p class="flex items-center gap-3 max-sm:gap-2">
                                         <i class="fas fa-phone text-pink-500"></i>
                                         <span><?php echo htmlspecialchars(getSetting($conn, 'contact_phone')); ?></span>
                                     </p>
-                                    <p class="flex items-center gap-3">
+                                    <p class="flex items-center gap-3 max-sm:gap-2">
                                         <i class="fas fa-envelope text-pink-500"></i>
-                                        <span><?php echo htmlspecialchars(getSetting($conn, 'contact_email')); ?></span>
+                                        <span class="break-all"><?php echo htmlspecialchars(getSetting($conn, 'contact_email')); ?></span>
                                     </p>
-                                    <p class="flex items-start gap-3">
-                                        <i class="fas fa-clock text-pink-500 mt-1"></i>
+                                    <p class="flex items-start gap-3 max-sm:gap-2">
+                                        <i class="fas fa-clock text-pink-500 mt-1 max-sm:mt-0.5"></i>
                                         <span>
                                             <?php echo htmlspecialchars(getSetting($conn, 'working_days')); ?><br>
                                             <?php echo htmlspecialchars(getSetting($conn, 'working_hours')); ?>

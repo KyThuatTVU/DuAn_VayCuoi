@@ -647,6 +647,15 @@ body.admin-page {
         white-space: nowrap;
         flex-shrink: 0;
     }
+    
+    /* Settings page layout - stack tabs and form */
+    .flex.flex-col.lg\:flex-row {
+        flex-direction: column !important;
+    }
+    
+    .lg\:w-64 {
+        width: 100% !important;
+    }
 }
 
 @media (max-width: 767.98px) {
@@ -659,6 +668,77 @@ body.admin-page {
     .settings-form .w-32.h-32 {
         width: 6rem !important;
         height: 6rem !important;
+    }
+    
+    /* Settings form footer - stack on mobile */
+    form .px-6.py-4.bg-gray-50.border-t.flex.justify-between.items-center {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        padding: 1rem !important;
+        text-align: center;
+    }
+    
+    form .px-6.py-4.bg-gray-50.border-t.flex.justify-between.items-center p {
+        font-size: 0.75rem !important;
+    }
+    
+    form .px-6.py-4.bg-gray-50.border-t.flex.justify-between.items-center button {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    /* Settings input fields */
+    form .p-6.space-y-6 input,
+    form .p-6.space-y-6 textarea {
+        font-size: 16px !important; /* Prevent zoom on iOS */
+    }
+    
+    /* Settings group navigation */
+    nav.p-2 a {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.875rem !important;
+    }
+    
+    /* Preview section compact */
+    .bg-gray-900.text-gray-300 {
+        padding: 1rem !important;
+    }
+    
+    .bg-gray-900 .space-y-3 {
+        font-size: 0.8125rem !important;
+    }
+}
+
+@media (max-width: 479.98px) {
+    /* Extra small screens */
+    form .p-6.space-y-6 {
+        padding: 1rem !important;
+    }
+    
+    form .p-6.border-b {
+        padding: 1rem !important;
+    }
+    
+    form .p-6.border-b h2 {
+        font-size: 1rem !important;
+    }
+    
+    /* Settings category tabs horizontal scroll */
+    .lg\:w-64 nav.p-2 {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 0.5rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    .lg\:w-64 nav.p-2 a {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 9999px !important;
+        font-size: 0.8125rem !important;
     }
 }
 
