@@ -62,7 +62,10 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
             }
         }
     </script>
+    <link rel="stylesheet" href="assets/css/admin-responsive.css">
+    <script src="assets/js/admin-mobile.js" defer></script>
     <style>
+        html.admin-page, body.admin-page { overflow-x: hidden; max-width: 100vw; }
         .sidebar-link { transition: all 0.2s; }
         .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.1); border-left: 3px solid #ed8936; }
         .sidebar-scroll::-webkit-scrollbar { width: 4px; }
@@ -70,7 +73,7 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 admin-page">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto sidebar-scroll z-50">
@@ -138,9 +141,13 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
         <main class="flex-1 ml-64">
             <!-- Header -->
             <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                <div>
+                <!-- Mobile Menu Toggle -->
+                <button id="headerMenuToggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 mr-3">
+                    <i class="fas fa-bars text-navy-700 text-xl"></i>
+                </button>
+                <div class="flex-1">
                     <h1 class="text-2xl font-bold text-navy-900">Cài Đặt Hệ Thống</h1>
-                    <p class="text-navy-500 text-sm">Quản lý thông tin liên hệ, giờ làm việc và các cài đặt khác</p>
+                    <p class="text-navy-500 text-sm hidden sm:block">Quản lý thông tin liên hệ, giờ làm việc và các cài đặt khác</p>
                 </div>
             </header>
 
