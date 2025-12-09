@@ -91,51 +91,51 @@ include 'includes/admin-layout.php';
 ?>
 
 <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
+    <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border-l-4 border-blue-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-navy-500 text-sm font-medium">Bình luận sản phẩm</p>
-                <p class="text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_product_comments']); ?></p>
+                <p class="text-navy-500 text-xs sm:text-sm font-medium">BL sản phẩm</p>
+                <p class="text-xl sm:text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_product_comments']); ?></p>
             </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-comments text-blue-500 text-xl"></i>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-comments text-blue-500 text-lg sm:text-xl"></i>
             </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
+    <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border-l-4 border-green-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-navy-500 text-sm font-medium">Bình luận bài viết</p>
-                <p class="text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_blog_comments']); ?></p>
+                <p class="text-navy-500 text-xs sm:text-sm font-medium">BL bài viết</p>
+                <p class="text-xl sm:text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_blog_comments']); ?></p>
             </div>
-            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-comment-dots text-green-500 text-xl"></i>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-comment-dots text-green-500 text-lg sm:text-xl"></i>
             </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-pink-500">
+    <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border-l-4 border-pink-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-navy-500 text-sm font-medium">Cảm xúc sản phẩm</p>
-                <p class="text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_product_reactions']); ?></p>
+                <p class="text-navy-500 text-xs sm:text-sm font-medium">CX sản phẩm</p>
+                <p class="text-xl sm:text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_product_reactions']); ?></p>
             </div>
-            <div class="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-heart text-pink-500 text-xl"></i>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-pink-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-heart text-pink-500 text-lg sm:text-xl"></i>
             </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
+    <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border-l-4 border-purple-500">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-navy-500 text-sm font-medium">Cảm xúc bài viết</p>
-                <p class="text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_blog_reactions']); ?></p>
+                <p class="text-navy-500 text-xs sm:text-sm font-medium">CX bài viết</p>
+                <p class="text-xl sm:text-3xl font-bold text-navy-900 mt-1"><?php echo number_format($stats['total_blog_reactions']); ?></p>
             </div>
-            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <i class="fas fa-thumbs-up text-purple-500 text-xl"></i>
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                <i class="fas fa-thumbs-up text-purple-500 text-lg sm:text-xl"></i>
             </div>
         </div>
     </div>
@@ -149,14 +149,14 @@ include 'includes/admin-layout.php';
 
 <!-- Tabs & Filter -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="flex flex-col gap-4">
         <!-- Tabs -->
-        <div class="flex gap-2">
-            <a href="?type=product" class="px-4 py-2 rounded-lg font-medium transition <?php echo $type === 'product' ? 'bg-accent-500 text-white' : 'bg-gray-100 text-navy-700 hover:bg-gray-200'; ?>">
-                <i class="fas fa-tshirt mr-2"></i>Sản phẩm (<?php echo $stats['total_product_comments']; ?>)
+        <div class="flex gap-2 overflow-x-auto pb-2">
+            <a href="?type=product" class="px-3 sm:px-4 py-2 rounded-lg font-medium transition whitespace-nowrap text-sm sm:text-base <?php echo $type === 'product' ? 'bg-accent-500 text-white' : 'bg-gray-100 text-navy-700 hover:bg-gray-200'; ?>">
+                <i class="fas fa-tshirt mr-1 sm:mr-2"></i>Sản phẩm (<?php echo $stats['total_product_comments']; ?>)
             </a>
-            <a href="?type=blog" class="px-4 py-2 rounded-lg font-medium transition <?php echo $type === 'blog' ? 'bg-accent-500 text-white' : 'bg-gray-100 text-navy-700 hover:bg-gray-200'; ?>">
-                <i class="fas fa-newspaper mr-2"></i>Bài viết (<?php echo $stats['total_blog_comments']; ?>)
+            <a href="?type=blog" class="px-3 sm:px-4 py-2 rounded-lg font-medium transition whitespace-nowrap text-sm sm:text-base <?php echo $type === 'blog' ? 'bg-accent-500 text-white' : 'bg-gray-100 text-navy-700 hover:bg-gray-200'; ?>">
+                <i class="fas fa-newspaper mr-1 sm:mr-2"></i>Bài viết (<?php echo $stats['total_blog_comments']; ?>)
             </a>
         </div>
         
@@ -164,8 +164,8 @@ include 'includes/admin-layout.php';
         <form method="GET" class="flex gap-2">
             <input type="hidden" name="type" value="<?php echo $type; ?>">
             <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-                placeholder="Tìm kiếm..." class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-            <button type="submit" class="bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 transition">
+                placeholder="Tìm kiếm..." class="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
+            <button type="submit" class="bg-accent-500 text-white px-4 py-2.5 rounded-lg hover:bg-accent-600 transition">
                 <i class="fas fa-search"></i>
             </button>
         </form>

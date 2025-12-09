@@ -178,10 +178,13 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="admin-page">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#102a43">
     <title><?php echo $page_title . ' - ' . SITE_NAME; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -198,7 +201,10 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
             }
         }
     </script>
+    <link rel="stylesheet" href="assets/css/admin-responsive.css">
+    <script src="assets/js/admin-mobile.js" defer></script>
     <style>
+        html.admin-page, body.admin-page { overflow-x: hidden; max-width: 100vw; }
         .sidebar-link { transition: all 0.2s; }
         .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.1); border-left: 3px solid #ed8936; }
         .card { transition: all 0.3s; }
@@ -210,12 +216,24 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
         .sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .sidebar-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
         .sidebar-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+        /* Mobile chart responsive */
+        @media (max-width: 767.98px) {
+            .chart-container { height: 180px !important; }
+            .card.stat-card { padding: 0.875rem !important; }
+            .stat-card .text-2xl { font-size: 1.125rem !important; }
+            .stat-card .text-xl { font-size: 1rem !important; }
+            .stat-card .w-12.h-12 { width: 2.25rem !important; height: 2.25rem !important; }
+            .stat-card .w-10.h-10 { width: 2rem !important; height: 2rem !important; }
+        }
+        @media (max-width: 479.98px) {
+            .chart-container { height: 150px !important; }
+        }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex min-h-screen">
+<body class="bg-gray-100 admin-page">
+    <div class="flex min-h-screen max-w-full overflow-x-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto sidebar-scroll z-50">
+        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto overflow-x-hidden sidebar-scroll z-50 admin-sidebar">
             <!-- Profile -->
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
@@ -280,46 +298,52 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-64">
+        <main class="flex-1 ml-64 max-w-full overflow-x-hidden admin-main">
             <!-- Header -->
-            <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                <div>
-                    <h1 class="text-2xl font-bold text-navy-900">Dashboard</h1>
-                    <p class="text-navy-500 text-sm">Tổng quan kinh doanh</p>
+            <header class="bg-white shadow-sm px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <!-- Mobile menu toggle in header -->
+                    <button class="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0" id="headerMenuToggle" aria-label="Toggle Menu">
+                        <i class="fas fa-bars text-navy-700"></i>
+                    </button>
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 truncate">Dashboard</h1>
+                        <p class="text-navy-500 text-xs sm:text-sm hidden sm:block">Tổng quan kinh doanh</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <form method="GET" class="flex items-center gap-2">
-                        <select name="month" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-accent-500">
+                <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                    <form method="GET" class="hidden md:flex items-center gap-2">
+                        <select name="month" class="border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-accent-500">
                             <?php for ($m = 1; $m <= 12; $m++): ?>
-                            <option value="<?php echo $m; ?>" <?php echo $m == $selected_month ? 'selected' : ''; ?>>Tháng <?php echo $m; ?></option>
+                            <option value="<?php echo $m; ?>" <?php echo $m == $selected_month ? 'selected' : ''; ?>>T<?php echo $m; ?></option>
                             <?php endfor; ?>
                         </select>
-                        <select name="year" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-accent-500">
+                        <select name="year" class="border border-gray-200 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm focus:ring-2 focus:ring-accent-500">
                             <?php for ($y = date('Y'); $y >= date('Y') - 3; $y--): ?>
                             <option value="<?php echo $y; ?>" <?php echo $y == $selected_year ? 'selected' : ''; ?>><?php echo $y; ?></option>
                             <?php endfor; ?>
                         </select>
-                        <button type="submit" class="bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 transition">
+                        <button type="submit" class="bg-accent-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg hover:bg-accent-600 transition">
                             <i class="fas fa-filter"></i>
                         </button>
                     </form>
-                    <button class="relative text-navy-500 hover:text-navy-700">
-                        <i class="fas fa-bell text-xl"></i>
+                    <button class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100">
+                        <i class="fas fa-bell text-base sm:text-lg lg:text-xl"></i>
                         <?php if($pending_orders + $new_contacts > 0): ?>
-                        <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"><?php echo $pending_orders + $new_contacts; ?></span>
+                        <span class="absolute top-0 right-0 sm:top-0 sm:right-0 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center text-[10px]"><?php echo min(99, $pending_orders + $new_contacts); ?></span>
                         <?php endif; ?>
                     </button>
                 </div>
             </header>
 
             <!-- Content -->
-            <div class="p-6 space-y-6">
+            <div class="p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 max-w-full overflow-x-hidden">
                 <!-- Stats Cards Row 1 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                     <!-- Doanh thu hôm nay -->
-                    <div class="card stat-card rounded-2xl p-6 shadow-sm border-l-4 border-green-500">
-                        <div class="flex items-center justify-between">
-                            <div>
+                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-green-500">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="min-w-0">
                                 <p class="text-navy-500 text-sm font-medium">Hôm nay</p>
                                 <p class="text-2xl font-bold text-navy-900 mt-1"><?php echo number_format($today_revenue/1000000, 1); ?>M</p>
                                 <p class="text-xs text-green-600 mt-1"><i class="fas fa-calendar-day mr-1"></i>VNĐ</p>
@@ -331,165 +355,167 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     </div>
 
                     <!-- Doanh thu tuần -->
-                    <div class="card stat-card rounded-2xl p-6 shadow-sm border-l-4 border-blue-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-sm font-medium">Tuần này</p>
-                                <p class="text-2xl font-bold text-navy-900 mt-1"><?php echo number_format($week_revenue/1000000, 1); ?>M</p>
-                                <p class="text-xs text-blue-600 mt-1"><i class="fas fa-calendar-week mr-1"></i>VNĐ</p>
+                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tuần này</p>
+                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($week_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs text-blue-600 mt-0.5 sm:mt-1 hidden sm:block"><i class="fas fa-calendar-week mr-1"></i>VNĐ</p>
                             </div>
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-calendar-week text-blue-500 text-xl"></i>
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-calendar-week text-blue-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Doanh thu tháng -->
-                    <div class="card stat-card rounded-2xl p-6 shadow-sm border-l-4 border-accent-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-sm font-medium">Tháng này</p>
-                                <p class="text-2xl font-bold text-navy-900 mt-1"><?php echo number_format($month_revenue/1000000, 1); ?>M</p>
-                                <p class="text-xs <?php echo $growth_percent >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-1">
-                                    <i class="fas fa-<?php echo $growth_percent >= 0 ? 'arrow-up' : 'arrow-down'; ?> mr-1"></i>
-                                    <?php echo abs($growth_percent); ?>% vs tháng trước
+                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-accent-500">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tháng này</p>
+                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($month_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs <?php echo $growth_percent >= 0 ? 'text-green-600' : 'text-red-600'; ?> mt-0.5 sm:mt-1 truncate">
+                                    <i class="fas fa-<?php echo $growth_percent >= 0 ? 'arrow-up' : 'arrow-down'; ?> mr-0.5 sm:mr-1"></i>
+                                    <span class="hidden sm:inline"><?php echo abs($growth_percent); ?>% vs tháng trước</span>
+                                    <span class="sm:hidden"><?php echo abs($growth_percent); ?>%</span>
                                 </p>
                             </div>
-                            <div class="w-12 h-12 bg-accent-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-chart-line text-accent-500 text-xl"></i>
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-accent-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-chart-line text-accent-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Tổng doanh thu -->
-                    <div class="card stat-card rounded-2xl p-6 shadow-sm border-l-4 border-purple-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-sm font-medium">Tổng doanh thu</p>
-                                <p class="text-2xl font-bold text-navy-900 mt-1"><?php echo number_format($total_revenue/1000000, 1); ?>M</p>
-                                <p class="text-xs text-purple-600 mt-1"><i class="fas fa-coins mr-1"></i>VNĐ</p>
+                    <div class="card stat-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-xs sm:text-sm font-medium truncate">Tổng doanh thu</p>
+                                <p class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 mt-0.5 sm:mt-1"><?php echo number_format($total_revenue/1000000, 1); ?>M</p>
+                                <p class="text-[10px] sm:text-xs text-purple-600 mt-0.5 sm:mt-1 hidden sm:block"><i class="fas fa-coins mr-1"></i>VNĐ</p>
                             </div>
-                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-dollar-sign text-purple-500 text-xl"></i>
+                            <div class="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-purple-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-dollar-sign text-purple-500 text-sm sm:text-base lg:text-xl"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Stats Cards Row 2 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                    <div class="card stat-card rounded-2xl p-5 shadow-sm border-l-4 border-navy-600">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-xs font-medium">Đơn hàng</p>
-                                <p class="text-xl font-bold text-navy-900"><?php echo number_format($total_orders); ?></p>
+                <!-- Stats Cards Row 2 -->
+                <div class="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-6">
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-navy-600">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Đơn hàng</p>
+                                <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_orders); ?></p>
                             </div>
-                            <div class="w-10 h-10 bg-navy-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-shopping-bag text-navy-600"></i>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-navy-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-shopping-bag text-navy-600 text-xs sm:text-sm lg:text-base"></i>
                             </div>
                         </div>
                     </div>
 
-                    <a href="admin-payments.php" class="card stat-card rounded-2xl p-5 shadow-sm border-l-4 border-green-500 hover:shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-xs font-medium">Thanh toán</p>
-                                <p class="text-xl font-bold text-navy-900"><?php echo number_format($payment_stats['total_success']); ?></p>
+                    <a href="admin-payments.php" class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-green-500 hover:shadow-lg">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Thanh toán</p>
+                                <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($payment_stats['total_success']); ?></p>
                             </div>
-                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-credit-card text-green-500"></i>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-green-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-credit-card text-green-500 text-xs sm:text-sm lg:text-base"></i>
                             </div>
                         </div>
                     </a>
 
-                    <div class="card stat-card rounded-2xl p-5 shadow-sm border-l-4 border-blue-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-xs font-medium">Khách hàng</p>
-                                <p class="text-xl font-bold text-navy-900"><?php echo number_format($total_users); ?></p>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Khách hàng</p>
+                                <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_users); ?></p>
                             </div>
-                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-users text-blue-500"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card stat-card rounded-2xl p-5 shadow-sm border-l-4 border-pink-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-xs font-medium">Váy cưới</p>
-                                <p class="text-xl font-bold text-navy-900"><?php echo number_format($total_dresses); ?></p>
-                            </div>
-                            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-tshirt text-pink-500"></i>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-blue-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-users text-blue-500 text-xs sm:text-sm lg:text-base"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card stat-card rounded-2xl p-5 shadow-sm border-l-4 border-yellow-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-navy-500 text-xs font-medium">Lịch hẹn chờ</p>
-                                <p class="text-xl font-bold text-navy-900"><?php echo number_format($pending_bookings); ?></p>
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-pink-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Váy cưới</p>
+                                <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($total_dresses); ?></p>
                             </div>
-                            <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-calendar-check text-yellow-500"></i>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-pink-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-tshirt text-pink-500 text-xs sm:text-sm lg:text-base"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card rounded-lg sm:rounded-xl lg:rounded-2xl p-2 sm:p-3 lg:p-5 shadow-sm border-l-2 sm:border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between gap-1 sm:gap-2">
+                            <div class="min-w-0">
+                                <p class="text-navy-500 text-[10px] sm:text-xs font-medium truncate">Lịch hẹn</p>
+                                <p class="text-sm sm:text-base lg:text-xl font-bold text-navy-900"><?php echo number_format($pending_bookings); ?></p>
+                            </div>
+                            <div class="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 bg-yellow-100 rounded-md sm:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-calendar-check text-yellow-500 text-xs sm:text-sm lg:text-base"></i>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Charts Row 1: Doanh thu & Trạng thái đơn hàng -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                     <!-- Biểu đồ doanh thu 12 tháng -->
-                    <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-navy-900">
-                                <i class="fas fa-chart-bar text-accent-500 mr-2"></i>Doanh thu 12 tháng
+                    <div class="lg:col-span-2 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3 sm:mb-4">
+                            <h3 class="text-sm sm:text-base lg:text-lg font-bold text-navy-900">
+                                <i class="fas fa-chart-bar text-accent-500 mr-1 sm:mr-2"></i>Doanh thu 12 tháng
                             </h3>
-                            <div class="flex items-center gap-4 text-sm">
-                                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-navy-600 rounded"></span> Doanh thu</span>
-                                <span class="flex items-center gap-2"><span class="w-3 h-3 bg-accent-500 rounded"></span> Đơn hàng</span>
+                            <div class="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-xs lg:text-sm">
+                                <span class="flex items-center gap-1 sm:gap-2"><span class="w-2 h-2 sm:w-3 sm:h-3 bg-navy-600 rounded"></span> <span class="hidden xs:inline">Doanh thu</span><span class="xs:hidden">DT</span></span>
+                                <span class="flex items-center gap-1 sm:gap-2"><span class="w-2 h-2 sm:w-3 sm:h-3 bg-accent-500 rounded"></span> <span class="hidden xs:inline">Đơn hàng</span><span class="xs:hidden">ĐH</span></span>
                             </div>
                         </div>
-                        <div class="chart-container" style="height: 280px;">
+                        <div class="chart-container" style="height: 200px;">
                             <canvas id="revenueChart"></canvas>
                         </div>
                     </div>
 
                     <!-- Biểu đồ trạng thái đơn hàng -->
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-navy-900 mb-4">
-                            <i class="fas fa-chart-pie text-accent-500 mr-2"></i>Trạng thái đơn hàng
+                    <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm">
+                        <h3 class="text-sm sm:text-base lg:text-lg font-bold text-navy-900 mb-3 sm:mb-4">
+                            <i class="fas fa-chart-pie text-accent-500 mr-1 sm:mr-2"></i>Trạng thái đơn hàng
                         </h3>
-                        <div class="relative chart-container" style="height: 200px;">
+                        <div class="relative chart-container" style="height: 150px;">
                             <canvas id="orderStatusChart"></canvas>
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                 <div class="text-center">
-                                    <p class="text-3xl font-bold text-navy-900"><?php echo $completed_percent; ?>%</p>
-                                    <p class="text-navy-500 text-sm">Hoàn thành</p>
+                                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-navy-900"><?php echo $completed_percent; ?>%</p>
+                                    <p class="text-navy-500 text-[10px] sm:text-xs lg:text-sm">Hoàn thành</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4 grid grid-cols-2 gap-2">
-                            <div class="flex items-center gap-2 text-sm p-2 bg-green-50 rounded-lg">
-                                <span class="w-3 h-3 bg-green-500 rounded-full"></span>
-                                <span class="text-navy-600">Hoàn thành</span>
+                        <div class="mt-3 sm:mt-4 grid grid-cols-2 gap-1.5 sm:gap-2">
+                            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm p-1.5 sm:p-2 bg-green-50 rounded-md sm:rounded-lg">
+                                <span class="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-navy-600 truncate">Hoàn thành</span>
                                 <span class="ml-auto font-bold"><?php echo $order_stats['completed']; ?></span>
                             </div>
-                            <div class="flex items-center gap-2 text-sm p-2 bg-yellow-50 rounded-lg">
-                                <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                                <span class="text-navy-600">Chờ xử lý</span>
+                            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm p-1.5 sm:p-2 bg-yellow-50 rounded-md sm:rounded-lg">
+                                <span class="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-navy-600 truncate">Chờ xử lý</span>
                                 <span class="ml-auto font-bold"><?php echo $order_stats['pending']; ?></span>
                             </div>
-                            <div class="flex items-center gap-2 text-sm p-2 bg-blue-50 rounded-lg">
-                                <span class="w-3 h-3 bg-blue-500 rounded-full"></span>
-                                <span class="text-navy-600">Đang xử lý</span>
+                            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm p-1.5 sm:p-2 bg-blue-50 rounded-md sm:rounded-lg">
+                                <span class="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-navy-600 truncate">Đang xử lý</span>
                                 <span class="ml-auto font-bold"><?php echo $order_stats['processing']; ?></span>
                             </div>
-                            <div class="flex items-center gap-2 text-sm p-2 bg-red-50 rounded-lg">
-                                <span class="w-3 h-3 bg-red-500 rounded-full"></span>
-                                <span class="text-navy-600">Đã hủy</span>
+                            <div class="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs lg:text-sm p-1.5 sm:p-2 bg-red-50 rounded-md sm:rounded-lg">
+                                <span class="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full flex-shrink-0"></span>
+                                <span class="text-navy-600 truncate">Đã hủy</span>
                                 <span class="ml-auto font-bold"><?php echo $order_stats['cancelled']; ?></span>
                             </div>
                         </div>
@@ -497,7 +523,7 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 </div>
 
                 <!-- Charts Row 2: Doanh thu theo ngày & So sánh năm -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     <!-- Biểu đồ doanh thu theo ngày trong tháng -->
                     <div class="bg-white rounded-2xl p-6 shadow-sm">
                         <h3 class="text-lg font-bold text-navy-900 mb-4">
@@ -960,5 +986,13 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
             }
         });
     </script>
+    
+    <!-- Admin Mobile Toggle Button -->
+    <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Admin Sidebar Overlay -->
+    <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
 </body>
 </html>

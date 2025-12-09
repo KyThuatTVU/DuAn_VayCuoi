@@ -86,16 +86,16 @@ include 'includes/admin-layout.php';
 
 <!-- Bộ lọc -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-            placeholder="Tìm tên, email, tiêu đề..." class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+            placeholder="Tìm tên, email, tiêu đề..." class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
+        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
             <option value="">-- Tất cả trạng thái --</option>
             <option value="new" <?php echo $status_filter === 'new' ? 'selected' : ''; ?>>Mới</option>
             <option value="replied" <?php echo $status_filter === 'replied' ? 'selected' : ''; ?>>Đã trả lời</option>
             <option value="closed" <?php echo $status_filter === 'closed' ? 'selected' : ''; ?>>Đã đóng</option>
         </select>
-        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2 hover:bg-accent-600 transition">
+        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2.5 hover:bg-accent-600 transition flex items-center justify-center sm:col-span-2 lg:col-span-1">
             <i class="fas fa-search mr-2"></i>Lọc
         </button>
     </form>
@@ -104,36 +104,36 @@ include 'includes/admin-layout.php';
 <!-- Danh sách liên hệ -->
 <div class="space-y-4">
     <?php foreach ($contacts as $contact): ?>
-    <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md transition">
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h3 class="text-lg font-semibold text-navy-900"><?php echo htmlspecialchars($contact['subject'] ?? 'Không có tiêu đề'); ?></h3>
-                <div class="flex flex-wrap items-center gap-4 text-sm text-navy-500 mt-2">
+    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 hover:shadow-md transition">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+            <div class="flex-1 min-w-0">
+                <h3 class="text-base sm:text-lg font-semibold text-navy-900"><?php echo htmlspecialchars($contact['subject'] ?? 'Không có tiêu đề'); ?></h3>
+                <div class="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-navy-500 mt-2">
                     <span><i class="fas fa-user mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['name']); ?></span>
-                    <span><i class="fas fa-envelope mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['email']); ?></span>
+                    <span class="break-all"><i class="fas fa-envelope mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['email']); ?></span>
                     <?php if ($contact['phone']): ?>
                     <span><i class="fas fa-phone mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['phone']); ?></span>
                     <?php endif; ?>
                     <span><i class="fas fa-clock mr-1 text-accent-500"></i><?php echo date('d/m/Y H:i', strtotime($contact['created_at'])); ?></span>
                 </div>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center gap-2 flex-shrink-0">
                 <form method="POST" class="inline">
                     <input type="hidden" name="action" value="update_status">
                     <input type="hidden" name="id" value="<?php echo $contact['id']; ?>">
-                    <select name="status" onchange="this.form.submit()" class="text-sm border-0 rounded-full px-3 py-1 font-medium
+                    <select name="status" onchange="this.form.submit()" class="text-xs sm:text-sm border rounded-lg px-2 sm:px-3 py-1.5 font-medium
                         <?php echo match($contact['status']) {
-                            'new' => 'bg-red-100 text-red-700',
-                            'replied' => 'bg-blue-100 text-blue-700',
-                            'closed' => 'bg-gray-100 text-gray-700',
-                            default => 'bg-gray-100 text-gray-700'
+                            'new' => 'bg-red-50 text-red-700 border-red-200',
+                            'replied' => 'bg-blue-50 text-blue-700 border-blue-200',
+                            'closed' => 'bg-gray-50 text-gray-700 border-gray-200',
+                            default => 'bg-gray-50 text-gray-700 border-gray-200'
                         }; ?>">
                         <option value="new" <?php echo $contact['status'] === 'new' ? 'selected' : ''; ?>>Mới</option>
                         <option value="replied" <?php echo $contact['status'] === 'replied' ? 'selected' : ''; ?>>Đã trả lời</option>
                         <option value="closed" <?php echo $contact['status'] === 'closed' ? 'selected' : ''; ?>>Đã đóng</option>
                     </select>
                 </form>
-                <button onclick="deleteContact(<?php echo $contact['id']; ?>)" class="text-red-500 hover:text-red-600 p-2">
+                <button onclick="deleteContact(<?php echo $contact['id']; ?>)" class="text-red-500 hover:text-red-600 p-2 hover:bg-red-50 rounded-lg">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>

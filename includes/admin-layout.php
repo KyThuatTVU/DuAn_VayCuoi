@@ -25,10 +25,13 @@ if ($conn) {
 $current_file = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="admin-page">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#102a43">
     <title><?php echo ($page_title ?? 'Admin') . ' - ' . SITE_NAME; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -48,6 +51,8 @@ $current_file = basename($_SERVER['PHP_SELF']);
     <link rel="stylesheet" href="assets/css/admin-responsive.css">
     <script src="assets/js/admin-mobile.js" defer></script>
     <style>
+        /* Base admin styles */
+        html.admin-page, body.admin-page { overflow-x: hidden; max-width: 100vw; }
         .sidebar-link { transition: all 0.2s; }
         .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.1); border-left: 3px solid #ed8936; }
         .card { transition: all 0.3s; }
@@ -56,12 +61,17 @@ $current_file = basename($_SERVER['PHP_SELF']);
         aside::-webkit-scrollbar { width: 4px; }
         aside::-webkit-scrollbar-track { background: transparent; }
         aside::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        /* Prevent text overflow */
+        .truncate-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        /* Table scroll indicator */
+        .table-scroll-hint { position: relative; }
+        .table-scroll-hint::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 30px; background: linear-gradient(to left, rgba(255,255,255,1), transparent); pointer-events: none; }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="flex min-h-screen">
+<body class="bg-gray-100 admin-page">
+    <div class="flex min-h-screen max-w-full overflow-x-hidden">
         <!-- Sidebar -->
-        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto z-50">
+        <aside class="w-64 bg-navy-900 fixed h-full overflow-y-auto overflow-x-hidden z-50 admin-sidebar">
             <!-- Profile -->
             <div class="p-4 text-center border-b border-navy-700">
                 <div class="w-16 h-16 mx-auto bg-navy-700 rounded-full flex items-center justify-center mb-3 overflow-hidden">
@@ -126,27 +136,27 @@ $current_file = basename($_SERVER['PHP_SELF']);
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 ml-64">
+        <main class="flex-1 ml-64 max-w-full overflow-x-hidden admin-main">
             <!-- Header -->
-            <header class="bg-white shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-                <div class="flex items-center gap-3">
+            <header class="bg-white shadow-sm px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                     <!-- Mobile menu toggle in header -->
-                    <button class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors" id="headerMenuToggle" aria-label="Toggle Menu">
+                    <button class="lg:hidden flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0" id="headerMenuToggle" aria-label="Toggle Menu">
                         <i class="fas fa-bars text-navy-700"></i>
                     </button>
-                    <div>
-                        <h1 class="text-2xl font-bold text-navy-900"><?php echo $page_title ?? 'Admin'; ?></h1>
-                        <p class="text-navy-500 text-sm hidden sm:block"><?php echo $page_subtitle ?? 'Quản lý hệ thống'; ?></p>
+                    <div class="min-w-0">
+                        <h1 class="text-lg sm:text-xl lg:text-2xl font-bold text-navy-900 truncate"><?php echo $page_title ?? 'Admin'; ?></h1>
+                        <p class="text-navy-500 text-xs sm:text-sm hidden sm:block truncate"><?php echo $page_subtitle ?? 'Quản lý hệ thống'; ?></p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <button class="relative text-navy-500 hover:text-navy-700 w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
-                        <i class="fas fa-bell text-lg sm:text-xl"></i>
+                <div class="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+                    <button class="relative text-navy-500 hover:text-navy-700 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-bell text-base sm:text-lg lg:text-xl"></i>
                         <?php if ($pending_orders + $new_contacts > 0): ?>
-                        <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"><?php echo $pending_orders + $new_contacts; ?></span>
+                        <span class="absolute top-0 right-0 sm:top-1 sm:right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center text-[10px]"><?php echo min(99, $pending_orders + $new_contacts); ?></span>
                         <?php endif; ?>
                     </button>
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-navy-200">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-navy-200 flex-shrink-0">
                         <?php if (!empty($_SESSION['admin_avatar'])): ?>
                             <img src="<?php echo htmlspecialchars($_SESSION['admin_avatar']); ?>" alt="Avatar" class="w-full h-full object-cover" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                             <div class="w-full h-full flex items-center justify-center" style="display:none;">
@@ -162,7 +172,7 @@ $current_file = basename($_SERVER['PHP_SELF']);
             </header>
 
             <!-- Page Content -->
-            <div class="p-6">
+            <div class="p-3 sm:p-4 lg:p-6 max-w-full overflow-x-hidden">
 
     <!-- Admin Mobile Toggle Button -->
     <button class="admin-mobile-toggle" id="adminMobileToggle" aria-label="Toggle Menu">
@@ -173,44 +183,86 @@ $current_file = basename($_SERVER['PHP_SELF']);
     <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
     
     <script>
-    // Admin Mobile Menu Toggle
+    // Admin Mobile Menu Toggle - Enhanced
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.querySelector('aside.w-64');
         const toggle = document.getElementById('adminMobileToggle');
+        const headerToggle = document.getElementById('headerMenuToggle');
         const overlay = document.getElementById('adminSidebarOverlay');
         
-        if (toggle && sidebar && overlay) {
-            toggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-                overlay.classList.toggle('active');
-                const icon = toggle.querySelector('i');
-                if (sidebar.classList.contains('active')) {
+        function openSidebar() {
+            if (sidebar && overlay) {
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                if (toggle) {
+                    const icon = toggle.querySelector('i');
                     icon.classList.remove('fa-bars');
                     icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
                 }
-            });
-            
-            overlay.addEventListener('click', function() {
+            }
+        }
+        
+        function closeSidebar() {
+            if (sidebar && overlay) {
                 sidebar.classList.remove('active');
                 overlay.classList.remove('active');
-                const icon = toggle.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            });
-            
-            // Close on escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && sidebar.classList.contains('active')) {
-                    sidebar.classList.remove('active');
-                    overlay.classList.remove('active');
+                document.body.style.overflow = '';
+                if (toggle) {
                     const icon = toggle.querySelector('i');
                     icon.classList.remove('fa-times');
                     icon.classList.add('fa-bars');
                 }
+            }
+        }
+        
+        function toggleSidebar() {
+            if (sidebar && sidebar.classList.contains('active')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        }
+        
+        if (toggle) {
+            toggle.addEventListener('click', toggleSidebar);
+        }
+        
+        if (headerToggle) {
+            headerToggle.addEventListener('click', toggleSidebar);
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', closeSidebar);
+        }
+        
+        // Close on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && sidebar && sidebar.classList.contains('active')) {
+                closeSidebar();
+            }
+        });
+        
+        // Close sidebar when clicking on a link (mobile)
+        if (sidebar) {
+            sidebar.querySelectorAll('a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        setTimeout(closeSidebar, 100);
+                    }
+                });
             });
         }
+        
+        // Handle resize - close sidebar when going to desktop
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.innerWidth >= 1024 && sidebar && sidebar.classList.contains('active')) {
+                    closeSidebar();
+                }
+            }, 100);
+        });
     });
     </script>

@@ -103,10 +103,10 @@ include 'includes/admin-layout.php';
 
 <!-- Tìm kiếm -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <form method="GET" class="flex gap-4">
+    <form method="GET" class="flex flex-col sm:flex-row gap-3">
         <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-            placeholder="Tìm tên, email, SĐT..." class="flex-1 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-        <button type="submit" class="bg-accent-500 text-white rounded-lg px-6 py-2 hover:bg-accent-600 transition">
+            placeholder="Tìm tên, email, SĐT..." class="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
+        <button type="submit" class="bg-accent-500 text-white rounded-lg px-6 py-2.5 hover:bg-accent-600 transition flex items-center justify-center">
             <i class="fas fa-search mr-2"></i>Tìm
         </button>
     </form>
@@ -114,6 +114,81 @@ include 'includes/admin-layout.php';
 
 <!-- Bảng người dùng -->
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <!-- Mobile: Card view -->
+    <div class="user-mobile-view block lg:hidden">
+        <?php foreach ($users as $user): 
+            $status = $user['status'] ?? 'active';
+            $status_classes = [
+                'active' => 'bg-green-100 text-green-700',
+                'locked' => 'bg-red-100 text-red-700',
+                'disabled' => 'bg-gray-100 text-gray-700'
+            ];
+            $status_labels = [
+                'active' => 'Hoạt động',
+                'locked' => 'Đã khóa',
+                'disabled' => 'Vô hiệu hóa'
+            ];
+        ?>
+        <div class="user-card p-4 border-b border-gray-100 last:border-b-0">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="w-12 h-12 rounded-full bg-navy-100 overflow-hidden flex items-center justify-center flex-shrink-0">
+                    <?php if (!empty($user['avt'])): ?>
+                        <img src="<?php echo htmlspecialchars($user['avt']); ?>" class="w-full h-full object-cover" referrerpolicy="no-referrer">
+                    <?php else: ?>
+                        <i class="fas fa-user text-navy-400 text-xl"></i>
+                    <?php endif; ?>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <p class="font-semibold text-navy-900"><?php echo htmlspecialchars($user['ho_ten']); ?></p>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-medium <?php echo $status_classes[$status] ?? $status_classes['active']; ?>">
+                            <?php echo $status_labels[$status] ?? 'Hoạt động'; ?>
+                        </span>
+                    </div>
+                    <p class="text-sm text-navy-500 mt-0.5 truncate"><?php echo htmlspecialchars($user['email']); ?></p>
+                    <p class="text-sm text-navy-500"><?php echo htmlspecialchars($user['so_dien_thoai'] ?? '-'); ?></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                <div class="bg-blue-50 rounded-lg p-2">
+                    <p class="text-xs text-navy-500">Đơn hàng</p>
+                    <p class="font-bold text-blue-600"><?php echo $user['order_count']; ?></p>
+                </div>
+                <div class="bg-green-50 rounded-lg p-2">
+                    <p class="text-xs text-navy-500">Tổng chi</p>
+                    <p class="font-bold text-green-600 text-sm"><?php echo number_format($user['total_spent'] ?? 0); ?>đ</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2">
+                    <p class="text-xs text-navy-500">Ngày ĐK</p>
+                    <p class="font-medium text-navy-700 text-sm"><?php echo date('d/m/Y', strtotime($user['created_at'])); ?></p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3">
+                <a href="admin-user-detail.php?id=<?php echo $user['id']; ?>" class="p-2 text-accent-500 hover:bg-accent-50 rounded-lg" title="Xem">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <?php if (($user['status'] ?? 'active') === 'active'): ?>
+                    <button onclick="lockUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" class="p-2 text-orange-500 hover:bg-orange-50 rounded-lg" title="Khóa">
+                        <i class="fas fa-lock"></i>
+                    </button>
+                <?php else: ?>
+                    <button onclick="activateUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" class="p-2 text-green-500 hover:bg-green-50 rounded-lg" title="Mở khóa">
+                        <i class="fas fa-unlock"></i>
+                    </button>
+                <?php endif; ?>
+                <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars(addslashes($user['ho_ten'])); ?>')" class="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <?php if (empty($users)): ?>
+        <div class="p-8 text-center text-navy-500">Không có người dùng nào</div>
+        <?php endif; ?>
+    </div>
+    
+    <!-- Desktop: Table view -->
+    <div class="user-table-view hidden lg:block overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
@@ -209,7 +284,8 @@ include 'includes/admin-layout.php';
             <?php endif; ?>
         </tbody>
     </table>
-</div>
+    </div><!-- End user-table-view -->
+</div><!-- End wrapper -->
 
 <!-- Phân trang -->
 <?php if ($total_pages > 1): ?>

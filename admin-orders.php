@@ -105,23 +105,23 @@ include 'includes/admin-layout.php';
 
 <!-- Bộ lọc -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-            placeholder="Tìm mã đơn, tên, SĐT..." class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+            placeholder="Tìm mã đơn, tên, SĐT..." class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
+        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
             <option value="">-- Trạng thái đơn --</option>
             <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Chờ xử lý</option>
             <option value="processing" <?php echo $status_filter === 'processing' ? 'selected' : ''; ?>>Đang xử lý</option>
             <option value="completed" <?php echo $status_filter === 'completed' ? 'selected' : ''; ?>>Hoàn thành</option>
             <option value="cancelled" <?php echo $status_filter === 'cancelled' ? 'selected' : ''; ?>>Đã hủy</option>
         </select>
-        <select name="payment" class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+        <select name="payment" class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
             <option value="">-- Thanh toán --</option>
             <option value="pending" <?php echo $payment_filter === 'pending' ? 'selected' : ''; ?>>Chưa thanh toán</option>
             <option value="paid" <?php echo $payment_filter === 'paid' ? 'selected' : ''; ?>>Đã thanh toán</option>
             <option value="failed" <?php echo $payment_filter === 'failed' ? 'selected' : ''; ?>>Thất bại</option>
         </select>
-        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2 hover:bg-accent-600 transition">
+        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2.5 hover:bg-accent-600 transition flex items-center justify-center">
             <i class="fas fa-search mr-2"></i>Lọc
         </button>
     </form>
@@ -129,6 +129,67 @@ include 'includes/admin-layout.php';
 
 <!-- Bảng đơn hàng -->
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <!-- Mobile: Card view -->
+    <div class="order-mobile-view block lg:hidden">
+        <?php foreach ($orders as $order): ?>
+        <div class="order-card p-4 border-b border-gray-100 last:border-b-0">
+            <div class="flex items-start justify-between mb-3">
+                <div>
+                    <p class="font-bold text-accent-500"><?php echo htmlspecialchars($order['ma_don_hang']); ?></p>
+                    <p class="text-xs text-navy-500 mt-0.5"><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></p>
+                </div>
+                <span class="text-lg font-bold text-green-600"><?php echo number_format($order['tong_tien']); ?>đ</span>
+            </div>
+            <div class="mb-3">
+                <p class="font-medium text-navy-900"><?php echo htmlspecialchars($order['ho_ten']); ?></p>
+                <p class="text-sm text-navy-500"><?php echo htmlspecialchars($order['so_dien_thoai']); ?></p>
+            </div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <form method="POST" class="flex-1">
+                    <input type="hidden" name="action" value="update_status">
+                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                    <select name="status" onchange="this.form.submit()" class="w-full text-xs border rounded-lg px-2 py-1.5 font-medium
+                        <?php echo match($order['trang_thai']) {
+                            'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                            'processing' => 'bg-blue-50 text-blue-700 border-blue-200',
+                            'completed' => 'bg-green-50 text-green-700 border-green-200',
+                            'cancelled' => 'bg-red-50 text-red-700 border-red-200',
+                            default => 'bg-gray-50 text-gray-700 border-gray-200'
+                        }; ?>">
+                        <option value="pending" <?php echo $order['trang_thai'] === 'pending' ? 'selected' : ''; ?>>Chờ xử lý</option>
+                        <option value="processing" <?php echo $order['trang_thai'] === 'processing' ? 'selected' : ''; ?>>Đang xử lý</option>
+                        <option value="completed" <?php echo $order['trang_thai'] === 'completed' ? 'selected' : ''; ?>>Hoàn thành</option>
+                        <option value="cancelled" <?php echo $order['trang_thai'] === 'cancelled' ? 'selected' : ''; ?>>Đã hủy</option>
+                    </select>
+                </form>
+                <form method="POST" class="flex-1">
+                    <input type="hidden" name="action" value="update_payment">
+                    <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                    <select name="payment_status" onchange="this.form.submit()" class="w-full text-xs border rounded-lg px-2 py-1.5 font-medium
+                        <?php echo match($order['trang_thai_thanh_toan']) {
+                            'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                            'paid' => 'bg-green-50 text-green-700 border-green-200',
+                            'failed' => 'bg-red-50 text-red-700 border-red-200',
+                            default => 'bg-gray-50 text-gray-700 border-gray-200'
+                        }; ?>">
+                        <option value="pending" <?php echo $order['trang_thai_thanh_toan'] === 'pending' ? 'selected' : ''; ?>>Chưa TT</option>
+                        <option value="paid" <?php echo $order['trang_thai_thanh_toan'] === 'paid' ? 'selected' : ''; ?>>Đã TT</option>
+                        <option value="failed" <?php echo $order['trang_thai_thanh_toan'] === 'failed' ? 'selected' : ''; ?>>Thất bại</option>
+                    </select>
+                </form>
+            </div>
+            <a href="admin-order-detail.php?id=<?php echo $order['id']; ?>" class="block w-full text-center py-2 bg-accent-50 text-accent-600 rounded-lg font-medium hover:bg-accent-100 transition">
+                <i class="fas fa-eye mr-1"></i> Xem chi tiết
+            </a>
+        </div>
+        <?php endforeach; ?>
+        <?php if (empty($orders)): ?>
+        <div class="p-8 text-center text-navy-500">Không có đơn hàng nào</div>
+        <?php endif; ?>
+    </div>
+    
+    <!-- Desktop: Table view -->
+    <div class="order-table-view hidden lg:block overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
@@ -205,7 +266,8 @@ include 'includes/admin-layout.php';
             <?php endif; ?>
         </tbody>
     </table>
-</div>
+    </div><!-- End order-table-view -->
+</div><!-- End wrapper -->
 
 <!-- Phân trang -->
 <?php if ($total_pages > 1): ?>

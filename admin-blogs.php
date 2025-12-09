@@ -156,9 +156,9 @@ include 'includes/admin-layout.php';
 ?>
 
 <!-- Header Actions -->
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
     <div class="text-sm text-navy-500">Tổng: <span class="font-bold text-navy-900"><?php echo $total; ?></span> bài viết</div>
-    <button onclick="openModal('add')" class="bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 transition">
+    <button onclick="openModal('add')" class="bg-accent-500 text-white px-4 py-2.5 rounded-lg hover:bg-accent-600 transition w-full sm:w-auto flex items-center justify-center">
         <i class="fas fa-plus mr-2"></i>Thêm bài viết
     </button>
 </div>
@@ -176,23 +176,23 @@ include 'includes/admin-layout.php';
 
 <!-- Bộ lọc -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-            placeholder="Tìm tiêu đề, tóm tắt..." class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
-        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+            placeholder="Tìm tiêu đề, tóm tắt..." class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
+        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
             <option value="">-- Tất cả trạng thái --</option>
             <option value="draft" <?php echo $status_filter === 'draft' ? 'selected' : ''; ?>>Nháp</option>
             <option value="published" <?php echo $status_filter === 'published' ? 'selected' : ''; ?>>Đã xuất bản</option>
             <option value="archived" <?php echo $status_filter === 'archived' ? 'selected' : ''; ?>>Lưu trữ</option>
         </select>
-        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2 hover:bg-accent-600 transition">
+        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2.5 hover:bg-accent-600 transition flex items-center justify-center sm:col-span-2 lg:col-span-1">
             <i class="fas fa-search mr-2"></i>Lọc
         </button>
     </form>
 </div>
 
 <!-- Danh sách bài viết dạng card -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
     <?php foreach ($blogs as $blog): ?>
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
         <!-- Ảnh bìa -->

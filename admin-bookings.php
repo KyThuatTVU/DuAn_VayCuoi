@@ -95,19 +95,19 @@ include 'includes/admin-layout.php';
 
 <!-- Bộ lọc -->
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-6">
-    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" 
-            placeholder="Tìm tên, SĐT, email..." class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500 focus:border-transparent">
+            placeholder="Tìm tên, SĐT, email..." class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 focus:border-transparent text-base">
         <input type="date" name="date" value="<?php echo htmlspecialchars($date_filter); ?>" 
-            class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
-        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500">
+            class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
+        <select name="status" class="border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
             <option value="">-- Tất cả trạng thái --</option>
             <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Chờ xác nhận</option>
             <option value="confirmed" <?php echo $status_filter === 'confirmed' ? 'selected' : ''; ?>>Đã xác nhận</option>
             <option value="attended" <?php echo $status_filter === 'attended' ? 'selected' : ''; ?>>Đã đến</option>
             <option value="cancelled" <?php echo $status_filter === 'cancelled' ? 'selected' : ''; ?>>Đã hủy</option>
         </select>
-        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2 hover:bg-accent-600 transition">
+        <button type="submit" class="bg-accent-500 text-white rounded-lg px-4 py-2.5 hover:bg-accent-600 transition flex items-center justify-center">
             <i class="fas fa-search mr-2"></i>Lọc
         </button>
     </form>
@@ -115,6 +115,64 @@ include 'includes/admin-layout.php';
 
 <!-- Bảng lịch hẹn -->
 <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <!-- Mobile: Card view -->
+    <div class="booking-mobile-view block lg:hidden">
+        <?php foreach ($bookings as $booking): ?>
+        <div class="booking-card p-4 border-b border-gray-100 last:border-b-0 <?php echo $booking['scheduled_date'] < date('Y-m-d') && $booking['status'] === 'pending' ? 'bg-red-50' : ''; ?>">
+            <div class="flex items-start justify-between mb-2">
+                <div>
+                    <p class="font-semibold text-navy-900"><?php echo htmlspecialchars($booking['name']); ?></p>
+                    <p class="text-sm text-navy-500"><i class="fas fa-phone mr-1 text-accent-500"></i><?php echo htmlspecialchars($booking['phone']); ?></p>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold <?php echo $booking['scheduled_date'] === date('Y-m-d') ? 'text-green-600' : 'text-navy-900'; ?>">
+                        <?php echo date('d/m/Y', strtotime($booking['scheduled_date'])); ?>
+                    </p>
+                    <p class="text-sm text-navy-600"><?php echo $booking['scheduled_time'] ? date('H:i', strtotime($booking['scheduled_time'])) : '-'; ?></p>
+                </div>
+            </div>
+            <?php if ($booking['ten_vay']): ?>
+            <div class="mb-3 p-2 bg-gray-50 rounded-lg">
+                <p class="text-sm"><span class="font-medium text-accent-500"><?php echo htmlspecialchars($booking['ma_vay']); ?></span> - <?php echo htmlspecialchars($booking['ten_vay']); ?></p>
+            </div>
+            <?php endif; ?>
+            <div class="flex items-center justify-between gap-2 mb-3">
+                <span class="px-2 py-1 bg-navy-100 text-navy-700 rounded-full text-xs"><?php echo $booking['number_of_persons']; ?> người</span>
+                <form method="POST" class="flex-1 max-w-[150px]">
+                    <input type="hidden" name="action" value="update_status">
+                    <input type="hidden" name="id" value="<?php echo $booking['id']; ?>">
+                    <select name="status" onchange="this.form.submit()" class="w-full text-xs border rounded-lg px-2 py-1.5 font-medium
+                        <?php echo match($booking['status']) {
+                            'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
+                            'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
+                            'attended' => 'bg-green-50 text-green-700 border-green-200',
+                            'cancelled' => 'bg-red-50 text-red-700 border-red-200',
+                            default => 'bg-gray-50 text-gray-700 border-gray-200'
+                        }; ?>">
+                        <option value="pending" <?php echo $booking['status'] === 'pending' ? 'selected' : ''; ?>>Chờ xác nhận</option>
+                        <option value="confirmed" <?php echo $booking['status'] === 'confirmed' ? 'selected' : ''; ?>>Đã xác nhận</option>
+                        <option value="attended" <?php echo $booking['status'] === 'attended' ? 'selected' : ''; ?>>Đã đến</option>
+                        <option value="cancelled" <?php echo $booking['status'] === 'cancelled' ? 'selected' : ''; ?>>Đã hủy</option>
+                    </select>
+                </form>
+            </div>
+            <div class="flex items-center justify-end gap-3">
+                <button onclick="showNote('<?php echo htmlspecialchars($booking['note'] ?? 'Không có ghi chú'); ?>')" class="p-2 text-accent-500 hover:bg-accent-50 rounded-lg" title="Ghi chú">
+                    <i class="fas fa-sticky-note"></i>
+                </button>
+                <button onclick="deleteBooking(<?php echo $booking['id']; ?>)" class="p-2 text-red-500 hover:bg-red-50 rounded-lg" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+        <?php endforeach; ?>
+        <?php if (empty($bookings)): ?>
+        <div class="p-8 text-center text-navy-500">Không có lịch hẹn nào</div>
+        <?php endif; ?>
+    </div>
+    
+    <!-- Desktop: Table view -->
+    <div class="booking-table-view hidden lg:block overflow-x-auto">
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>
@@ -194,7 +252,8 @@ include 'includes/admin-layout.php';
             <?php endif; ?>
         </tbody>
     </table>
-</div>
+    </div><!-- End booking-table-view -->
+</div><!-- End wrapper -->
 
 <!-- Phân trang -->
 <?php if ($total_pages > 1): ?>
