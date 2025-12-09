@@ -38,19 +38,19 @@ if (!$product) {
 // Lấy số lượng đánh giá (reactions) cho sản phẩm này
 $review_count = 0;
 $avg_rating = 5; // Mặc định 5 sao
-$reaction_result = $conn->query("SELECT COUNT(*) as total FROM reactions WHERE target_type = 'product' AND target_id = $product_id");
+$reaction_result = $conn->query("SELECT COUNT(*) as total FROM cam_xuc_san_pham WHERE vay_id = $product_id");
 if ($reaction_result) {
     $review_count = (int)$reaction_result->fetch_assoc()['total'];
 }
 
 // Tính rating dựa trên reactions (love = 5, like = 4, wow = 4, haha = 3, sad = 2, angry = 1)
-$rating_query = $conn->query("SELECT reaction_type, COUNT(*) as cnt FROM reactions WHERE target_type = 'product' AND target_id = $product_id GROUP BY reaction_type");
+$rating_query = $conn->query("SELECT loai_cam_xuc, COUNT(*) as cnt FROM cam_xuc_san_pham WHERE vay_id = $product_id GROUP BY loai_cam_xuc");
 if ($rating_query && $rating_query->num_rows > 0) {
     $rating_map = ['love' => 5, 'like' => 4, 'wow' => 4, 'haha' => 3, 'sad' => 2, 'angry' => 1];
     $total_score = 0;
     $total_count = 0;
     while ($r = $rating_query->fetch_assoc()) {
-        $score = $rating_map[$r['reaction_type']] ?? 3;
+        $score = $rating_map[$r['loai_cam_xuc']] ?? 3;
         $total_score += $score * $r['cnt'];
         $total_count += $r['cnt'];
     }
@@ -61,7 +61,7 @@ if ($rating_query && $rating_query->num_rows > 0) {
 
 // Lấy số bình luận
 $comment_count = 0;
-$comment_result = $conn->query("SELECT COUNT(*) as total FROM comments WHERE target_type = 'product' AND target_id = $product_id AND status = 'approved'");
+$comment_result = $conn->query("SELECT COUNT(*) as total FROM binh_luan_san_pham WHERE vay_id = $product_id AND parent_id IS NULL");
 if ($comment_result) {
     $comment_count = (int)$comment_result->fetch_assoc()['total'];
 }

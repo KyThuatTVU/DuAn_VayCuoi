@@ -1,0 +1,34 @@
+# Environment files (contains secrets)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+debug-*.txt
+
+# Node modules (if using npm)
+node_modules/
+
+# Uploads (user-generated content)
+uploads/avatars/*
+uploads/blogs/*
+uploads/dresses/*
+!uploads/avatars/.gitkeep
+!uploads/blogs/.gitkeep
+!uploads/dresses/.gitkeep
+
+# Temp files
+*.tmp
+*.bak
+*.swp
