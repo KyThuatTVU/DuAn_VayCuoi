@@ -21,6 +21,10 @@ $new_contacts = $result->fetch_assoc()['total'];
 $result = $conn->query("SELECT COUNT(*) as total FROM dat_lich_thu_vay WHERE status = 'pending'");
 $pending_bookings = $result->fetch_assoc()['total'];
 
+// Đếm thông báo chưa đọc
+$result = $conn->query("SELECT COUNT(*) as total FROM admin_notifications WHERE is_read = 0");
+$unread_notifications = $result->fetch_assoc()['total'];
+
 // Lấy tất cả nhóm cài đặt
 $groups = getSettingGroups($conn);
 
@@ -122,6 +126,10 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                 </a>
                 <a href="admin-payments.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
+                </a>
+                <a href="admin-notifications.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-bell w-5"></i> Thông báo
+                    <?php if($unread_notifications > 0): ?><span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $unread_notifications; ?></span><?php endif; ?>
                 </a>
                 <a href="admin-settings.php" class="sidebar-link active flex items-center gap-3 px-4 py-3 text-white rounded mt-1">
                     <i class="fas fa-cog w-5"></i> Cài đặt
