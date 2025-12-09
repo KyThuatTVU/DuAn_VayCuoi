@@ -30,8 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
     
     if ($action === 'lock') {
-        $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'locked' WHERE id = ?");
-        $stmt->bind_param("i", $id);
+        // Kiểm tra xem có cột locked_at không
+        $check_locked_col = $conn->query("SHOW COLUMNS FROM nguoi_dung LIKE 'locked_at'");
+        if ($check_locked_col->num_rows > 0) {
+            $locked_reason = "Khóa thủ công bởi admin";
+            $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'locked', locked_at = NOW(), locked_reason = ? WHERE id = ?");
+            $stmt->bind_param("si", $locked_reason, $id);
+        } else {
+            $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'locked' WHERE id = ?");
+            $stmt->bind_param("i", $id);
+        }
         $stmt->execute();
         $_SESSION['admin_success'] = 'Đã khóa tài khoản người dùng!';
     }
@@ -43,11 +51,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $_SESSION['admin_success'] = 'Đã vô hiệu hóa tài khoản người dùng!';
     }
     
-    if ($action === 'activate') {
-        $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'active' WHERE id = ?");
+    if ($action === 'activate' || $action === 'unlock') {
+        // Reset cả login_attempts khi mở khóa
+        $check_attempts_col = $conn->query("SHOW COLUMNS FROM nguoi_dung LIKE 'login_attempts'");
+        if ($check_attempts_col->num_rows > 0) {
+            $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'active', login_attempts = 0, locked_at = NULL, locked_reason = NULL, last_failed_login = NULL WHERE id = ?");
+        } else {
+            $stmt = $conn->prepare("UPDATE nguoi_dung SET status = 'active' WHERE id = ?");
+        }
         $stmt->bind_param("i", $id);
         $stmt->execute();
-        $_SESSION['admin_success'] = 'Đã kích hoạt lại tài khoản người dùng!';
+        $_SESSION['admin_success'] = 'Đã kích hoạt/mở khóa tài khoản người dùng!';
     }
     
     header('Location: admin-users.php');
@@ -65,12 +79,19 @@ $params = [];
 $types = "";
 
 if ($search) {
-    $where .= " AND (ho_ten LIKE ? OR email LIKE ? OR so_dien_thoai LIKE ?)";
-    $search_param = "%$search%";
-    $params[] = $search_param;
-    $params[] = $search_param;
-    $params[] = $search_param;
-    $types .= "sss";
+    // Nếu tìm kiếm theo status
+    if ($search === 'locked' || $search === 'disabled' || $search === 'active') {
+        $where .= " AND COALESCE(status, 'active') = ?";
+        $params[] = $search;
+        $types .= "s";
+    } else {
+        $where .= " AND (ho_ten LIKE ? OR email LIKE ? OR so_dien_thoai LIKE ?)";
+        $search_param = "%$search%";
+        $params[] = $search_param;
+        $params[] = $search_param;
+        $params[] = $search_param;
+        $types .= "sss";
+    }
 }
 
 $count_sql = "SELECT COUNT(*) as total FROM nguoi_dung WHERE $where";
@@ -80,10 +101,28 @@ $stmt->execute();
 $total = $stmt->get_result()->fetch_assoc()['total'];
 $total_pages = ceil($total / $per_page);
 
-$sql = "SELECT n.*, COALESCE(n.status, 'active') as status,
-        (SELECT COUNT(*) FROM don_hang WHERE nguoi_dung_id = n.id) as order_count,
-        (SELECT SUM(tong_tien) FROM don_hang WHERE nguoi_dung_id = n.id AND trang_thai_thanh_toan = 'paid') as total_spent
-        FROM nguoi_dung n WHERE $where ORDER BY n.created_at DESC LIMIT ? OFFSET ?";
+// Kiểm tra xem có các cột mới không
+$has_lock_columns = false;
+$check_lock_col = $conn->query("SHOW COLUMNS FROM nguoi_dung LIKE 'locked_at'");
+if ($check_lock_col && $check_lock_col->num_rows > 0) {
+    $has_lock_columns = true;
+}
+
+// Query phù hợp với cấu trúc bảng
+if ($has_lock_columns) {
+    $sql = "SELECT n.*, COALESCE(n.status, 'active') as status,
+            COALESCE(n.login_attempts, 0) as login_attempts,
+            n.locked_at, n.locked_reason, n.last_failed_login,
+            (SELECT COUNT(*) FROM don_hang WHERE nguoi_dung_id = n.id) as order_count,
+            (SELECT SUM(tong_tien) FROM don_hang WHERE nguoi_dung_id = n.id AND trang_thai_thanh_toan = 'paid') as total_spent
+            FROM nguoi_dung n WHERE $where ORDER BY n.created_at DESC LIMIT ? OFFSET ?";
+} else {
+    $sql = "SELECT n.*, COALESCE(n.status, 'active') as status,
+            0 as login_attempts, NULL as locked_at, NULL as locked_reason, NULL as last_failed_login,
+            (SELECT COUNT(*) FROM don_hang WHERE nguoi_dung_id = n.id) as order_count,
+            (SELECT SUM(tong_tien) FROM don_hang WHERE nguoi_dung_id = n.id AND trang_thai_thanh_toan = 'paid') as total_spent
+            FROM nguoi_dung n WHERE $where ORDER BY n.created_at DESC LIMIT ? OFFSET ?";
+}
 $params[] = $per_page;
 $params[] = $offset;
 $types .= "ii";
@@ -92,12 +131,34 @@ $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
+// Đếm số tài khoản bị khóa
+$locked_count = 0;
+$locked_result = $conn->query("SELECT COUNT(*) as cnt FROM nguoi_dung WHERE status = 'locked'");
+if ($locked_result) {
+    $locked_count = $locked_result->fetch_assoc()['cnt'];
+}
+
 include 'includes/admin-layout.php';
 ?>
 
 <?php if (isset($_SESSION['admin_success'])): ?>
     <div class="mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
         <?php echo $_SESSION['admin_success']; unset($_SESSION['admin_success']); ?>
+    </div>
+<?php endif; ?>
+
+<?php if ($locked_count > 0): ?>
+    <div class="mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-exclamation-triangle text-xl"></i>
+            <div>
+                <p class="font-semibold">Có <?php echo $locked_count; ?> tài khoản đang bị khóa</p>
+                <p class="text-sm">Một số tài khoản có thể bị khóa do đăng nhập sai mật khẩu nhiều lần. Hãy kiểm tra và mở khóa nếu cần.</p>
+            </div>
+        </div>
+        <a href="?search=locked" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm whitespace-nowrap">
+            <i class="fas fa-filter mr-1"></i> Lọc tài khoản khóa
+        </a>
     </div>
 <?php endif; ?>
 
@@ -239,6 +300,12 @@ include 'includes/admin-layout.php';
                     <span class="px-3 py-1 rounded-full text-xs font-medium <?php echo $status_classes[$status] ?? $status_classes['active']; ?>">
                         <?php echo $status_labels[$status] ?? 'Hoạt động'; ?>
                     </span>
+                    <?php if ($status === 'locked' && !empty($user['locked_reason'])): ?>
+                    <div class="mt-1 text-xs text-red-500" title="<?php echo htmlspecialchars($user['locked_reason']); ?>">
+                        <i class="fas fa-info-circle"></i> 
+                        <?php echo htmlspecialchars(mb_substr($user['locked_reason'], 0, 25)); ?><?php echo mb_strlen($user['locked_reason']) > 25 ? '...' : ''; ?>
+                    </div>
+                    <?php endif; ?>
                 </td>
                 <td class="px-6 py-4">
                     <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"><?php echo $user['order_count']; ?></span>
