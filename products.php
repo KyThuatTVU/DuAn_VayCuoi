@@ -37,7 +37,7 @@ if ($check_table && $check_table->num_rows > 0) {
 // Xây dựng SQL query
 if ($size_table_exists) {
     $sql = "SELECT v.*, 
-            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+            COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1)) as anh_dai_dien,
             (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
             (SELECT GROUP_CONCAT(DISTINCT size ORDER BY FIELD(size, 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL') SEPARATOR ',') 
              FROM vay_cuoi_size WHERE vay_id = v.id) as sizes
@@ -47,7 +47,7 @@ if ($size_table_exists) {
 } else {
     // Nếu bảng size chưa tồn tại, không lấy sizes
     $sql = "SELECT v.*, 
-            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+            COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1)) as anh_dai_dien,
             (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
             NULL as sizes
             FROM vay_cuoi v 
@@ -274,6 +274,15 @@ require_once 'includes/header.php';
                                 <div class="text-sm text-gray-500 font-medium">
                                     Mã: <?php echo htmlspecialchars($product['ma_vay']); ?>
                                 </div>
+                                
+                                <?php if (!empty($product['size'])): ?>
+                                <div class="flex items-center gap-1.5 text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="font-medium">Size: <?php echo htmlspecialchars($product['size']); ?></span>
+                                </div>
+                                <?php endif; ?>
                                 
                                 <?php if(!empty($product['mo_ta'])): ?>
                                 <p class="text-sm text-gray-600 line-clamp-2">

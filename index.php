@@ -6,7 +6,7 @@ require_once 'includes/config.php';
 $featured_products = [];
 if ($conn) {
     $sql = "SELECT v.*, 
-            (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien
+            COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1)) as anh_dai_dien
             FROM vay_cuoi v 
             WHERE v.so_luong_ton > 0 
             ORDER BY v.created_at DESC 

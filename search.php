@@ -42,7 +42,7 @@ if (!empty($search_query)) {
     
     if ($size_table_exists) {
         $sql = "SELECT v.*, 
-                (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+                COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1)) as anh_dai_dien,
                 (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
                 (SELECT GROUP_CONCAT(DISTINCT size ORDER BY FIELD(size, 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL') SEPARATOR ',') 
                  FROM vay_cuoi_size WHERE vay_id = v.id) as sizes
@@ -52,7 +52,7 @@ if (!empty($search_query)) {
                 ORDER BY $order_by";
     } else {
         $sql = "SELECT v.*, 
-                (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1) as anh_dai_dien,
+                COALESCE(v.hinh_anh_chinh, (SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = v.id ORDER BY is_primary DESC, sort_order ASC LIMIT 1)) as anh_dai_dien,
                 (SELECT COUNT(*) FROM hinh_anh_vay_cuoi WHERE vay_id = v.id) as so_luong_hinh,
                 NULL as sizes
                 FROM vay_cuoi v 
@@ -214,6 +214,13 @@ require_once 'includes/header.php';
                             <div class="product-style">
                                 <i class="fas fa-tag"></i>
                                 <span><?php echo htmlspecialchars($product['phong_cach']); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($product['size'])): ?>
+                            <div class="product-style">
+                                <i class="fas fa-ruler-combined"></i>
+                                <span>Size: <?php echo htmlspecialchars($product['size']); ?></span>
                             </div>
                         <?php endif; ?>
                         

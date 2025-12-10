@@ -23,6 +23,12 @@ if ($check_column->num_rows == 0) {
     $conn->query("ALTER TABLE vay_cuoi ADD COLUMN hinh_anh_chinh VARCHAR(500) NULL AFTER so_luong_ton");
 }
 
+// Kiểm tra và thêm cột size nếu chưa có
+$check_size = $conn->query("SHOW COLUMNS FROM vay_cuoi LIKE 'size'");
+if ($check_size->num_rows == 0) {
+    $conn->query("ALTER TABLE vay_cuoi ADD COLUMN size VARCHAR(100) NULL COMMENT 'Kích cỡ váy' AFTER so_luong_ton");
+}
+
 // Xử lý thêm/sửa/xóa
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -33,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mo_ta = trim($_POST['mo_ta']);
         $gia_thue = floatval($_POST['gia_thue']);
         $so_luong = intval($_POST['so_luong_ton']);
+        $size = trim($_POST['size'] ?? '');
         $hinh_anh_chinh = '';
         
         // Upload ảnh chính
@@ -44,8 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        $stmt = $conn->prepare("INSERT INTO vay_cuoi (ma_vay, ten_vay, mo_ta, gia_thue, so_luong_ton, hinh_anh_chinh) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssdis", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $hinh_anh_chinh);
+        $stmt = $conn->prepare("INSERT INTO vay_cuoi (ma_vay, ten_vay, mo_ta, gia_thue, so_luong_ton, size, hinh_anh_chinh) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssdisg", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $size, $hinh_anh_chinh);
         
         if ($stmt->execute()) {
             $vay_id = $conn->insert_id;
@@ -78,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $mo_ta = trim($_POST['mo_ta']);
         $gia_thue = floatval($_POST['gia_thue']);
         $so_luong = intval($_POST['so_luong_ton']);
+        $size = trim($_POST['size'] ?? '');
         
         // Upload ảnh chính mới nếu có
         if (!empty($_FILES['main_image']['name']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
@@ -90,12 +98,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $file_name = time() . '_main_' . basename($_FILES['main_image']['name']);
             $file_path = $upload_dir . $file_name;
             if (move_uploaded_file($_FILES['main_image']['tmp_name'], $file_path)) {
-                $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=?, hinh_anh_chinh=? WHERE id=?");
-                $stmt->bind_param("sssdisi", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $file_path, $id);
+                $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=?, size=?, hinh_anh_chinh=? WHERE id=?");
+                $stmt->bind_param("sssdissi", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $size, $file_path, $id);
             }
         } else {
-            $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=? WHERE id=?");
-            $stmt->bind_param("sssdii", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $id);
+            $stmt = $conn->prepare("UPDATE vay_cuoi SET ma_vay=?, ten_vay=?, mo_ta=?, gia_thue=?, so_luong_ton=?, size=? WHERE id=?");
+            $stmt->bind_param("sssdisi", $ma_vay, $ten_vay, $mo_ta, $gia_thue, $so_luong, $size, $id);
         }
         $stmt->execute();
         
@@ -255,7 +263,12 @@ include 'includes/admin-layout.php';
                 </div>
             </div>
             <div class="flex items-center justify-between gap-2 mb-3">
-                <span class="text-lg font-bold text-green-600"><?php echo number_format($dress['gia_thue']); ?>đ</span>
+                <div class="flex flex-col gap-1">
+                    <span class="text-lg font-bold text-green-600"><?php echo number_format($dress['gia_thue']); ?>đ</span>
+                    <?php if (!empty($dress['size'])): ?>
+                    <span class="text-xs text-navy-600"><i class="fas fa-ruler-combined mr-1"></i><?php echo htmlspecialchars($dress['size']); ?></span>
+                    <?php endif; ?>
+                </div>
                 <span class="px-2 py-0.5 rounded-full text-xs font-medium <?php echo $dress['so_luong_ton'] > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                     Tồn: <?php echo $dress['so_luong_ton']; ?>
                 </span>
@@ -294,6 +307,7 @@ include 'includes/admin-layout.php';
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Váy cưới</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Mã váy</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Giá thuê</th>
+                <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Size</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Tồn kho</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Ảnh</th>
                 <th class="px-6 py-3 text-left text-xs font-semibold text-navy-600 uppercase">Thao tác</th>
@@ -319,6 +333,13 @@ include 'includes/admin-layout.php';
                 </td>
                 <td class="px-6 py-4 font-medium text-accent-500"><?php echo htmlspecialchars($dress['ma_vay']); ?></td>
                 <td class="px-6 py-4 font-bold text-green-600"><?php echo number_format($dress['gia_thue']); ?>đ</td>
+                <td class="px-6 py-4 text-navy-700">
+                    <?php if (!empty($dress['size'])): ?>
+                        <i class="fas fa-ruler-combined text-navy-400 mr-1"></i><?php echo htmlspecialchars($dress['size']); ?>
+                    <?php else: ?>
+                        <span class="text-gray-400 italic">-</span>
+                    <?php endif; ?>
+                </td>
                 <td class="px-6 py-4">
                     <span class="px-3 py-1 rounded-full text-sm font-medium <?php echo $dress['so_luong_ton'] > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                         <?php echo $dress['so_luong_ton']; ?>
@@ -348,7 +369,7 @@ include 'includes/admin-layout.php';
             </tr>
             <?php endforeach; ?>
             <?php if (empty($dresses)): ?>
-            <tr><td colspan="6" class="px-6 py-8 text-center text-navy-500">Không có váy cưới nào</td></tr>
+            <tr><td colspan="7" class="px-6 py-8 text-center text-navy-500">Không có váy cưới nào</td></tr>
             <?php endif; ?>
         </tbody>
     </table>
@@ -400,6 +421,10 @@ include 'includes/admin-layout.php';
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1">Giá thuê (VNĐ)</label>
                         <input type="number" name="gia_thue" id="gia_thue" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-navy-700 mb-1"><i class="fas fa-ruler-combined mr-1"></i>Kích cỡ (Size)</label>
+                        <input type="text" name="size" id="size" placeholder="VD: S, M, L, XL hoặc số đo 85-65-90" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1">Mô tả</label>
@@ -513,6 +538,7 @@ include 'includes/admin-layout.php';
             document.getElementById('mo_ta').value = data.mo_ta || '';
             document.getElementById('gia_thue').value = data.gia_thue;
             document.getElementById('so_luong_ton').value = data.so_luong_ton;
+            document.getElementById('size').value = data.size || '';
         } else {
             currentDressData = null;
             document.getElementById('modalTitle').textContent = 'Thêm váy cưới';

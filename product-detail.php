@@ -16,13 +16,18 @@ if ($product_id > 0) {
     $product = $result->fetch_assoc();
     
     if ($product) {
-        // Lấy ảnh từ bảng hinh_anh_vay_cuoi (ảnh chính trước, sau đó theo sort_order)
+        // Lấy ảnh gallery từ bảng hinh_anh_vay_cuoi
         $img_result = $conn->query("SELECT url FROM hinh_anh_vay_cuoi WHERE vay_id = $product_id ORDER BY is_primary DESC, sort_order ASC");
         while ($img = $img_result->fetch_assoc()) {
             $images[] = $img['url'];
         }
         
-        // Nếu không có ảnh nào, dùng ảnh mặc định
+        // Nếu không có ảnh gallery, dùng ảnh chính từ bảng vay_cuoi
+        if (empty($images) && !empty($product['hinh_anh_chinh'])) {
+            $images = [$product['hinh_anh_chinh']];
+        }
+        
+        // Nếu vẫn không có ảnh nào, dùng ảnh mặc định
         if (empty($images)) {
             $images = ['images/vay1.jpg'];
         }
@@ -67,6 +72,16 @@ if ($comment_result) {
 }
 
 // Chuẩn bị dữ liệu hiển thị
+// Lấy size từ database hoặc tạo mảng mặc định
+$sizes_arr = [];
+if (!empty($product['size'])) {
+    // Nếu có size trong DB (có thể là "S, M, L" hoặc "S" hoặc "85-65-90")
+    $sizes_arr = array_map('trim', explode(',', $product['size']));
+} else {
+    // Mặc định nếu không có
+    $sizes_arr = ['S', 'M', 'L', 'XL'];
+}
+
 $product_data = [
     'id' => $product['id'],
     'name' => $product['ten_vay'],
@@ -76,7 +91,8 @@ $product_data = [
     'stock' => $product['so_luong_ton'],
     'images' => $images,
     'description' => $product['mo_ta'] ?? 'Váy cưới cao cấp với thiết kế tinh tế, phù hợp cho ngày trọng đại của bạn.',
-    'sizes' => ['S', 'M', 'L', 'XL'], // Có thể mở rộng thêm bảng sizes sau
+    'sizes' => $sizes_arr,
+    'size_display' => !empty($product['size']) ? $product['size'] : 'Chưa cập nhật',
     'rating' => $avg_rating,
     'reviews' => $review_count + $comment_count
 ];
@@ -206,6 +222,16 @@ require_once 'includes/header.php';
                 <p class="price-note">* Giá thuê cho 1 ngày (chưa bao gồm phụ kiện)</p>
 
                 <p class="product-description"><?php echo nl2br(htmlspecialchars($product_data['description'])); ?></p>
+
+                <?php if (!empty($product_data['size_display']) && $product_data['size_display'] != 'Chưa cập nhật'): ?>
+                <div class="mb-4 flex items-center gap-2 text-gray-700">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                    <strong>Kích cỡ:</strong> 
+                    <span class="font-semibold text-blue-600"><?php echo htmlspecialchars($product_data['size_display']); ?></span>
+                </div>
+                <?php endif; ?>
 
                 <div class="size-selector">
                     <h3>Chọn Size</h3>

@@ -125,6 +125,9 @@ function displayCart(items, total) {
                         <div>
                             <h3 class="text-xl font-bold text-gray-800 mb-1">${item.ten_vay}</h3>
                             <p class="text-gray-600 text-sm">Mã: ${item.ma_vay}</p>
+                            ${item.size ? `<p class="text-blue-600 text-sm font-medium mt-1">
+                                <i class="fas fa-ruler-combined mr-1"></i>Size: ${item.size}
+                            </p>` : ''}
                         </div>
                         <button onclick="removeItem(${item.cart_id})" 
                                 class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-all"

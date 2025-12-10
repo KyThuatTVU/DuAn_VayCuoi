@@ -238,6 +238,7 @@ function getCart($conn, $user_id) {
                 gh.vay_id,
                 vc.ten_vay,
                 vc.ma_vay,
+                vc.size,
                 vc.gia_thue as gia_thue_moi_ngay,
                 gh.so_luong,
                 gh.ngay_bat_dau_thue,

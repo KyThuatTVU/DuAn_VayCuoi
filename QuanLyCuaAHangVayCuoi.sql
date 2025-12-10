@@ -35,6 +35,7 @@ CREATE TABLE vay_cuoi (
    mo_ta TEXT,
    gia_thue DECIMAL(12,2) NOT NULL,
    so_luong_ton INT DEFAULT 0,
+   size VARCHAR(100) NULL COMMENT 'Kích cỡ váy: S, M, L, XL hoặc số đo cụ thể',
    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 CREATE TABLE hinh_anh_vay_cuoi (
