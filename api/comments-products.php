@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once '../includes/notification-helper.php';
 
 header('Content-Type: application/json');
 
@@ -105,6 +106,9 @@ if ($action === 'add') {
     $reply_to_id = $parent_id; // Lưu ID comment đang được reply (để hiển thị @tên)
     $user_id = $_SESSION['user_id'];
     
+    // Debug log
+    error_log("[COMMENTS-PRODUCTS] ADD - user_id: $user_id, vay_id: $vay_id, parent_id: " . ($parent_id ?? 'NULL') . ", reply_to_id: " . ($reply_to_id ?? 'NULL'));
+    
     if ($vay_id <= 0) {
         echo json_encode(['success' => false, 'message' => 'ID sản phẩm không hợp lệ']);
         exit();
@@ -152,6 +156,55 @@ if ($action === 'add') {
         $get_stmt->bind_param("i", $comment_id);
         $get_stmt->execute();
         $comment = $get_stmt->get_result()->fetch_assoc();
+        
+        // Gửi thông báo cho người được trả lời (nếu có)
+        if ($reply_to_id) {
+            error_log("[COMMENTS-PRODUCTS] Attempting to send notification for reply_to_id: $reply_to_id");
+            try {
+                // Lấy thông tin comment gốc và sản phẩm
+                // Kiểm tra xem cột is_admin_reply có tồn tại không
+                $has_admin_reply_col = $conn->query("SHOW COLUMNS FROM binh_luan_san_pham LIKE 'is_admin_reply'");
+                $select_admin_reply = ($has_admin_reply_col && $has_admin_reply_col->num_rows > 0) ? 'bl.is_admin_reply' : '0 as is_admin_reply';
+                
+                $original_sql = "SELECT bl.nguoi_dung_id, $select_admin_reply, v.ten_vay 
+                                 FROM binh_luan_san_pham bl 
+                                 JOIN vay_cuoi v ON bl.vay_id = v.id 
+                                 WHERE bl.id = ?";
+                $original_stmt = $conn->prepare($original_sql);
+                if ($original_stmt) {
+                    $original_stmt->bind_param("i", $reply_to_id);
+                    $original_stmt->execute();
+                    $original_comment = $original_stmt->get_result()->fetch_assoc();
+                    
+                    // Kiểm tra: có nguoi_dung_id (không phải admin reply) VÀ không phải chính mình
+                    $is_admin_reply = isset($original_comment['is_admin_reply']) ? (int)$original_comment['is_admin_reply'] : 0;
+                    $owner_user_id = isset($original_comment['nguoi_dung_id']) ? (int)$original_comment['nguoi_dung_id'] : 0;
+                    
+                    if ($original_comment && $owner_user_id > 0 && $is_admin_reply != 1 && $owner_user_id != $user_id) {
+                        // Lấy tên người trả lời
+                        $replier_name = $comment['ho_ten'] ?? 'Người dùng';
+                        
+                        // Gửi thông báo cho chủ bình luận gốc (truyền comment_id để scroll đến đúng vị trí)
+                        $notify_result = notifyCommentReply(
+                            $conn,
+                            $owner_user_id,
+                            $user_id,
+                            $replier_name,
+                            'product',
+                            $vay_id,
+                            $original_comment['ten_vay'] ?? 'Sản phẩm',
+                            $noi_dung,
+                            $comment_id  // ID của comment mới để scroll đến
+                        );
+                        // Log để debug
+                        error_log("[COMMENT_REPLY] Product - Owner: $owner_user_id, Replier: $user_id, Name: $replier_name, CommentID: $comment_id, Result: " . ($notify_result ? 'SUCCESS' : 'FAILED'));
+                    }
+                }
+            } catch (Exception $e) {
+                // Log lỗi để debug
+                error_log("Notification error in comments-products.php: " . $e->getMessage());
+            }
+        }
         
         echo json_encode(['success' => true, 'message' => 'Đã thêm bình luận thành công', 'comment' => $comment]);
     } else {

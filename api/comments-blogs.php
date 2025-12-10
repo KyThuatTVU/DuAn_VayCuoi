@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once '../includes/notification-helper.php';
 
 header('Content-Type: application/json');
 
@@ -152,6 +153,54 @@ if ($action === 'add') {
         $get_stmt->bind_param("i", $comment_id);
         $get_stmt->execute();
         $comment = $get_stmt->get_result()->fetch_assoc();
+        
+        // Gửi thông báo cho người được trả lời (nếu có)
+        if ($reply_to_id) {
+            try {
+                // Lấy thông tin comment gốc và bài viết
+                // Kiểm tra xem cột is_admin_reply có tồn tại không
+                $has_admin_reply_col = $conn->query("SHOW COLUMNS FROM binh_luan_bai_viet LIKE 'is_admin_reply'");
+                $select_admin_reply = ($has_admin_reply_col && $has_admin_reply_col->num_rows > 0) ? 'bl.is_admin_reply' : '0 as is_admin_reply';
+                
+                $original_sql = "SELECT bl.nguoi_dung_id, $select_admin_reply, bv.title as tieu_de 
+                                 FROM binh_luan_bai_viet bl 
+                                 JOIN tin_tuc_cuoi_hoi bv ON bl.bai_viet_id = bv.id 
+                                 WHERE bl.id = ?";
+                $original_stmt = $conn->prepare($original_sql);
+                if ($original_stmt) {
+                    $original_stmt->bind_param("i", $reply_to_id);
+                    $original_stmt->execute();
+                    $original_comment = $original_stmt->get_result()->fetch_assoc();
+                    
+                    // Kiểm tra: có nguoi_dung_id (không phải admin reply) VÀ không phải chính mình
+                    $is_admin_reply = isset($original_comment['is_admin_reply']) ? (int)$original_comment['is_admin_reply'] : 0;
+                    $owner_user_id = isset($original_comment['nguoi_dung_id']) ? (int)$original_comment['nguoi_dung_id'] : 0;
+                    
+                    if ($original_comment && $owner_user_id > 0 && $is_admin_reply != 1 && $owner_user_id != $user_id) {
+                        // Lấy tên người trả lời
+                        $replier_name = $comment['ho_ten'] ?? 'Người dùng';
+                        
+                        // Gửi thông báo cho chủ bình luận gốc (truyền comment_id để scroll đến đúng vị trí)
+                        $notify_result = notifyCommentReply(
+                            $conn,
+                            $owner_user_id,
+                            $user_id,
+                            $replier_name,
+                            'blog',
+                            $bai_viet_id,
+                            $original_comment['tieu_de'] ?? 'Bài viết',
+                            $noi_dung,
+                            $comment_id  // ID của comment mới để scroll đến
+                        );
+                        // Log để debug
+                        error_log("[COMMENT_REPLY] Blog - Owner: $owner_user_id, Replier: $user_id, Name: $replier_name, CommentID: $comment_id, Result: " . ($notify_result ? 'SUCCESS' : 'FAILED'));
+                    }
+                }
+            } catch (Exception $e) {
+                // Log lỗi để debug
+                error_log("Notification error in comments-blogs.php: " . $e->getMessage());
+            }
+        }
         
         echo json_encode(['success' => true, 'message' => 'Đã thêm bình luận thành công', 'comment' => $comment]);
     } else {

@@ -16,19 +16,68 @@
  * @return bool
  */
 function createNotification($conn, $user_id, $type, $title, $content, $link = null, $reference_id = null, $reference_type = null) {
-    // Kiểm tra bảng có tồn tại không
-    $check = $conn->query("SHOW TABLES LIKE 'thong_bao'");
-    if (!$check || $check->num_rows === 0) {
+    try {
+        // Validate user_id
+        $user_id = (int)$user_id;
+        if ($user_id <= 0) {
+            error_log("[createNotification] Invalid user_id: $user_id");
+            return false;
+        }
+        
+        // Kiểm tra bảng có tồn tại không
+        $check = $conn->query("SHOW TABLES LIKE 'thong_bao'");
+        if (!$check || $check->num_rows === 0) {
+            error_log("[createNotification] Table thong_bao not found, creating...");
+            // Tự động tạo bảng nếu chưa có
+            $create_sql = "CREATE TABLE IF NOT EXISTS thong_bao (
+                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                nguoi_dung_id BIGINT NOT NULL,
+                loai VARCHAR(50) NOT NULL DEFAULT 'system',
+                tieu_de VARCHAR(255) NOT NULL,
+                noi_dung TEXT NOT NULL,
+                link VARCHAR(500) NULL,
+                reference_id BIGINT NULL,
+                reference_type VARCHAR(50) NULL,
+                da_doc TINYINT(1) DEFAULT 0,
+                read_at DATETIME NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_nguoi_dung_id (nguoi_dung_id),
+                INDEX idx_da_doc (da_doc)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            if (!$conn->query($create_sql)) {
+                error_log("[createNotification] Failed to create table: " . $conn->error);
+                return false;
+            }
+        }
+        
+        // Convert reference_id to int or null
+        $reference_id = $reference_id !== null ? (int)$reference_id : null;
+        
+        // Sử dụng query trực tiếp thay vì prepared statement để tránh lỗi type
+        $user_id_safe = (int)$user_id;
+        $type_safe = $conn->real_escape_string($type);
+        $title_safe = $conn->real_escape_string($title);
+        $content_safe = $conn->real_escape_string($content);
+        $link_safe = $link ? "'" . $conn->real_escape_string($link) . "'" : "NULL";
+        $ref_id_safe = $reference_id !== null ? (int)$reference_id : "NULL";
+        $ref_type_safe = $reference_type ? "'" . $conn->real_escape_string($reference_type) . "'" : "NULL";
+        
+        $sql = "INSERT INTO thong_bao (nguoi_dung_id, loai, tieu_de, noi_dung, link, reference_id, reference_type) 
+                VALUES ($user_id_safe, '$type_safe', '$title_safe', '$content_safe', $link_safe, $ref_id_safe, $ref_type_safe)";
+        
+        $result = $conn->query($sql);
+        
+        if (!$result) {
+            error_log("[createNotification] INSERT error: " . $conn->error . " | SQL: " . $sql);
+        } else {
+            error_log("[createNotification] SUCCESS - Inserted notification for user $user_id, type: $type");
+        }
+        
+        return $result;
+    } catch (Exception $e) {
+        error_log("[createNotification] Exception: " . $e->getMessage());
         return false;
     }
-    
-    $sql = "INSERT INTO thong_bao (nguoi_dung_id, loai, tieu_de, noi_dung, link, reference_id, reference_type) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) return false;
-    
-    $stmt->bind_param("issssss", $user_id, $type, $title, $content, $link, $reference_id, $reference_type);
-    return $stmt->execute();
 }
 
 /**
@@ -274,6 +323,173 @@ function notifyNewPayment($conn, $payment_id, $order_code, $amount, $method) {
         "Nhận thanh toán $amount_formatted qua $method_text",
         $payment_id,
         'payment'
+    );
+}
+
+// ============================================================
+// USER INTERACTION NOTIFICATIONS
+// ============================================================
+
+/**
+ * Thông báo khi có người trả lời bình luận
+ * @param mysqli $conn Database connection
+ * @param int $owner_user_id ID người sở hữu bình luận gốc (người nhận thông báo)
+ * @param int $replier_user_id ID người trả lời
+ * @param string $replier_name Tên người trả lời
+ * @param string $comment_type Loại: 'product' hoặc 'blog'
+ * @param int $item_id ID sản phẩm hoặc bài viết
+ * @param string $item_name Tên sản phẩm hoặc bài viết
+ * @param string $reply_content Nội dung trả lời (rút gọn)
+ * @param int|null $comment_id ID của comment reply (để scroll đến đúng vị trí)
+ * @return bool
+ */
+function notifyCommentReply($conn, $owner_user_id, $replier_user_id, $replier_name, $comment_type, $item_id, $item_name, $reply_content = '', $comment_id = null) {
+    // Log bắt đầu
+    error_log("[notifyCommentReply] START - Owner: $owner_user_id, Replier: $replier_user_id, Type: $comment_type, CommentID: " . ($comment_id ?? 'NULL'));
+    
+    // Validate parameters
+    $owner_user_id = (int)$owner_user_id;
+    $replier_user_id = (int)$replier_user_id;
+    $item_id = (int)$item_id;
+    
+    // Không gửi thông báo cho chính mình
+    if ($owner_user_id <= 0 || $owner_user_id == $replier_user_id) {
+        error_log("[notifyCommentReply] SKIP - Same user or invalid owner ($owner_user_id)");
+        return true;
+    }
+    
+    // Kiểm tra bảng thong_bao tồn tại
+    $check = $conn->query("SHOW TABLES LIKE 'thong_bao'");
+    if (!$check || $check->num_rows === 0) {
+        error_log("[notifyCommentReply] Table thong_bao not found, creating...");
+        // Tự động tạo bảng nếu chưa có
+        $create_sql = "CREATE TABLE IF NOT EXISTS thong_bao (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            nguoi_dung_id BIGINT NOT NULL,
+            loai VARCHAR(50) NOT NULL DEFAULT 'system',
+            tieu_de VARCHAR(255) NOT NULL,
+            noi_dung TEXT NOT NULL,
+            link VARCHAR(500) NULL,
+            reference_id BIGINT NULL,
+            reference_type VARCHAR(50) NULL,
+            da_doc TINYINT(1) DEFAULT 0,
+            read_at DATETIME NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_nguoi_dung_id (nguoi_dung_id),
+            INDEX idx_da_doc (da_doc)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        $conn->query($create_sql);
+    }
+    
+    $type_text = $comment_type === 'product' ? 'sản phẩm' : 'bài viết';
+    
+    // Tạo link với anchor đến đúng comment
+    $comment_anchor = $comment_id ? "comment-$comment_id" : "comments";
+    $link = $comment_type === 'product' 
+        ? "product-detail.php?id=$item_id#$comment_anchor" 
+        : "blog-detail.php?id=$item_id#$comment_anchor";
+    
+    // Rút gọn nội dung
+    $short_content = mb_strlen($reply_content) > 50 ? mb_substr($reply_content, 0, 50) . '...' : $reply_content;
+    
+    // Escape strings
+    $replier_name = $conn->real_escape_string($replier_name);
+    $item_name = $conn->real_escape_string($item_name);
+    $short_content = $conn->real_escape_string($short_content);
+    
+    $result = createNotification(
+        $conn,
+        $owner_user_id,
+        'comment_reply',
+        "$replier_name đã trả lời bình luận của bạn",
+        "\"$short_content\" - trong $type_text \"$item_name\"",
+        $link,
+        $item_id,
+        'comment_' . $comment_type
+    );
+    
+    error_log("[notifyCommentReply] createNotification result: " . ($result ? 'SUCCESS' : 'FAILED') . " - MySQL Error: " . $conn->error);
+    
+    return $result;
+}
+
+/**
+ * Thông báo khi có người thả cảm xúc vào bình luận
+ * @param mysqli $conn Database connection
+ * @param int $owner_user_id ID người sở hữu bình luận (người nhận thông báo)
+ * @param int $reactor_user_id ID người thả cảm xúc
+ * @param string $reactor_name Tên người thả cảm xúc
+ * @param string $reaction_type Loại cảm xúc: like, love, haha, wow, sad, angry
+ * @param string $comment_type Loại: 'product' hoặc 'blog'
+ * @param int $item_id ID sản phẩm hoặc bài viết
+ * @param string $item_name Tên sản phẩm hoặc bài viết
+ * @return bool
+ */
+function notifyCommentReaction($conn, $owner_user_id, $reactor_user_id, $reactor_name, $reaction_type, $comment_type, $item_id, $item_name) {
+    // Không gửi thông báo cho chính mình
+    if ($owner_user_id == $reactor_user_id) {
+        return true;
+    }
+    
+    $reaction_text = [
+        'like' => '👍 thích',
+        'love' => '❤️ yêu thích',
+        'haha' => '😄 cười',
+        'wow' => '😮 ngạc nhiên',
+        'sad' => '😢 buồn',
+        'angry' => '😠 tức giận'
+    ];
+    
+    $emoji = $reaction_text[$reaction_type] ?? '👍 thích';
+    $type_text = $comment_type === 'product' ? 'sản phẩm' : 'bài viết';
+    $link = $comment_type === 'product' 
+        ? "product-detail.php?id=$item_id#comments" 
+        : "blog-detail.php?id=$item_id#comments";
+    
+    return createNotification(
+        $conn,
+        $owner_user_id,
+        'comment_reaction',
+        "$reactor_name đã $emoji bình luận của bạn",
+        "Trong $type_text \"$item_name\"",
+        $link,
+        $item_id,
+        'reaction_' . $comment_type
+    );
+}
+
+/**
+ * Thông báo khi có người thả cảm xúc vào sản phẩm/bài viết (cho admin hoặc chủ bài viết)
+ * @param mysqli $conn Database connection
+ * @param int $reactor_user_id ID người thả cảm xúc
+ * @param string $reactor_name Tên người thả cảm xúc
+ * @param string $reaction_type Loại cảm xúc
+ * @param string $item_type Loại: 'product' hoặc 'blog'
+ * @param int $item_id ID sản phẩm hoặc bài viết
+ * @param string $item_name Tên sản phẩm hoặc bài viết
+ * @return bool
+ */
+function notifyItemReaction($conn, $reactor_user_id, $reactor_name, $reaction_type, $item_type, $item_id, $item_name) {
+    $reaction_text = [
+        'like' => '👍 thích',
+        'love' => '❤️ yêu thích',
+        'haha' => '😄 cười',
+        'wow' => '😮 ngạc nhiên',
+        'sad' => '😢 buồn',
+        'angry' => '😠 tức giận'
+    ];
+    
+    $emoji = $reaction_text[$reaction_type] ?? '👍 thích';
+    $type_text = $item_type === 'product' ? 'sản phẩm' : 'bài viết';
+    
+    // Tạo thông báo cho admin
+    return createAdminNotification(
+        $conn,
+        'item_reaction',
+        "$reactor_name đã $emoji $type_text",
+        "\"$item_name\"",
+        $item_id,
+        $item_type
     );
 }
 ?>

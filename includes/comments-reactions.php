@@ -756,7 +756,7 @@ function renderComment(comment, isReply = false) {
     const avatarClass = isAdmin ? 'author-avatar' : '';
     
     return `
-        <div class="comment-item ${isReply ? 'is-reply' : ''} ${adminClass}" data-comment-id="${comment.id}">
+        <div class="comment-item ${isReply ? 'is-reply' : ''} ${adminClass}" id="comment-${comment.id}" data-comment-id="${comment.id}">
             <div class="comment-header">
                 <div class="comment-avatar ${avatarClass}">${avatar}</div>
                 <div class="comment-info">
@@ -783,6 +783,12 @@ function renderComment(comment, isReply = false) {
 async function addComment(parentId = null) {
     const textareaId = parentId ? `replyTextarea${parentId}` : 'commentTextarea';
     const textarea = document.getElementById(textareaId);
+    
+    if (!textarea) {
+        alert('Lỗi: Không tìm thấy ô nhập bình luận');
+        return;
+    }
+    
     const content = textarea.value.trim();
     
     if (!content) {
@@ -995,14 +1001,55 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Scroll đến comment từ URL hash (khi click từ thông báo)
+function scrollToCommentFromHash() {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#comment-')) {
+        const commentId = hash.replace('#comment-', '');
+        const commentElement = document.getElementById(`comment-${commentId}`);
+        
+        if (commentElement) {
+            // Scroll đến comment
+            setTimeout(() => {
+                commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Highlight comment
+                commentElement.classList.add('highlight-target-comment');
+                
+                // Xóa highlight sau 3 giây
+                setTimeout(() => {
+                    commentElement.classList.remove('highlight-target-comment');
+                }, 3000);
+            }, 500);
+        }
+    }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     loadReactions();
-    loadComments();
+    loadComments().then(() => {
+        // Sau khi load comments xong, scroll đến comment từ hash
+        scrollToCommentFromHash();
+    });
 });
 </script>
 
 <style>
+/* Highlight animation for target comment */
+@keyframes highlightFade {
+    0% { background-color: #fef3c7; box-shadow: 0 0 0 4px #fbbf24; }
+    70% { background-color: #fef3c7; box-shadow: 0 0 0 4px #fbbf24; }
+    100% { background-color: transparent; box-shadow: none; }
+}
+
+.comment-item.highlight-target-comment {
+    animation: highlightFade 3s ease-out forwards;
+    border-radius: 8px !important;
+    margin: -8px !important;
+    padding: 24px 8px !important;
+}
+
 /* Override Comment Styles - Clean Minimal Design */
 .comment-item {
     padding: 16px 0 !important;
@@ -1010,6 +1057,7 @@ document.addEventListener('DOMContentLoaded', function() {
     border-radius: 0 !important;
     border-left: none !important;
     border-bottom: 1px solid #f3f4f6 !important;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .comment-item:last-child {

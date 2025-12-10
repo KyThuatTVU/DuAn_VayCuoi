@@ -140,6 +140,8 @@ function timeAgo($datetime) {
 function getNotificationIcon($type) {
     $icons = [
         'admin_reply' => '💬',
+        'comment_reply' => '💬',
+        'comment_reaction' => '❤️',
         'order_update' => '📦',
         'new_blog' => '📰',
         'promotion' => '🎉',
