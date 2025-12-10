@@ -132,10 +132,12 @@ include 'includes/admin-layout.php';
             }
             
             $link = '#';
-            if ($notif['reference_type'] === 'user' && $notif['reference_id']) {
-                $link = 'admin-user-detail.php?id=' . $notif['reference_id'];
-            } elseif ($notif['reference_type'] === 'order' && $notif['reference_id']) {
-                $link = 'admin-order-detail.php?id=' . $notif['reference_id'];
+            if (isset($notif['reference_type']) && isset($notif['reference_id'])) {
+                if ($notif['reference_type'] === 'user' && $notif['reference_id']) {
+                    $link = 'admin-user-detail.php?id=' . $notif['reference_id'];
+                } elseif ($notif['reference_type'] === 'order' && $notif['reference_id']) {
+                    $link = 'admin-order-detail.php?id=' . $notif['reference_id'];
+                }
             }
         ?>
         <div class="p-4 lg:p-5 hover:bg-gray-50 transition <?php echo $notif['is_read'] ? 'opacity-60' : 'bg-blue-50/30'; ?>">
@@ -149,7 +151,7 @@ include 'includes/admin-layout.php';
                             <p class="font-semibold text-gray-900 <?php echo $notif['is_read'] ? '' : 'text-navy-900'; ?>">
                                 <?php echo htmlspecialchars($notif['title']); ?>
                             </p>
-                            <p class="text-gray-600 text-sm mt-1"><?php echo htmlspecialchars($notif['content']); ?></p>
+                            <p class="text-gray-600 text-sm mt-1"><?php echo htmlspecialchars($notif['content'] ?? ''); ?></p>
                             <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
                                 <span><i class="far fa-clock mr-1"></i><?php echo timeAgo($notif['created_at']); ?></span>
                                 <span class="px-2 py-0.5 bg-gray-100 rounded-full"><?php echo htmlspecialchars($notif['type']); ?></span>

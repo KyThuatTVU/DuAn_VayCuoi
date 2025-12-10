@@ -2,6 +2,7 @@
 session_start();
 require_once 'includes/config.php';
 require_once 'includes/notification-helper.php';
+require_once 'includes/email-validator.php';
 $page_title = 'Liên Hệ';
 
 // Xử lý form submit
@@ -65,14 +66,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Lấy user_id nếu đã đăng nhập
             $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
             
+            // Kiểm tra email nâng cao
+            $email_validation = validateEmailAdvanced($email);
+            $email_is_valid = $email_validation['is_valid'] ? 1 : 0;
+            $email_is_real = $email_validation['is_real'] ? 1 : 0;
+            $email_validation_reason = $email_validation['reason'];
+            $email_validation_details = json_encode($email_validation['details'], JSON_UNESCAPED_UNICODE);
+            
             try {
-                // Insert vào database với prepared statement
+                // Insert vào database với prepared statement (bao gồm thông tin xác thực email)
                 if ($user_id) {
-                    $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("issssss", $user_id, $name, $email, $phone, $subject, $message, $image_path);
+                    $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, image_path, email_is_valid, email_is_real, email_validation_reason, email_validation_details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->bind_param("issssssiiss", $user_id, $name, $email, $phone, $subject, $message, $image_path, $email_is_valid, $email_is_real, $email_validation_reason, $email_validation_details);
                 } else {
-                    $stmt = $conn->prepare("INSERT INTO lien_he (name, email, phone, subject, message, image_path) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("ssssss", $name, $email, $phone, $subject, $message, $image_path);
+                    $stmt = $conn->prepare("INSERT INTO lien_he (name, email, phone, subject, message, image_path, email_is_valid, email_is_real, email_validation_reason, email_validation_details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->bind_param("ssssssiiss", $name, $email, $phone, $subject, $message, $image_path, $email_is_valid, $email_is_real, $email_validation_reason, $email_validation_details);
                 }
                 
                 if ($stmt->execute()) {

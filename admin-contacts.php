@@ -2,6 +2,7 @@
 session_start();
 require_once 'includes/config.php';
 require_once 'includes/mail-helper.php';
+require_once 'includes/email-validator.php';
 
 // Kiểm tra đăng nhập admin
 if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
@@ -153,7 +154,21 @@ include 'includes/admin-layout.php';
                 <h3 class="text-base sm:text-lg font-semibold text-navy-900"><?php echo htmlspecialchars($contact['subject'] ?? 'Không có tiêu đề'); ?></h3>
                 <div class="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-navy-500 mt-2">
                     <span><i class="fas fa-user mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['name']); ?></span>
-                    <span class="break-all"><i class="fas fa-envelope mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['email']); ?></span>
+                    <span class="break-all">
+                        <i class="fas fa-envelope mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['email']); ?>
+                        <?php 
+                        // Hiển thị badge cảnh báo email
+                        $email_is_valid = $contact['email_is_valid'] ?? 1;
+                        $email_is_real = $contact['email_is_real'] ?? 1;
+                        $badge_info = getEmailBadgeInfo($email_is_valid, $email_is_real);
+                        if (!$email_is_valid || !$email_is_real): 
+                        ?>
+                        <span class="inline-flex items-center text-xs px-2 py-0.5 rounded-full border ml-1 <?php echo $badge_info['class']; ?>" 
+                              title="<?php echo htmlspecialchars($contact['email_validation_reason'] ?? $badge_info['text']); ?>">
+                            <i class="fas <?php echo $badge_info['icon']; ?> mr-1"></i><?php echo $badge_info['text']; ?>
+                        </span>
+                        <?php endif; ?>
+                    </span>
                     <?php if ($contact['phone']): ?>
                     <span><i class="fas fa-phone mr-1 text-accent-500"></i><?php echo htmlspecialchars($contact['phone']); ?></span>
                     <?php endif; ?>
@@ -189,25 +204,53 @@ include 'includes/admin-layout.php';
             <img src="<?php echo htmlspecialchars($contact['image_path']); ?>" class="max-w-xs rounded-lg" alt="Ảnh đính kèm">
         </div>
         <?php endif; ?>
-        <div class="mt-4 flex gap-2">
+        <div class="mt-4 flex flex-wrap gap-2">
+            <?php 
+            $email_is_valid = $contact['email_is_valid'] ?? 1;
+            $email_is_real = $contact['email_is_real'] ?? 1;
+            $is_fake_email = !$email_is_valid || !$email_is_real;
+            ?>
+            <?php if ($is_fake_email): ?>
+            <div class="w-full mb-2 bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-start">
+                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2 mt-0.5"></i>
+                <div class="text-sm">
+                    <span class="font-medium text-yellow-700">Cảnh báo:</span>
+                    <span class="text-yellow-600"><?php echo htmlspecialchars($contact['email_validation_reason'] ?? 'Email có thể không thật'); ?></span>
+                </div>
+            </div>
+            <?php endif; ?>
             <button 
                 onclick="openReplyModal(this)" 
                 data-id="<?php echo $contact['id']; ?>"
                 data-name="<?php echo htmlspecialchars($contact['name']); ?>"
                 data-email="<?php echo htmlspecialchars($contact['email']); ?>"
                 data-subject="<?php echo htmlspecialchars($contact['subject'] ?? ''); ?>"
-                class="inline-flex items-center bg-accent-500 text-white px-4 py-2 rounded-lg hover:bg-accent-600 transition text-sm">
+                data-is-fake="<?php echo $is_fake_email ? '1' : '0'; ?>"
+                data-validation-reason="<?php echo htmlspecialchars($contact['email_validation_reason'] ?? ''); ?>"
+                class="inline-flex items-center <?php echo $is_fake_email ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-accent-500 hover:bg-accent-600'; ?> text-white px-4 py-2 rounded-lg transition text-sm">
+                <?php if ($is_fake_email): ?>
+                <i class="fas fa-exclamation-triangle mr-2"></i>Trả lời (Email có thể giả)
+                <?php else: ?>
                 <i class="fas fa-reply mr-2"></i>Trả lời qua Email
+                <?php endif; ?>
             </button>
             <?php 
                 $mailto_subject = $contact['subject'] ?? 'Liên hệ';
-                $mailto_link = 'mailto:' . rawurlencode($contact['email']) . '?subject=' . rawurlencode('Re: ' . $mailto_subject);
+                $clean_email = trim($contact['email']);
             ?>
-            <a href="<?php echo $mailto_link; ?>" 
-               class="inline-flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition text-sm"
-               target="_blank">
+            <?php if (!$is_fake_email): ?>
+            <button type="button" 
+               onclick="openMailClient('<?php echo addslashes($clean_email); ?>', '<?php echo addslashes('Re: ' . $mailto_subject); ?>')"
+               class="inline-flex items-center bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition text-sm">
                 <i class="fas fa-external-link-alt mr-2"></i>Mở Email Client
-            </a>
+            </button>
+            <?php else: ?>
+            <button type="button" 
+               onclick="if(confirm('Email này có thể không thật. Bạn vẫn muốn mở ứng dụng email?')) { openMailClient('<?php echo addslashes($clean_email); ?>', '<?php echo addslashes('Re: ' . $mailto_subject); ?>'); }"
+               class="inline-flex items-center bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition text-sm">
+                <i class="fas fa-exclamation-circle mr-2"></i>Mở Email Client (Cẩn thận)
+            </button>
+            <?php endif; ?>
         </div>
     </div>
     <?php endforeach; ?>
@@ -260,6 +303,18 @@ include 'includes/admin-layout.php';
             
             <!-- Body -->
             <div class="p-6 space-y-4">
+                <!-- Cảnh báo email giả -->
+                <div id="fakeEmailWarning" class="hidden bg-yellow-50 border border-yellow-300 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-3 mt-0.5 text-lg"></i>
+                        <div>
+                            <h4 class="font-semibold text-yellow-700">Cảnh báo: Email có thể không thật!</h4>
+                            <p id="fakeEmailReason" class="text-sm text-yellow-600 mt-1"></p>
+                            <p class="text-sm text-yellow-600 mt-1">Email có thể sẽ không được gửi đi hoặc không tới người nhận. Hãy cân nhắc trước khi gửi.</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Thông tin khách hàng -->
                 <div class="bg-gray-50 rounded-lg p-4">
                     <h4 class="font-semibold text-navy-900 mb-2">Thông tin khách hàng:</h4>
@@ -318,11 +373,24 @@ include 'includes/admin-layout.php';
         const name = button.getAttribute('data-name');
         const email = button.getAttribute('data-email');
         const subject = button.getAttribute('data-subject');
+        const isFake = button.getAttribute('data-is-fake') === '1';
+        const validationReason = button.getAttribute('data-validation-reason');
         
         document.getElementById('replyContactId').value = id;
         document.getElementById('replyCustomerName').textContent = name;
         document.getElementById('replyCustomerEmail').textContent = email;
         document.getElementById('replySubject').textContent = subject || 'Không có chủ đề';
+        
+        // Hiển thị cảnh báo email giả
+        const warningEl = document.getElementById('fakeEmailWarning');
+        const reasonEl = document.getElementById('fakeEmailReason');
+        if (isFake) {
+            warningEl.classList.remove('hidden');
+            reasonEl.textContent = validationReason || 'Email có thể không thật hoặc là email tạm thời';
+        } else {
+            warningEl.classList.add('hidden');
+        }
+        
         document.getElementById('replyModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
@@ -339,6 +407,38 @@ include 'includes/admin-layout.php';
             closeReplyModal();
         }
     });
+    
+    // Hàm mở ứng dụng email
+    function openMailClient(email, subject) {
+        // Kiểm tra domain email để mở webmail phù hợp
+        const domain = email.split('@')[1]?.toLowerCase();
+        const encodedSubject = encodeURIComponent(subject);
+        const encodedEmail = encodeURIComponent(email);
+        
+        let webmailUrl = '';
+        
+        // Gmail
+        if (domain === 'gmail.com' || domain === 'googlemail.com') {
+            webmailUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodedEmail + '&su=' + encodedSubject;
+        }
+        // Outlook/Hotmail/Live
+        else if (domain === 'outlook.com' || domain === 'hotmail.com' || domain === 'live.com' || domain === 'msn.com') {
+            webmailUrl = 'https://outlook.live.com/mail/0/deeplink/compose?to=' + encodedEmail + '&subject=' + encodedSubject;
+        }
+        // Yahoo Mail
+        else if (domain === 'yahoo.com' || domain === 'yahoo.com.vn') {
+            webmailUrl = 'https://compose.mail.yahoo.com/?to=' + encodedEmail + '&subject=' + encodedSubject;
+        }
+        // Các email khác - mở mailto
+        else {
+            const mailtoUrl = 'mailto:' + email + '?subject=' + encodedSubject;
+            window.location.href = mailtoUrl;
+            return;
+        }
+        
+        // Mở webmail trong tab mới
+        window.open(webmailUrl, '_blank');
+    }
 </script>
 
 <?php include 'includes/admin-footer.php'; ?>
