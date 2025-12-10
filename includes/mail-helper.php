@@ -255,4 +255,125 @@ function generateOTP($length = 6) {
     }
     return $otp;
 }
+
+/**
+ * Gửi email phản hồi liên hệ
+ * @param string $to_email Email khách hàng
+ * @param string $to_name Tên khách hàng
+ * @param string $original_subject Chủ đề liên hệ gốc
+ * @param string $original_message Tin nhắn gốc của khách
+ * @param string $reply_content Nội dung phản hồi
+ * @return array ['success' => bool, 'message' => string]
+ */
+function sendContactReplyEmail($to_email, $to_name, $original_subject, $original_message, $reply_content) {
+    // Lấy cấu hình SMTP từ .env
+    $smtp_host = getenv('SMTP_HOST') ?: 'smtp.gmail.com';
+    $smtp_port = (int)(getenv('SMTP_PORT') ?: 587);
+    $smtp_user = getenv('SMTP_USER') ?: '';
+    $smtp_pass = getenv('SMTP_PASS') ?: '';
+    $smtp_from_email = getenv('SMTP_FROM_EMAIL') ?: $smtp_user;
+    $smtp_from_name = getenv('SMTP_FROM_NAME') ?: 'Váy Cưới Thiên Thần';
+    
+    // Kiểm tra cấu hình SMTP
+    if (empty($smtp_user) || empty($smtp_pass)) {
+        return ['success' => false, 'message' => 'Chưa cấu hình SMTP trong file .env'];
+    }
+    
+    // Tạo subject
+    $subject = 'Re: ' . $original_subject;
+    
+    // Tạo nội dung email
+    $body = getContactReplyEmailTemplate($to_name, $original_subject, $original_message, $reply_content);
+    
+    // Gửi email bằng SMTP
+    return sendEmailSMTP($smtp_host, $smtp_port, $smtp_user, $smtp_pass, $smtp_from_email, $smtp_from_name, $to_email, $to_name, $subject, $body);
+}
+
+/**
+ * Template HTML cho email phản hồi liên hệ
+ */
+function getContactReplyEmailTemplate($name, $original_subject, $original_message, $reply_content) {
+    $site_name = getenv('SITE_NAME') ?: 'Váy Cưới Thiên Thần';
+    $site_url = getenv('SITE_URL') ?: 'http://localhost';
+    $hotline = getenv('HOTLINE') ?: '078.797.2075';
+    
+    return '<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td align="center" style="padding: 40px 0;">
+                <table role="presentation" style="width: 600px; border-collapse: collapse; background-color: #ffffff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <!-- Header -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); border-radius: 10px 10px 0 0;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px;">' . htmlspecialchars($site_name) . '</h1>
+                            <p style="margin: 10px 0 0; color: #ffffff; font-size: 14px; opacity: 0.9;">Phản hồi liên hệ</p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 20px; color: #333333; font-size: 24px;">Xin chào ' . htmlspecialchars($name) . ',</h2>
+                            
+                            <p style="margin: 0 0 20px; color: #666666; font-size: 16px; line-height: 1.6;">
+                                Cảm ơn bạn đã liên hệ với chúng tôi. Đây là phản hồi cho tin nhắn của bạn:
+                            </p>
+                            
+                            <!-- Reply Content -->
+                            <div style="background-color: #f8f9fa; border-left: 4px solid #ec4899; padding: 20px; margin: 20px 0; border-radius: 5px;">
+                                <p style="margin: 0; color: #333333; font-size: 15px; line-height: 1.8; white-space: pre-wrap;">' . nl2br(htmlspecialchars($reply_content)) . '</p>
+                            </div>
+                            
+                            <!-- Original Message -->
+                            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eeeeee;">
+                                <p style="margin: 0 0 10px; color: #999999; font-size: 13px; font-weight: bold;">TIN NHẮN GỐC CỦA BẠN:</p>
+                                <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                                    <p style="margin: 0 0 10px; color: #666666; font-size: 14px;"><strong>Chủ đề:</strong> ' . htmlspecialchars($original_subject) . '</p>
+                                    <p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">' . nl2br(htmlspecialchars($original_message)) . '</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Contact Info -->
+                            <div style="margin-top: 30px; padding: 20px; background-color: #fff7ed; border-radius: 8px;">
+                                <p style="margin: 0 0 10px; color: #333333; font-size: 14px; font-weight: bold;">Liên hệ với chúng tôi:</p>
+                                <p style="margin: 5px 0; color: #666666; font-size: 14px;">
+                                    📞 Hotline: <strong>' . htmlspecialchars($hotline) . '</strong>
+                                </p>
+                                <p style="margin: 5px 0; color: #666666; font-size: 14px;">
+                                    🌐 Website: <a href="' . htmlspecialchars($site_url) . '" style="color: #ec4899; text-decoration: none;">' . htmlspecialchars($site_url) . '</a>
+                                </p>
+                            </div>
+                            
+                            <hr style="border: none; border-top: 1px solid #eeeeee; margin: 30px 0;">
+                            
+                            <p style="margin: 0; color: #999999; font-size: 13px; line-height: 1.6;">
+                                Nếu bạn có thêm câu hỏi, vui lòng trả lời email này hoặc liên hệ trực tiếp với chúng tôi qua hotline.
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 20px 40px; background-color: #f8f9fa; border-radius: 0 0 10px 10px; text-align: center;">
+                            <p style="margin: 0 0 10px; color: #666666; font-size: 13px; font-weight: bold;">
+                                ' . htmlspecialchars($site_name) . '
+                            </p>
+                            <p style="margin: 0; color: #999999; font-size: 12px;">
+                                © ' . date('Y') . ' ' . htmlspecialchars($site_name) . '. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>';
+}
 ?>

@@ -144,26 +144,49 @@ function createAdminNotification($conn, $type, $title, $content, $reference_id =
     // Kiểm tra bảng có tồn tại không
     $check = $conn->query("SHOW TABLES LIKE 'admin_notifications'");
     if (!$check || $check->num_rows === 0) {
-        // Tự tạo bảng nếu chưa có
+        // Tự tạo bảng nếu chưa có - dùng cấu trúc từ file SQL
         $conn->query("CREATE TABLE IF NOT EXISTS admin_notifications (
-            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            id INT(11) AUTO_INCREMENT PRIMARY KEY,
             type VARCHAR(50) NOT NULL,
             title VARCHAR(255) NOT NULL,
-            content TEXT NOT NULL,
-            reference_id BIGINT NULL,
-            reference_type VARCHAR(50) NULL,
+            message TEXT NOT NULL,
+            link VARCHAR(255) NULL,
             is_read TINYINT(1) DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_is_read (is_read),
+            INDEX idx_type (type),
             INDEX idx_created_at (created_at)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     }
     
-    $sql = "INSERT INTO admin_notifications (type, title, content, reference_id, reference_type) VALUES (?, ?, ?, ?, ?)";
+    // Tạo link dựa trên reference_type và reference_id
+    $link = null;
+    if ($reference_id && $reference_type) {
+        switch ($reference_type) {
+            case 'order':
+                $link = "admin-order-detail.php?id=$reference_id";
+                break;
+            case 'user':
+                $link = "admin-user-detail.php?id=$reference_id";
+                break;
+            case 'contact':
+                $link = "admin-contacts.php";
+                break;
+            case 'booking':
+                $link = "admin-bookings.php";
+                break;
+            case 'payment':
+                $link = "admin-payments.php";
+                break;
+        }
+    }
+    
+    // Dùng tên cột 'message' thay vì 'content' để khớp với database
+    $sql = "INSERT INTO admin_notifications (type, title, message, link) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     if (!$stmt) return false;
     
-    $stmt->bind_param("sssis", $type, $title, $content, $reference_id, $reference_type);
+    $stmt->bind_param("ssss", $type, $title, $content, $link);
     return $stmt->execute();
 }
 
