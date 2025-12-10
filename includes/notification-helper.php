@@ -227,6 +227,12 @@ function createAdminNotification($conn, $type, $title, $content, $reference_id =
             case 'payment':
                 $link = "admin-payments.php";
                 break;
+            case 'product':
+                $link = "product-detail.php?id=$reference_id#comments";
+                break;
+            case 'blog':
+                $link = "blog-detail.php?id=$reference_id#comments";
+                break;
         }
     }
     
@@ -279,6 +285,25 @@ function notifyNewContact($conn, $contact_id, $name, $subject) {
         "Chủ đề: $subject",
         $contact_id,
         'contact'
+    );
+}
+
+/**
+ * Thông báo khi có bình luận mới
+ */
+function notifyNewComment($conn, $comment_type, $item_id, $item_name, $user_name, $comment_content) {
+    $type_text = $comment_type === 'product' ? 'sản phẩm' : 'bài viết';
+    $short_content = mb_strlen($comment_content) > 50 ? mb_substr($comment_content, 0, 50) . '...' : $comment_content;
+    
+    error_log("[notifyNewComment] Type: $comment_type, Item: $item_name, User: $user_name, Content: $short_content");
+    
+    return createAdminNotification(
+        $conn,
+        'new_comment',
+        'Bình luận mới về "' . $item_name . '" (' . $type_text . ')',
+        "$user_name: \"$short_content\"",
+        $item_id,
+        $comment_type
     );
 }
 

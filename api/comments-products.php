@@ -148,14 +148,30 @@ if ($action === 'add') {
         $comment_id = $stmt->insert_id;
         
         // Lấy thông tin bình luận vừa thêm
-        $get_sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email
+        $get_sql = "SELECT bl.*, nd.ho_ten, nd.avt, nd.email, v.ten_vay
                     FROM binh_luan_san_pham bl
                     JOIN nguoi_dung nd ON bl.nguoi_dung_id = nd.id
+                    JOIN vay_cuoi v ON bl.vay_id = v.id
                     WHERE bl.id = ?";
         $get_stmt = $conn->prepare($get_sql);
         $get_stmt->bind_param("i", $comment_id);
         $get_stmt->execute();
         $comment = $get_stmt->get_result()->fetch_assoc();
+        
+        // Gửi thông báo cho admin về bình luận mới
+        try {
+            $notify_admin_result = notifyNewComment(
+                $conn,
+                'product',
+                $vay_id,
+                $comment['ten_vay'] ?? 'Sản phẩm',
+                $comment['ho_ten'] ?? 'Người dùng',
+                $noi_dung
+            );
+            error_log("[COMMENT_ADMIN] Product - User: {$comment['ho_ten']}, Product: {$comment['ten_vay']}, Result: " . ($notify_admin_result ? 'SUCCESS' : 'FAILED'));
+        } catch (Exception $e) {
+            error_log("Admin notification error in comments-products.php: " . $e->getMessage());
+        }
         
         // Gửi thông báo cho người được trả lời (nếu có)
         if ($reply_to_id) {

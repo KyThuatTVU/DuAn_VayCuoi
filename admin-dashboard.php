@@ -445,6 +445,9 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                         } elseif ($notif['type'] === 'new_contact') {
                             $icon_class = 'fa-envelope';
                             $bg_class = 'bg-blue-100 text-blue-600';
+                        } elseif ($notif['type'] === 'new_comment') {
+                            $icon_class = 'fa-comment';
+                            $bg_class = 'bg-purple-100 text-purple-600';
                         }
                         $time_ago = '';
                         $diff = time() - strtotime($notif['created_at']);
@@ -453,14 +456,14 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                         elseif ($diff < 86400) $time_ago = floor($diff/3600) . ' giờ trước';
                         else $time_ago = floor($diff/86400) . ' ngày trước';
                     ?>
-                    <div class="p-3 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer <?php echo $notif['is_read'] ? 'opacity-60' : ''; ?>" onclick="handleNotificationClick(<?php echo $notif['id']; ?>, '<?php echo $notif['reference_type']; ?>', <?php echo $notif['reference_id'] ?? 'null'; ?>)">
+                    <div class="p-3 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer <?php echo $notif['is_read'] ? 'opacity-60' : ''; ?>" onclick="handleNotificationClick(<?php echo $notif['id']; ?>, '<?php echo htmlspecialchars($notif['type'] ?? ''); ?>', '<?php echo htmlspecialchars($notif['link'] ?? ''); ?>')">
                         <div class="flex gap-3">
                             <div class="w-9 h-9 rounded-full <?php echo $bg_class; ?> flex items-center justify-center flex-shrink-0">
                                 <i class="fas <?php echo $icon_class; ?> text-sm"></i>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-medium text-gray-900 text-sm <?php echo $notif['is_read'] ? '' : 'font-semibold'; ?> truncate"><?php echo htmlspecialchars($notif['title']); ?></p>
-                                <p class="text-gray-500 text-xs mt-0.5 line-clamp-2"><?php echo htmlspecialchars($notif['content']); ?></p>
+                                <p class="font-medium text-gray-900 text-sm <?php echo $notif['is_read'] ? '' : 'font-semibold'; ?> truncate"><?php echo htmlspecialchars($notif['title'] ?? ''); ?></p>
+                                <p class="text-gray-500 text-xs mt-0.5 line-clamp-2"><?php echo htmlspecialchars($notif['message'] ?? ''); ?></p>
                                 <p class="text-gray-400 text-xs mt-1"><?php echo $time_ago; ?></p>
                             </div>
                             <?php if (!$notif['is_read']): ?>
@@ -1479,7 +1482,7 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
         });
         
         // Xử lý click vào thông báo
-        function handleNotificationClick(id, refType, refId) {
+        function handleNotificationClick(id, type, link) {
             // Đánh dấu đã đọc
             fetch('api/admin-notifications.php', {
                 method: 'POST',
@@ -1487,11 +1490,18 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 body: 'action=mark_read&id=' + id
             });
             
-            // Chuyển hướng
-            if (refType === 'user' && refId) {
-                window.location.href = 'admin-user-detail.php?id=' + refId;
-            } else if (refType === 'order' && refId) {
-                window.location.href = 'admin-order-detail.php?id=' + refId;
+            // Chuyển hướng dựa trên link hoặc type
+            if (link && link !== '') {
+                window.location.href = link;
+            } else if (type === 'account_locked') {
+                window.location.href = 'admin-users.php';
+            } else if (type === 'new_order') {
+                window.location.href = 'admin-orders.php';
+            } else if (type === 'new_contact') {
+                window.location.href = 'admin-contacts.php';
+            } else if (type === 'new_comment') {
+                // Comment notifications should have link, but fallback to products page
+                window.location.href = link || 'products.php';
             } else {
                 window.location.href = 'admin-notifications.php';
             }

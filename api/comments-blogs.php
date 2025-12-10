@@ -154,6 +154,29 @@ if ($action === 'add') {
         $get_stmt->execute();
         $comment = $get_stmt->get_result()->fetch_assoc();
         
+        // Gửi thông báo cho admin về bình luận mới
+        try {
+            // Lấy tên bài viết
+            $blog_sql = "SELECT title FROM tin_tuc_cuoi_hoi WHERE id = ?";
+            $blog_stmt = $conn->prepare($blog_sql);
+            $blog_stmt->bind_param("i", $bai_viet_id);
+            $blog_stmt->execute();
+            $blog_result = $blog_stmt->get_result()->fetch_assoc();
+            $blog_title = $blog_result['title'] ?? 'Bài viết';
+            
+            $notify_admin_result = notifyNewComment(
+                $conn,
+                'blog',
+                $bai_viet_id,
+                $blog_title,
+                $comment['ho_ten'] ?? 'Người dùng',
+                $noi_dung
+            );
+            error_log("[COMMENT_ADMIN] Blog - User: {$comment['ho_ten']}, Blog: $blog_title, Result: " . ($notify_admin_result ? 'SUCCESS' : 'FAILED'));
+        } catch (Exception $e) {
+            error_log("Admin notification error in comments-blogs.php: " . $e->getMessage());
+        }
+        
         // Gửi thông báo cho người được trả lời (nếu có)
         if ($reply_to_id) {
             try {
