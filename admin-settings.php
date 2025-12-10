@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
-$page_title = 'Cài Đặt Hệ Thống';
+$page_title = 'Thông tin Website';
 
 // Lấy thống kê cho sidebar badges
 $result = $conn->query("SELECT COUNT(*) as total FROM don_hang WHERE trang_thai = 'pending'");

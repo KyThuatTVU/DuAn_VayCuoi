@@ -185,16 +185,16 @@ if (!$is_admin_preview) {
                                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                             </svg>
-                            <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 items-center justify-center px-1 hidden" id="notificationCount">0</span>
+                            <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 hidden" id="notificationCount">0</span>
                         </button>
                         
                         <!-- Notification Dropdown -->
-                        <div class="notification-dropdown absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible transition-all duration-300 transform translate-y-2 z-50" id="notificationDropdown">
+                        <div class="notification-dropdown bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible transition-all duration-300 transform translate-y-2" id="notificationDropdown">
                             <div class="p-4 border-b border-gray-100 flex items-center justify-between">
                                 <h3 class="font-bold text-gray-800 text-lg">Thông báo</h3>
                                 <button class="text-sm text-primary hover:underline font-medium" id="markAllReadBtn">Đánh dấu đã đọc</button>
                             </div>
-                            <div class="max-h-96 overflow-y-auto" id="notificationList">
+                            <div class="max-h-80 sm:max-h-96 overflow-y-auto" id="notificationList">
                                 <div class="p-8 text-center text-gray-400">
                                     <svg class="w-12 h-12 mx-auto mb-3 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
@@ -535,11 +535,28 @@ if (!$is_admin_preview) {
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
     <!-- Notification System -->
     <style>
+    /* Notification Wrapper */
+    #notificationWrapper {
+        position: relative;
+    }
+    
+    /* Notification Dropdown Base Styles */
+    .notification-dropdown {
+        position: absolute !important;
+        right: 0 !important;
+        top: 100% !important;
+        margin-top: 0.5rem;
+        width: 320px;
+        max-width: calc(100vw - 2rem);
+        z-index: 9999 !important;
+    }
+    
     .notification-dropdown.show {
         opacity: 1 !important;
         visibility: visible !important;
         transform: translateY(0) !important;
     }
+    
     .notification-item {
         transition: all 0.2s;
     }
@@ -559,6 +576,61 @@ if (!$is_admin_preview) {
     @keyframes pulse {
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.1); }
+    }
+    
+    /* Mobile: Full-width bottom sheet */
+    @media (max-width: 640px) {
+        .notification-dropdown {
+            position: fixed !important;
+            top: auto !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            border-radius: 1rem 1rem 0 0 !important;
+            max-height: 75vh !important;
+            margin-top: 0;
+            transform: translateY(100%) !important;
+        }
+        
+        .notification-dropdown.show {
+            transform: translateY(0) !important;
+        }
+        
+        /* Add overlay for mobile */
+        .notification-dropdown::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .notification-dropdown.show::before {
+            opacity: 1;
+        }
+    }
+    
+    /* Tablet and small desktop */
+    @media (min-width: 641px) and (max-width: 1024px) {
+        .notification-dropdown {
+            width: 360px;
+            right: 0 !important;
+        }
+    }
+    
+    /* Large desktop */
+    @media (min-width: 1025px) {
+        .notification-dropdown {
+            width: 384px;
+        }
     }
     </style>
     <script>

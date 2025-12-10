@@ -534,11 +534,9 @@ function copyPromoCode() {
                     <p class="text-gray-700 leading-relaxed italic pl-6">"Váy cưới tuyệt đẹp, chất lượng cao cấp. Nhân viên tư vấn rất nhiệt tình và chuyên nghiệp. Mình rất hài lòng với dịch vụ!"</p>
                 </div>
                 <div class="flex items-center gap-4 pt-6 border-t border-gray-100">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center text-white font-bold text-xl shadow-lg ring-4 ring-pink-100">
-                        NA
-                    </div>
+                    <img src="images/T.VY.jpg" alt="Nguyễn Thị Vy" class="w-14 h-14 rounded-full object-cover shadow-lg ring-4 ring-pink-100">
                     <div>
-                        <h4 class="font-bold text-gray-800 text-lg">Nguyễn Thị An</h4>
+                        <h4 class="font-bold text-gray-800 text-lg">Nguyễn Thị Vy</h4>
                         <span class="text-gray-500 text-sm">Cô dâu 2024</span>
                     </div>
                 </div>
@@ -558,11 +556,9 @@ function copyPromoCode() {
                     <p class="text-gray-700 leading-relaxed italic pl-6">"Showroom rất đẹp, nhiều mẫu váy đa dạng. Giá cả hợp lý, dịch vụ chỉnh sửa váy rất tốt. Chắc chắn sẽ giới thiệu cho bạn bè!"</p>
                 </div>
                 <div class="flex items-center gap-4 pt-6 border-t border-gray-100">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg ring-4 ring-purple-100">
-                        TC
-                    </div>
+                    <img src="images/t. vu.jpg" alt="Trần Minh Vũ" class="w-14 h-14 rounded-full object-cover shadow-lg ring-4 ring-purple-100">
                     <div>
-                        <h4 class="font-bold text-gray-800 text-lg">Trần Minh Châu</h4>
+                        <h4 class="font-bold text-gray-800 text-lg">Trần Minh Vũ</h4>
                         <span class="text-gray-500 text-sm">Cô dâu 2023</span>
                     </div>
                 </div>
@@ -582,9 +578,7 @@ function copyPromoCode() {
                     <p class="text-gray-700 leading-relaxed italic pl-6">"Mình đã thử nhiều nơi nhưng chỉ có ở đây mới tìm được chiếc váy ưng ý. Cảm ơn team đã giúp mình có một đám cưới hoàn hảo!"</p>
                 </div>
                 <div class="flex items-center gap-4 pt-6 border-t border-gray-100">
-                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center text-white font-bold text-xl shadow-lg ring-4 ring-rose-100">
-                        LG
-                    </div>
+                    <img src="images/truong.jpg" alt="Lê Hương Giang" class="w-14 h-14 rounded-full object-cover shadow-lg ring-4 ring-rose-100">
                     <div>
                         <h4 class="font-bold text-gray-800 text-lg">Lê Hương Giang</h4>
                         <span class="text-gray-500 text-sm">Cô dâu 2024</span>
