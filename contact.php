@@ -68,10 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Insert vào database với prepared statement
                 if ($user_id) {
-                    $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, image_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'new', NOW())");
+                    $stmt = $conn->prepare("INSERT INTO lien_he (user_id, name, email, phone, subject, message, image_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
                     $stmt->bind_param("issssss", $user_id, $name, $email, $phone, $subject, $message, $image_path);
                 } else {
-                    $stmt = $conn->prepare("INSERT INTO lien_he (name, email, phone, subject, message, image_path, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'new', NOW())");
+                    $stmt = $conn->prepare("INSERT INTO lien_he (name, email, phone, subject, message, image_path) VALUES (?, ?, ?, ?, ?, ?)");
                     $stmt->bind_param("ssssss", $name, $email, $phone, $subject, $message, $image_path);
                 }
                 
