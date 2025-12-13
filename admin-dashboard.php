@@ -36,6 +36,12 @@ $new_contacts = $result->fetch_assoc()['total'];
 $result = $conn->query("SELECT COUNT(*) as total FROM dat_lich_thu_vay WHERE status = 'pending'");
 $pending_bookings = $result->fetch_assoc()['total'];
 
+$result = $conn->query("SELECT COUNT(*) as total FROM khuyen_mai WHERE start_at <= NOW() AND end_at >= NOW()");
+$active_promotions = $result->fetch_assoc()['total'];
+
+$result = $conn->query("SELECT COUNT(*) as total FROM khuyen_mai WHERE end_at < NOW()");
+$expired_promotions = $result->fetch_assoc()['total'];
+
 // Lấy thông báo admin
 $admin_notifications = [];
 $unread_notifications = 0;
@@ -343,6 +349,12 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                     <i class="fas fa-calendar w-5"></i> Lịch hẹn
                     <?php if($pending_bookings > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $pending_bookings; ?></span><?php endif; ?>
                 </a>
+                <a href="admin-promotions.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-gift w-5"></i> Khuyến mãi
+                </a>
+                <a href="admin-banners.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-bullhorn w-5"></i> Banner Quảng Cáo
+                </a>
                 <a href="admin-contacts.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-envelope w-5"></i> Liên hệ
                     <?php if($new_contacts > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $new_contacts; ?></span><?php endif; ?>
@@ -560,6 +572,18 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                             </div>
                             <?php if($pending_bookings > 0): ?>
                             <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full">chờ xử lý</span>
+                            <?php endif; ?>
+                        </div>
+                    </a>
+
+                    <a href="admin-promotions.php" class="bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-xs font-medium">Khuyến mãi</p>
+                                <p class="text-lg lg:text-xl font-bold text-gray-900 mt-1"><?php echo number_format($active_promotions); ?></p>
+                            </div>
+                            <?php if($expired_promotions > 0): ?>
+                            <span class="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full"><?php echo $expired_promotions; ?> hết hạn</span>
                             <?php endif; ?>
                         </div>
                     </a>

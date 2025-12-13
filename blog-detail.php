@@ -11,9 +11,10 @@ if (empty($slug)) {
 }
 
 // Lấy thông tin bài viết
-$sql = "SELECT t.*, a.full_name as author_name 
+$sql = "SELECT t.*, a.full_name as author_name, km.title as promotion_title, km.description as promotion_description, km.type as promotion_type, km.value as promotion_value
         FROM tin_tuc_cuoi_hoi t 
         LEFT JOIN admin a ON t.admin_id = a.id 
+        LEFT JOIN khuyen_mai km ON t.promotion_code = km.code AND km.start_at <= NOW() AND km.end_at >= NOW()
         WHERE t.slug = ? AND t.status = 'published'";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $slug);
@@ -100,6 +101,35 @@ require_once 'includes/header.php';
                 <img src="<?php echo htmlspecialchars($post['cover_image']); ?>" 
                      alt="<?php echo htmlspecialchars($post['title']); ?>" 
                      class="w-full h-auto">
+            </div>
+            <?php endif; ?>
+
+            <!-- Promotion Banner -->
+            <?php if (!empty($post['promotion_code'])): ?>
+            <div class="mb-8 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white shadow-lg">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-gift text-3xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($post['promotion_title']); ?></h3>
+                        <p class="mb-3 opacity-90"><?php echo htmlspecialchars($post['promotion_description']); ?></p>
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white bg-opacity-20 rounded-lg px-3 py-1">
+                                <span class="font-bold text-lg">
+                                    <?php if ($post['promotion_type'] === 'percent'): ?>
+                                        <?php echo $post['promotion_value']; ?>%
+                                    <?php else: ?>
+                                        <?php echo number_format($post['promotion_value'], 0, ',', '.'); ?> VNĐ
+                                    <?php endif; ?>
+                                </span>
+                            </div>
+                            <div class="bg-white bg-opacity-20 rounded-lg px-3 py-1">
+                                <span class="font-semibold">Mã: <?php echo htmlspecialchars($post['promotion_code']); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <?php endif; ?>
 

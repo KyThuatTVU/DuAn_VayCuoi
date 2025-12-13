@@ -94,8 +94,55 @@ try {
     foreach ($cart_items as $item) {
         $subtotal += $item['tong_tien_thue'];
     }
-    $service_fee = $subtotal * 0.05;
-    $total = $subtotal + $service_fee;
+    
+    // Xử lý mã khuyến mãi
+    $applied_coupon = trim($_POST['applied_coupon'] ?? '');
+    $discount_amount = floatval($_POST['discount_amount'] ?? 0);
+    $discount_info = null;
+    
+    if (!empty($applied_coupon) && $discount_amount > 0) {
+        // Kiểm tra lại coupon để đảm bảo tính hợp lệ
+        $coupon_check = $conn->prepare("SELECT * FROM khuyen_mai 
+            WHERE code = ? AND start_at <= NOW() AND end_at >= NOW() 
+            AND (usage_limit IS NULL OR usage_limit > 0)");
+        $coupon_check->bind_param("s", $applied_coupon);
+        $coupon_check->execute();
+        $coupon_result = $coupon_check->get_result();
+        
+        if ($coupon_result->num_rows > 0) {
+            $coupon = $coupon_result->fetch_assoc();
+            
+            // Kiểm tra lại điều kiện áp dụng
+            if ($subtotal >= $coupon['min_order_amount']) {
+                // Tính lại giảm giá để đảm bảo chính xác
+                if ($coupon['type'] === 'percent') {
+                    $calculated_discount = $subtotal * ($coupon['value'] / 100);
+                } else {
+                    $calculated_discount = min($coupon['value'], $subtotal);
+                }
+                
+                // Chỉ áp dụng nếu khớp với discount_amount từ client
+                if (abs($calculated_discount - $discount_amount) < 0.01) {
+                    $discount_info = [
+                        'code' => $applied_coupon,
+                        'type' => $coupon['type'],
+                        'value' => $coupon['value'],
+                        'amount' => $discount_amount
+                    ];
+                    
+                    // Giảm usage_limit nếu có
+                    if ($coupon['usage_limit'] !== null) {
+                        $update_limit = $conn->prepare("UPDATE khuyen_mai SET usage_limit = usage_limit - 1 WHERE id = ?");
+                        $update_limit->bind_param("i", $coupon['id']);
+                        $update_limit->execute();
+                    }
+                }
+            }
+        }
+    }
+    
+    $service_fee = ($subtotal - ($discount_info ? $discount_info['amount'] : 0)) * 0.05;
+    $total = $subtotal + $service_fee - ($discount_info ? $discount_info['amount'] : 0);
     
     // Tạo mã đơn hàng
     $ma_don_hang = 'DH' . date('YmdHis') . rand(100, 999);
@@ -188,6 +235,20 @@ try {
     
     // Commit transaction
     $conn->commit();
+    
+    // Lưu thông tin sử dụng coupon nếu có
+    if ($discount_info) {
+        $insert_coupon_usage = $conn->prepare("INSERT INTO user_coupon_usage 
+            (user_id, coupon_code, order_id, discount_amount) 
+            VALUES (?, ?, ?, ?)");
+        $insert_coupon_usage->bind_param("isid", 
+            $user_id, 
+            $discount_info['code'], 
+            $order_id, 
+            $discount_info['amount']
+        );
+        $insert_coupon_usage->execute();
+    }
     
     // Lưu thông tin vào session
     $_SESSION['order_info'] = [

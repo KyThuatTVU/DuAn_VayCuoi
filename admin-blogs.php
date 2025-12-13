@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $status = $_POST['status'];
         $published_at = $status === 'published' ? date('Y-m-d H:i:s') : null;
         $cover_image = null;
+        $promotion_code = trim($_POST['promotion_code']) ?: null;
         
         // Upload ảnh bìa
         if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
@@ -49,8 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $slug = $slug . '-' . time();
         }
         
-        $stmt = $conn->prepare("INSERT INTO tin_tuc_cuoi_hoi (admin_id, title, slug, summary, content, cover_image, status, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("isssssss", $_SESSION['admin_id'], $title, $slug, $summary, $content, $cover_image, $status, $published_at);
+        $stmt = $conn->prepare("INSERT INTO tin_tuc_cuoi_hoi (admin_id, title, slug, summary, content, promotion_code, cover_image, status, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issssssss", $_SESSION['admin_id'], $title, $slug, $summary, $content, $promotion_code, $cover_image, $status, $published_at);
         if ($stmt->execute()) {
             $new_blog_id = $stmt->insert_id;
             
@@ -72,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $summary = trim($_POST['summary']);
         $content = $_POST['content'];
         $status = $_POST['status'];
+        $promotion_code = trim($_POST['promotion_code']) ?: null;
         
         // Upload ảnh bìa mới nếu có
         if (!empty($_FILES['cover_image']['name']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
@@ -88,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        $stmt = $conn->prepare("UPDATE tin_tuc_cuoi_hoi SET title=?, slug=?, summary=?, content=?, status=? WHERE id=?");
-        $stmt->bind_param("sssssi", $title, $slug, $summary, $content, $status, $id);
+        $stmt = $conn->prepare("UPDATE tin_tuc_cuoi_hoi SET title=?, slug=?, summary=?, content=?, promotion_code=?, status=? WHERE id=?");
+        $stmt->bind_param("ssssssi", $title, $slug, $summary, $content, $promotion_code, $status, $id);
         $stmt->execute();
         $_SESSION['admin_success'] = 'Cập nhật bài viết thành công!';
     }
@@ -302,6 +304,11 @@ include 'includes/admin-layout.php';
                             <option value="archived">Lưu trữ</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-navy-700 mb-1">Mã khuyến mãi (tùy chọn)</label>
+                        <input type="text" name="promotion_code" id="promotion_code" class="w-full border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-accent-500" placeholder="Nhập mã khuyến mãi nếu có">
+                        <small class="text-gray-500">Mã khuyến mãi sẽ được hiển thị kèm theo bài viết</small>
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-100 transition">Hủy</button>
@@ -331,6 +338,7 @@ include 'includes/admin-layout.php';
             document.getElementById('summary').value = data.summary || '';
             document.getElementById('content').value = data.content || '';
             document.getElementById('status').value = data.status;
+            document.getElementById('promotion_code').value = data.promotion_code || '';
             
             if (data.cover_image) {
                 document.getElementById('currentImage').classList.remove('hidden');

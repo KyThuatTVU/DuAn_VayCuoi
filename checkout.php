@@ -191,23 +191,58 @@ require_once 'includes/header.php';
                 </div>
             </div>
             
+            <!-- Mã khuyến mãi -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                        </svg>
+                        Mã Khuyến Mãi
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <input type="text" name="coupon_code" id="coupon_code" 
+                                   placeholder="Nhập mã khuyến mãi (nếu có)"
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:ring-2 focus:ring-pink-200 transition-all">
+                            <p class="text-xs text-gray-500 mt-1">
+                                <i class="fas fa-info-circle mr-1"></i>Mỗi khách hàng chỉ được sử dụng một mã khuyến mãi một lần
+                            </p>
+                        </div>
+                        <button type="button" id="apply_coupon" 
+                                class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            Áp Dụng Mã
+                        </button>
+                        <div id="coupon_message" class="text-sm text-center hidden"></div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Tổng đơn hàng -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                     <h3 class="text-2xl font-bold text-gray-800 mb-6">💰 Tổng Đơn Hàng</h3>
                     
-                    <div class="space-y-4 mb-6">
+                    <div class="space-y-4 mb-6" id="order_summary">
                         <div class="flex justify-between text-gray-600">
                             <span>Tiền thuê váy:</span>
-                            <span><?php echo formatPrice($subtotal); ?></span>
+                            <span id="subtotal_display"><?php echo formatPrice($subtotal); ?></span>
                         </div>
                         <div class="flex justify-between text-gray-600">
                             <span>Phí dịch vụ (5%):</span>
-                            <span><?php echo formatPrice($service_fee); ?></span>
+                            <span id="service_fee_display"><?php echo formatPrice($service_fee); ?></span>
+                        </div>
+                        <div id="discount_row" class="flex justify-between text-green-600 hidden">
+                            <span>Giảm giá:</span>
+                            <span id="discount_display">-<?php echo formatPrice(0); ?></span>
                         </div>
                         <div class="border-t pt-4 flex justify-between text-xl font-bold text-gray-800">
                             <span>Tổng cộng:</span>
-                            <span class="text-pink-600"><?php echo formatPrice($total); ?></span>
+                            <span id="total_display" class="text-pink-600"><?php echo formatPrice($total); ?></span>
                         </div>
                     </div>
                     
@@ -566,6 +601,77 @@ document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
             btnText.textContent = 'Đặt Hàng (COD)';
             submitBtn.className = 'w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-xl font-bold hover:shadow-lg hover:shadow-green-200 transition-all flex items-center justify-center gap-2';
         }
+    });
+});
+
+// Xử lý áp dụng mã khuyến mãi
+document.getElementById('apply_coupon').addEventListener('click', function() {
+    const couponCode = document.getElementById('coupon_code').value.trim().toUpperCase();
+    const messageDiv = document.getElementById('coupon_message');
+    const button = this;
+    
+    if (!couponCode) {
+        messageDiv.className = 'text-sm text-center text-red-600';
+        messageDiv.textContent = 'Vui lòng nhập mã khuyến mãi';
+        messageDiv.classList.remove('hidden');
+        return;
+    }
+    
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang kiểm tra...';
+    
+    fetch('api/apply-coupon.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ coupon_code: couponCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Cập nhật hiển thị tổng tiền
+            document.getElementById('discount_row').classList.remove('hidden');
+            document.getElementById('discount_display').textContent = '-' + data.discount_formatted;
+            document.getElementById('total_display').textContent = data.total_formatted;
+            
+            messageDiv.className = 'text-sm text-center text-green-600';
+            messageDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i>Áp dụng thành công! Giảm ' + data.discount_formatted + ' cho đơn hàng của bạn.';
+            
+            // Lưu thông tin coupon để submit
+            document.getElementById('checkout-form').insertAdjacentHTML('beforeend', 
+                '<input type="hidden" name="applied_coupon" value="' + couponCode + '">' +
+                '<input type="hidden" name="discount_amount" value="' + data.discount_amount + '">'
+            );
+            
+            // Disable input và button sau khi áp dụng thành công
+            document.getElementById('coupon_code').disabled = true;
+            document.getElementById('apply_coupon').disabled = true;
+            document.getElementById('apply_coupon').innerHTML = '<i class="fas fa-check mr-2"></i>Đã áp dụng';
+            document.getElementById('apply_coupon').classList.remove('bg-pink-600', 'hover:bg-pink-700');
+            document.getElementById('apply_coupon').classList.add('bg-green-600', 'cursor-not-allowed');
+        } else {
+            document.getElementById('discount_row').classList.add('hidden');
+            messageDiv.className = 'text-sm text-center text-red-600';
+            messageDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>' + data.message;
+            
+            // Xóa coupon đã áp dụng nếu có
+            const existingCoupon = document.querySelector('input[name="applied_coupon"]');
+            const existingDiscount = document.querySelector('input[name="discount_amount"]');
+            if (existingCoupon) existingCoupon.remove();
+            if (existingDiscount) existingDiscount.remove();
+        }
+        messageDiv.classList.remove('hidden');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        messageDiv.className = 'text-sm text-center text-red-600';
+        messageDiv.textContent = 'Có lỗi xảy ra, vui lòng thử lại';
+        messageDiv.classList.remove('hidden');
+    })
+    .finally(() => {
+        button.disabled = false;
+        button.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> Áp Dụng Mã';
     });
 });
 

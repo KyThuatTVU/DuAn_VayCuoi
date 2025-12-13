@@ -38,10 +38,25 @@ if ($conn) {
     }
 }
 
+// Lấy banner khuyến mãi active
+$active_banner = null;
+$banner_query = $conn->prepare("SELECT * FROM banner_promotions 
+    WHERE is_active = 1 
+    AND (start_date IS NULL OR start_date <= NOW()) 
+    AND (end_date IS NULL OR end_date >= NOW())
+    ORDER BY display_order ASC, created_at DESC 
+    LIMIT 1");
+$banner_query->execute();
+$banner_result = $banner_query->get_result();
+if ($banner_result->num_rows > 0) {
+    $active_banner = $banner_result->fetch_assoc();
+}
+
 require_once 'includes/header.php';
 ?>
 
 <!-- Promotional Banner -->
+<?php if ($active_banner): ?>
 <section class="relative overflow-hidden bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 py-2">
     <div class="container mx-auto px-4">
         <!-- Banner chính với animation -->
@@ -65,27 +80,38 @@ require_once 'includes/header.php';
                     
                     <!-- Main Heading -->
                     <h2 class="text-2xl md:text-3xl font-bold leading-tight">
-                        Giảm Giá Lên Đến
-                        <span class="block text-4xl md:text-5xl text-purple-600 mt-1 animate-bounce">30%</span>
+                        <?php echo htmlspecialchars($active_banner['title']); ?>
+                        <span class="block text-4xl md:text-5xl text-purple-600 mt-1 animate-bounce"><?php echo htmlspecialchars($active_banner['discount_value']); ?></span>
                     </h2>
                     
-                    <!-- Description -->
+                    <!-- Subtitle -->
+                    <?php if ($active_banner['subtitle']): ?>
                     <p class="text-sm md:text-base text-white/90 leading-relaxed">
-                        Cho tất cả các mẫu váy cưới cao cấp. Đặt lịch ngay hôm nay để nhận ưu đãi!
+                        <?php echo htmlspecialchars($active_banner['subtitle']); ?>
                     </p>
+                    <?php endif; ?>
+                    
+                    <!-- Description -->
+                    <?php if ($active_banner['description']): ?>
+                    <p class="text-sm md:text-base text-white/90 leading-relaxed">
+                        <?php echo htmlspecialchars($active_banner['description']); ?>
+                    </p>
+                    <?php endif; ?>
                     
                     <!-- Promo Code -->
+                    <?php if ($active_banner['promo_code']): ?>
                     <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 rounded-xl p-2 max-w-sm">
                         <div class="flex-1">
                             <p class="text-xs text-white/80">Mã giảm giá:</p>
-                            <p class="text-lg font-bold tracking-wider">WEDDING2024</p>
+                            <p class="text-lg font-bold tracking-wider"><?php echo htmlspecialchars($active_banner['promo_code']); ?></p>
                         </div>
-                        <button onclick="copyPromoCode()" class="bg-white text-pink-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
+                        <button onclick="copyPromoCode('<?php echo htmlspecialchars($active_banner['promo_code']); ?>')" class="bg-white text-pink-600 px-4 py-2 rounded-lg font-semibold hover:bg-pink-50 transition-all transform hover:scale-105 shadow-lg">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
                         </button>
                     </div>
+                    <?php endif; ?>
                     
                     <!-- CTA Buttons -->
                     <div class="flex flex-wrap gap-2 pt-2">
@@ -99,49 +125,37 @@ require_once 'includes/header.php';
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                             </svg>
-                            <span>Đặt Lịch Thử</span>
+                            <span>Đặt Lịch Ngay</span>
                         </a>
                     </div>
                     
                     <!-- Countdown Timer -->
+                    <?php if ($active_banner['end_date']): ?>
                     <div class="flex items-center gap-1 text-xs">
                         <svg class="w-4 h-4 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                         </svg>
-                        <span class="text-white/90">Ưu đãi kết thúc trong: <strong class="text-yellow-300">3 ngày 12 giờ</strong></span>
+                        <span class="text-white/90">Ưu đãi kết thúc trong: <strong class="text-yellow-300" id="countdown-timer">Đang tải...</strong></span>
                     </div>
+                    <?php endif; ?>
                 </div>
                 
-                <!-- Right Image -->
-                <div class="relative z-10 hidden md:block">
+                <!-- Right Content - Image/Animation -->
+                <div class="relative z-10">
                     <div class="relative">
-                        <!-- Decorative circles -->
-                        <div class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full opacity-50 animate-ping"></div>
-                        <div class="absolute -bottom-4 -left-4 w-32 h-32 bg-white rounded-full opacity-20"></div>
+                        <!-- Floating elements -->
+                        <div class="absolute -top-4 -left-4 w-8 h-8 bg-yellow-400 rounded-full animate-bounce opacity-80"></div>
+                        <div class="absolute -bottom-4 -right-4 w-6 h-6 bg-pink-400 rounded-full animate-pulse opacity-60"></div>
+                        <div class="absolute top-1/2 -right-6 w-4 h-4 bg-purple-400 rounded-full animate-ping opacity-70"></div>
                         
-                        <!-- Main image -->
-                        <div class="relative bg-white/10 backdrop-blur-sm rounded-3xl p-4 border-4 border-white/30 shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                            <img src="images/ad.png" alt="Váy cưới khuyến mãi" class="rounded-2xl w-full h-96 object-cover shadow-xl">
-                            
-                            <!-- Floating badge -->
-                            <div class="absolute -top-6 -left-6 bg-gradient-to-br from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-2xl shadow-2xl transform rotate-12 animate-bounce">
-                                <p class="text-sm font-semibold">Giảm ngay</p>
-                                <p class="text-3xl font-bold">30%</p>
-                            </div>
-                            
-                            <!-- Stats badges -->
-                            <div class="absolute -bottom-4 -right-4 bg-white rounded-2xl p-4 shadow-2xl">
-                                <div class="flex items-center gap-2">
-                                    <div class="flex -space-x-2">
-                                        <div class="w-8 h-8 rounded-full bg-pink-200 border-2 border-white"></div>
-                                        <div class="w-8 h-8 rounded-full bg-purple-200 border-2 border-white"></div>
-                                        <div class="w-8 h-8 rounded-full bg-blue-200 border-2 border-white"></div>
-                                    </div>
-                                    <div class="text-left">
-                                        <p class="text-xs text-gray-500">Đã đặt hôm nay</p>
-                                        <p class="text-sm font-bold text-gray-800">127+ khách hàng</p>
-                                    </div>
-                                </div>
+                        <!-- Main image placeholder -->
+                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                            <div class="text-center">
+                                <svg class="w-24 h-24 mx-auto text-white/80 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                <p class="text-white/90 font-semibold">Váy Cưới Đẳng Cấp</p>
+                                <p class="text-white/70 text-sm">Thiết kế độc đáo</p>
                             </div>
                         </div>
                     </div>
@@ -200,23 +214,50 @@ require_once 'includes/header.php';
         </div>
     </div>
 </section>
+<?php endif; ?>
 
 <script>
-function copyPromoCode() {
-    const code = 'WEDDING2024';
-    navigator.clipboard.writeText(code).then(() => {
-        // Show success message
-        const btn = event.target.closest('button');
-        const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-        btn.classList.add('bg-green-500', 'text-white');
+function copyPromoCode(code) {
+    navigator.clipboard.writeText(code).then(function() {
+        // Hiển thị thông báo copy thành công
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        notification.textContent = 'Đã sao chép mã: ' + code;
+        document.body.appendChild(notification);
         
         setTimeout(() => {
-            btn.innerHTML = originalHTML;
-            btn.classList.remove('bg-green-500', 'text-white');
+            notification.remove();
         }, 2000);
     });
 }
+
+<?php if ($active_banner && $active_banner['end_date']): ?>
+// Countdown timer
+function updateCountdown() {
+    const endDate = new Date('<?php echo $active_banner['end_date']; ?>').getTime();
+    const now = new Date().getTime();
+    const distance = endDate - now;
+    
+    if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        
+        let countdownText = '';
+        if (days > 0) countdownText += days + ' ngày ';
+        if (hours > 0) countdownText += hours + ' giờ ';
+        if (minutes > 0) countdownText += minutes + ' phút';
+        
+        document.getElementById('countdown-timer').textContent = countdownText.trim();
+    } else {
+        document.getElementById('countdown-timer').textContent = 'Đã kết thúc';
+    }
+}
+
+// Update countdown every minute
+updateCountdown();
+setInterval(updateCountdown, 60000);
+<?php endif; ?>
 </script>
 
 <!-- Featured Categories -->
