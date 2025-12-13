@@ -479,22 +479,22 @@ function showRentalModal(productId, productName, pricePerDay) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] backdrop-blur-sm';
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl p-8 max-w-lg w-full mx-4 shadow-2xl transform animate-scale-in">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold text-gray-800">📅 Chọn Ngày Thuê Váy</h3>
-                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl transform animate-scale-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">📅 Chọn Ngày Thuê Váy</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
             </div>
             
-            <div class="mb-4 p-4 bg-blue-50 rounded-xl">
-                <p class="font-semibold text-gray-800">${productName}</p>
-                <p class="text-blue-600 font-bold text-lg mt-1">${formatPrice(pricePerDay)}/ngày</p>
+            <div class="mb-3 p-3 bg-blue-50 rounded-lg">
+                <p class="font-semibold text-gray-800 text-sm">${productName}</p>
+                <p class="text-blue-600 font-bold text-base mt-1">${formatPrice(pricePerDay)}/ngày</p>
             </div>
             
-            <form id="rental-form" class="space-y-4">
+            <form id="rental-form" class="space-y-3">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Chọn Size *</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn Size *</label>
                     <select id="size-select" required
-                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
                         <option value="">-- Chọn Size --</option>
                         <option value="S">S</option>
                         <option value="M">M</option>
@@ -504,41 +504,41 @@ function showRentalModal(productId, productName, pricePerDay) {
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ngày bắt đầu thuê *</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ngày bắt đầu thuê *</label>
                     <input type="date" id="start-date" min="${today}" value="${today}" required
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                           class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ngày trả váy *</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ngày trả váy *</label>
                     <input type="date" id="end-date" min="${tomorrow}" value="${tomorrow}" required
-                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                           class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
                 </div>
                 
-                <div class="p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl">
+                <div class="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-700 font-medium">Số ngày thuê:</span>
-                        <span id="rental-days" class="text-2xl font-bold text-blue-600">1 ngày</span>
+                        <span class="text-gray-700 font-medium text-sm">Số ngày thuê:</span>
+                        <span id="rental-days" class="text-lg font-bold text-blue-600">1 ngày</span>
                     </div>
-                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-blue-200">
-                        <span class="text-gray-700 font-medium">Tổng tiền:</span>
-                        <span id="total-price" class="text-2xl font-bold text-blue-600">${formatPrice(pricePerDay)}</span>
+                    <div class="flex justify-between items-center mt-1 pt-1 border-t border-blue-200">
+                        <span class="text-gray-700 font-medium text-sm">Tổng tiền:</span>
+                        <span id="total-price" class="text-lg font-bold text-blue-600">${formatPrice(pricePerDay)}</span>
                     </div>
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú (yêu cầu đặc biệt...)</label>
-                    <textarea id="note" rows="3" placeholder="VD: Cần sửa ngắn váy, màu khác..."
-                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"></textarea>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ghi chú (yêu cầu đặc biệt...)</label>
+                    <textarea id="note" rows="2" placeholder="VD: Cần sửa ngắn váy, màu khác..."
+                              class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"></textarea>
                 </div>
                 
-                <div class="flex gap-3 pt-4">
+                <div class="flex gap-2 pt-3">
                     <button type="button" onclick="this.closest('.fixed').remove()" 
-                            class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-all">
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-all text-sm">
                         Hủy
                     </button>
                     <button type="submit" 
-                            class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-lg">
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-lg text-sm">
                         Thêm Vào Giỏ
                     </button>
                 </div>

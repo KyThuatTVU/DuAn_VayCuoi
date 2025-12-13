@@ -170,6 +170,25 @@ require_once 'includes/header.php';
     .main-image { height: 350px; }
     .products-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Modal animations */
+@keyframes scale-in {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-scale-in {
+    animation: scale-in 0.3s ease-out;
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+}
 </style>
 
 <div class="product-detail-page">
@@ -243,7 +262,13 @@ require_once 'includes/header.php';
                 </div>
 
                 <div class="action-buttons">
-                    <a href="booking.php?id=<?php echo $product_id; ?>" class="btn-large btn-primary">
+                    <button class="btn-large btn-primary" onclick="showRentalModal(<?php echo $product_id; ?>, '<?php echo addslashes($product_data['name']); ?>', <?php echo $product_data['price']; ?>)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                        </svg>
+                        Thuê Ngay
+                    </button>
+                    <a href="booking.php?id=<?php echo $product_id; ?>" class="btn-large btn-outline">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -252,12 +277,6 @@ require_once 'includes/header.php';
                         </svg>
                         Đặt Lịch Thử Váy
                     </a>
-                    <button class="btn-large btn-outline" onclick="addToWishlist()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                        Yêu Thích
-                    </button>
                 </div>
 
                 <div class="product-status <?php echo $product_data['stock'] <= 0 ? 'out-of-stock' : ''; ?>">
@@ -424,6 +443,244 @@ function selectSize(element) {
 
 function addToWishlist() {
     alert('Đã thêm vào danh sách yêu thích!');
+}
+
+// Format giá tiền
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN', { 
+        style: 'currency', 
+        currency: 'VND' 
+    }).format(price);
+}
+
+// Hiển thị modal chọn ngày thuê váy
+function showRentalModal(productId, productName, pricePerDay) {
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+    
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] backdrop-blur-sm';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl transform animate-scale-in">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-gray-800">📅 Chọn Ngày Thuê Váy</h3>
+                <button onclick="this.closest('.fixed').remove()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            </div>
+            
+            <div class="mb-3 p-3 bg-blue-50 rounded-lg">
+                <p class="font-semibold text-gray-800 text-sm">${productName}</p>
+                <p class="text-blue-600 font-bold text-base mt-1">${formatPrice(pricePerDay)}/ngày</p>
+            </div>
+            
+            <form id="rental-form" class="space-y-3">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn Size *</label>
+                    <select id="size-select" required
+                            class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
+                        <option value="">-- Chọn Size --</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ngày bắt đầu thuê *</label>
+                    <input type="date" id="start-date" min="${today}" value="${today}" required
+                           class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ngày trả váy *</label>
+                    <input type="date" id="end-date" min="${tomorrow}" value="${tomorrow}" required
+                           class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
+                </div>
+                
+                <div class="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-700 font-medium text-sm">Số ngày thuê:</span>
+                        <span id="rental-days" class="text-lg font-bold text-blue-600">1 ngày</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-1 pt-1 border-t border-blue-200">
+                        <span class="text-gray-700 font-medium text-sm">Tổng tiền:</span>
+                        <span id="total-price" class="text-lg font-bold text-blue-600">${formatPrice(pricePerDay)}</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ghi chú (yêu cầu đặc biệt...)</label>
+                    <textarea id="note" rows="2" placeholder="VD: Cần sửa ngắn váy, màu khác..."
+                              class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm"></textarea>
+                </div>
+                
+                <div class="flex gap-2 pt-3">
+                    <button type="button" onclick="this.closest('.fixed').remove()" 
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-all text-sm">
+                        Hủy
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-lg text-sm">
+                        Thêm Vào Giỏ
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Tính toán ngày thuê và tổng tiền
+    const startInput = modal.querySelector('#start-date');
+    const endInput = modal.querySelector('#end-date');
+    const daysSpan = modal.querySelector('#rental-days');
+    const totalPriceSpan = modal.querySelector('#total-price');
+    
+    function calculateRental() {
+        const start = new Date(startInput.value);
+        const end = new Date(endInput.value);
+        const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+        const totalPrice = days * pricePerDay;
+        
+        daysSpan.textContent = days + ' ngày';
+        totalPriceSpan.textContent = formatPrice(totalPrice);
+    }
+    
+    startInput.addEventListener('change', calculateRental);
+    endInput.addEventListener('change', calculateRental);
+    
+    // Xử lý submit form
+    modal.querySelector('#rental-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const size = modal.querySelector('#size-select').value;
+        const startDate = startInput.value;
+        const endDate = endInput.value;
+        const note = modal.querySelector('#note').value;
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+        
+        addToCart(productId, productName, startDate, endDate, days, note, size);
+        modal.remove();
+    });
+}
+
+// Thêm vào giỏ hàng
+function addToCart(productId, productName, startDate, endDate, days, note, size) {
+    fetch('api/cart.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            action: 'add',
+            vay_id: productId,
+            so_luong: 1,
+            ngay_bat_dau_thue: startDate,
+            ngay_tra_vay: endDate,
+            so_ngay_thue: days,
+            ghi_chu: `Size: ${size}. ${note}`
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateCartCount();
+            showCartNotification(`Đã thêm "${productName}" vào giỏ (${days} ngày)`, 'success');
+        } else {
+            if (data.require_login) {
+                showLoginModal();
+            } else {
+                showCartNotification(data.message, 'error');
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showCartNotification('Có lỗi xảy ra. Vui lòng thử lại!', 'error');
+    });
+}
+
+// Cập nhật số lượng giỏ hàng
+function updateCartCount() {
+    fetch('api/cart.php?action=count')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const cartBadge = document.querySelector('.cart-count');
+            if (cartBadge) {
+                cartBadge.textContent = data.count;
+                if (data.count > 0) {
+                    cartBadge.style.display = 'block';
+                } else {
+                    cartBadge.style.display = 'none';
+                }
+            }
+        }
+    });
+}
+
+// Hiển thị thông báo giỏ hàng
+function showCartNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-24 right-6 p-6 rounded-2xl shadow-2xl z-50 animate-slide-in ${
+        type === 'success' 
+            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white' 
+            : 'bg-gradient-to-r from-red-500 to-pink-600 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${
+                        type === 'success' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'
+                    }"/>
+                </svg>
+            </div>
+            <div>
+                <div class="font-bold text-lg">${
+                    type === 'success' ? 'Đã thêm vào giỏ hàng!' : 'Có lỗi xảy ra!'
+                }</div>
+                <div class="text-sm opacity-90 mt-1">${message}</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
+
+// Hiển thị modal đăng nhập
+function showLoginModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] backdrop-blur-sm';
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform animate-scale-in">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Đăng nhập để tiếp tục</h3>
+                <p class="text-gray-600 mb-6">Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng</p>
+                <div class="space-y-3">
+                    <a href="login.php?redirect=${encodeURIComponent(window.location.href)}" 
+                       class="block w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-bold hover:bg-blue-700 transition-all">
+                        Đăng nhập
+                    </a>
+                    <a href="register.php" 
+                       class="block w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-bold hover:bg-gray-300 transition-all">
+                        Tạo tài khoản mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    setTimeout(() => modal.remove(), 10000); // Tự động đóng sau 10 giây
 }
 </script>
 
