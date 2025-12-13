@@ -217,10 +217,26 @@ require_once 'includes/header.php';
                             </div>
                         <?php endif; ?>
                         
-                        <?php if (!empty($product['size'])): ?>
+                        <?php 
+                        $size_display = '';
+                        if (!empty($product['size'])) {
+                            $decoded = json_decode($product['size'], true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                $active_sizes = [];
+                                foreach ($decoded as $s) {
+                                    if (!empty($s['active'])) $active_sizes[] = $s['name'];
+                                }
+                                $size_display = implode(', ', $active_sizes);
+                            } else {
+                                $size_display = $product['size'];
+                            }
+                        }
+                        
+                        if (!empty($size_display)): 
+                        ?>
                             <div class="product-style">
                                 <i class="fas fa-ruler-combined"></i>
-                                <span>Size: <?php echo htmlspecialchars($product['size']); ?></span>
+                                <span>Size: <?php echo htmlspecialchars($size_display); ?></span>
                             </div>
                         <?php endif; ?>
                         

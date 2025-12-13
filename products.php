@@ -275,12 +275,28 @@ require_once 'includes/header.php';
                                     Mã: <?php echo htmlspecialchars($product['ma_vay']); ?>
                                 </div>
                                 
-                                <?php if (!empty($product['size'])): ?>
+                                <?php 
+                                $size_display = '';
+                                if (!empty($product['size'])) {
+                                    $decoded = json_decode($product['size'], true);
+                                    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                        $active_sizes = [];
+                                        foreach ($decoded as $s) {
+                                            if (!empty($s['active'])) $active_sizes[] = $s['name'];
+                                        }
+                                        $size_display = implode(', ', $active_sizes);
+                                    } else {
+                                        $size_display = $product['size'];
+                                    }
+                                }
+                                
+                                if (!empty($size_display)): 
+                                ?>
                                 <div class="flex items-center gap-1.5 text-sm text-gray-600">
                                     <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                     </svg>
-                                    <span class="font-medium">Size: <?php echo htmlspecialchars($product['size']); ?></span>
+                                    <span class="font-medium">Size: <?php echo htmlspecialchars($size_display); ?></span>
                                 </div>
                                 <?php endif; ?>
                                 
@@ -306,7 +322,22 @@ require_once 'includes/header.php';
                                     </div>
                                     
                                     <div class="flex gap-2">
-                                        <button onclick="showRentalModal(<?php echo $product['id']; ?>, '<?php echo addslashes($product['ten_vay']); ?>', <?php echo $product['gia_thue']; ?>)" 
+                                        <?php 
+                                        $js_sizes = [];
+                                        if (!empty($product['size'])) {
+                                            $decoded = json_decode($product['size'], true);
+                                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                                foreach ($decoded as $s) {
+                                                    if (!empty($s['active'])) $js_sizes[] = $s['name'];
+                                                }
+                                            } else {
+                                                $js_sizes = array_map('trim', explode(',', $product['size']));
+                                            }
+                                        } else {
+                                            $js_sizes = ['S', 'M', 'L', 'XL'];
+                                        }
+                                        ?>
+                                        <button onclick='showRentalModal(<?php echo $product['id']; ?>, "<?php echo addslashes($product['ten_vay']); ?>", <?php echo $product['gia_thue']; ?>, <?php echo json_encode($js_sizes); ?>)' 
                                                 class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105 shadow-md flex items-center justify-center gap-2">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -472,10 +503,19 @@ function formatPrice(price) {
 }
 
 // Hiển thị modal chọn ngày thuê váy
-function showRentalModal(productId, productName, pricePerDay) {
+function showRentalModal(productId, productName, pricePerDay, sizes = []) {
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
     
+    let sizeOptions = '<option value="">-- Chọn Size --</option>';
+    if (Array.isArray(sizes) && sizes.length > 0) {
+        sizes.forEach(s => {
+            sizeOptions += `<option value="${s}">${s}</option>`;
+        });
+    } else {
+        sizeOptions += '<option value="S">S</option><option value="M">M</option><option value="L">L</option>';
+    }
+
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] backdrop-blur-sm';
     modal.innerHTML = `
@@ -495,11 +535,7 @@ function showRentalModal(productId, productName, pricePerDay) {
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn Size *</label>
                     <select id="size-select" required
                             class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
-                        <option value="">-- Chọn Size --</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
+                        ${sizeOptions}
                     </select>
                 </div>
                 

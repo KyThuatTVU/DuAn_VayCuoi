@@ -112,23 +112,23 @@
 </style>
 
 <!-- Contact Buttons (Left Side) -->
-<div id="contact-buttons" class="fixed bottom-6 left-6 z-50 flex flex-col-reverse gap-5 transition-all duration-300">
+<div id="contact-buttons" class="fixed bottom-6 left-6 z-[9999] flex flex-col-reverse gap-5 transition-all duration-300 overflow-visible">
     
     <!-- Phone Button -->
     <div class="relative group">
         <!-- Pulse ring effect -->
-        <span class="absolute inset-0 flex items-center justify-center">
+        <span class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
         </span>
         
-        <a href="tel:0787972075" 
-           class="relative flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <a href="tel:<?php echo str_replace(['.', ' '], '', $footer_phone); ?>" 
+           class="relative flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-10">
             <i class="fas fa-phone-alt text-2xl animate-pulse"></i>
         </a>
         
         <!-- Tooltip -->
-        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
-            Gọi: 078.797.2075
+        <div class="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl z-50 min-w-max">
+            Gọi: <?php echo htmlspecialchars($footer_phone); ?>
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
@@ -136,17 +136,17 @@
     <!-- Zalo Button -->
     <div class="relative group">
         <!-- Pulse ring effect -->
-        <span class="absolute inset-0 flex items-center justify-center">
+        <span class="absolute inset-0 flex items-center justify-center pointer-events-none">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
         </span>
         
-        <a href="https://zalo.me/0787972075" target="_blank" 
-           class="relative flex flex-col items-center justify-center w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+        <a href="<?php echo htmlspecialchars($footer_zalo); ?>" target="_blank" 
+           class="relative flex flex-col items-center justify-center w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-10">
             <span class="text-white text-xs font-bold tracking-wide animate-pulse">Zalo</span>
         </a>
         
         <!-- Tooltip -->
-        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+        <div class="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl z-50 min-w-max">
             Chat qua Zalo
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
@@ -155,12 +155,12 @@
     <!-- Scroll to Top Button -->
     <div class="relative group">
         <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-           class="flex items-center justify-center w-16 h-16 bg-cyan-400 hover:bg-cyan-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+           class="flex items-center justify-center w-16 h-16 bg-cyan-400 hover:bg-cyan-500 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-10">
             <i class="fas fa-arrow-up text-2xl"></i>
         </button>
         
         <!-- Tooltip -->
-        <div class="absolute left-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+        <div class="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl z-50 min-w-max">
             Lên đầu trang
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
@@ -168,21 +168,21 @@
 </div>
 
 <!-- Chatbot Button (Right Side) -->
-<div id="chatbot-button" class="fixed bottom-6 right-6 z-50 transition-all duration-300">
+<div id="chatbot-button" class="fixed bottom-6 right-6 z-[9999] transition-all duration-300 overflow-visible">
     <div class="relative group">
         <button id="chatbot-toggle" 
-                class="flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 overflow-hidden border-2 border-pink-300 hover:border-pink-500 bg-white p-0">
+                class="flex items-center justify-center w-16 h-16 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border-2 border-pink-300 hover:border-pink-500 bg-white p-0 relative">
             <img src="images/chatbot.webp" alt="Chatbot" class="w-full h-full object-cover rounded-full">
             
             <!-- Notification badge -->
-            <span class="absolute -top-1 -right-1 flex h-5 w-5">
+            <span class="absolute -top-1 -right-1 flex h-5 w-5 z-20">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-5 w-5 bg-red-500 items-center justify-center text-xs font-bold border-2 border-white text-white">3</span>
             </span>
         </button>
         
         <!-- Tooltip -->
-        <div class="absolute right-20 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl pointer-events-none">
+        <div class="absolute right-full mr-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl z-50 min-w-max">
             Chat với Trà My 💬
             <div class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>

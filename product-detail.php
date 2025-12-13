@@ -72,14 +72,28 @@ if ($comment_result) {
 }
 
 // Chuẩn bị dữ liệu hiển thị
-// Lấy size từ database hoặc tạo mảng mặc định
+// Lấy size từ database
 $sizes_arr = [];
+$size_display_str = '';
+
 if (!empty($product['size'])) {
-    // Nếu có size trong DB (có thể là "S, M, L" hoặc "S" hoặc "85-65-90")
-    $sizes_arr = array_map('trim', explode(',', $product['size']));
+    $decoded = json_decode($product['size'], true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        foreach ($decoded as $s) {
+            if (!empty($s['active'])) {
+                $sizes_arr[] = $s['name'];
+            }
+        }
+        $size_display_str = implode(', ', $sizes_arr);
+    } else {
+        // Legacy format
+        $sizes_arr = array_map('trim', explode(',', $product['size']));
+        $size_display_str = $product['size'];
+    }
 } else {
     // Mặc định nếu không có
     $sizes_arr = ['S', 'M', 'L', 'XL'];
+    $size_display_str = 'S, M, L, XL';
 }
 
 $product_data = [
@@ -92,7 +106,7 @@ $product_data = [
     'images' => $images,
     'description' => $product['mo_ta'] ?? 'Váy cưới cao cấp với thiết kế tinh tế, phù hợp cho ngày trọng đại của bạn.',
     'sizes' => $sizes_arr,
-    'size_display' => !empty($product['size']) ? $product['size'] : 'Chưa cập nhật',
+    'size_display' => !empty($size_display_str) ? $size_display_str : 'Chưa cập nhật',
     'rating' => $avg_rating,
     'reviews' => $review_count + $comment_count
 ];
@@ -262,7 +276,7 @@ require_once 'includes/header.php';
                 </div>
 
                 <div class="action-buttons">
-                    <button class="btn-large btn-primary" onclick="showRentalModal(<?php echo $product_id; ?>, '<?php echo addslashes($product_data['name']); ?>', <?php echo $product_data['price']; ?>)">
+                    <button class="btn-large btn-primary" onclick='showRentalModal(<?php echo $product_id; ?>, "<?php echo addslashes($product_data['name']); ?>", <?php echo $product_data['price']; ?>, <?php echo json_encode($product_data['sizes']); ?>)'>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                         </svg>
@@ -454,10 +468,19 @@ function formatPrice(price) {
 }
 
 // Hiển thị modal chọn ngày thuê váy
-function showRentalModal(productId, productName, pricePerDay) {
+function showRentalModal(productId, productName, pricePerDay, sizes = []) {
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
     
+    let sizeOptions = '<option value="">-- Chọn Size --</option>';
+    if (Array.isArray(sizes) && sizes.length > 0) {
+        sizes.forEach(s => {
+            sizeOptions += `<option value="${s}">${s}</option>`;
+        });
+    } else {
+        sizeOptions += '<option value="S">S</option><option value="M">M</option><option value="L">L</option>';
+    }
+
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[10000] backdrop-blur-sm';
     modal.innerHTML = `
@@ -477,11 +500,7 @@ function showRentalModal(productId, productName, pricePerDay) {
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Chọn Size *</label>
                     <select id="size-select" required
                             class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all text-sm">
-                        <option value="">-- Chọn Size --</option>
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L">L</option>
-                        <option value="XL">XL</option>
+                        ${sizeOptions}
                     </select>
                 </div>
                 

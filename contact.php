@@ -3,6 +3,18 @@ session_start();
 require_once 'includes/config.php';
 require_once 'includes/notification-helper.php';
 require_once 'includes/email-validator.php';
+
+// Load settings helper
+if (!function_exists('getSetting')) {
+    require_once 'includes/settings-helper.php';
+}
+
+// Lấy thông tin liên hệ từ database
+$contact_phone = getSetting($conn, 'contact_phone', '078.797.2075');
+$contact_email = getSetting($conn, 'contact_email', 'duyphongtv123@gmail.com');
+$contact_address = getSetting($conn, 'contact_address', '123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh');
+$social_zalo = getSetting($conn, 'social_zalo', 'https://zalo.me/0787972075');
+
 $page_title = 'Liên Hệ';
 
 // Xử lý form submit
@@ -135,7 +147,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-phone-alt text-3xl text-primary"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Hotline</h3>
-                <a href="tel:0787972075" class="text-primary text-lg font-semibold hover:underline">078.797.2075</a>
+                <a href="tel:<?php echo str_replace(['.', ' '], '', $contact_phone); ?>" class="text-primary text-lg font-semibold hover:underline"><?php echo htmlspecialchars($contact_phone); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Hỗ trợ 24/7</p>
             </div>
             
@@ -145,7 +157,7 @@ require_once 'includes/header.php';
                     <i class="fab fa-whatsapp text-3xl text-accent"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Zalo</h3>
-                <a href="https://zalo.me/0787972075" class="text-accent text-lg font-semibold hover:underline" target="_blank">078.797.2075</a>
+                <a href="<?php echo htmlspecialchars($social_zalo); ?>" class="text-accent text-lg font-semibold hover:underline" target="_blank"><?php echo htmlspecialchars($contact_phone); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Chat nhanh</p>
             </div>
             
@@ -155,7 +167,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-envelope text-3xl text-secondary"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Email</h3>
-                <a href="mailto:duyphongtv123@gmail.com" class="text-secondary text-lg font-semibold hover:underline break-all">duyphongtv123@gmail.com</a>
+                <a href="mailto:<?php echo htmlspecialchars($contact_email); ?>" class="text-secondary text-lg font-semibold hover:underline break-all"><?php echo htmlspecialchars($contact_email); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Hỗ trợ email</p>
             </div>
             
@@ -165,7 +177,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-map-marker-alt text-3xl text-red-500"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Địa chỉ</h3>
-                <p class="text-gray-700 text-sm leading-relaxed">123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</p>
+                <p class="text-gray-700 text-sm leading-relaxed"><?php echo htmlspecialchars($contact_address); ?></p>
                 <p class="text-gray-600 mt-2 text-sm">Ghé thăm</p>
             </div>
         </div>

@@ -10,6 +10,7 @@ $bank_name = getSetting($conn, 'bank_name', 'Vietcombank');
 $bank_account = getSetting($conn, 'bank_account', '1234567890123');
 $bank_holder = getSetting($conn, 'bank_holder', 'NGUYEN VAN A');
 $bank_branch = getSetting($conn, 'bank_branch', 'TP. Hồ Chí Minh');
+$contact_phone = getSetting($conn, 'contact_phone', '078.797.2075');
 ?>
 
 <!-- Breadcrumb -->
@@ -264,9 +265,9 @@ $bank_branch = getSetting($conn, 'bank_branch', 'TP. Hồ Chí Minh');
                                 Nếu gặp vấn đề trong quá trình thanh toán, vui lòng liên hệ ngay:
                             </p>
                             <div class="flex flex-wrap gap-4">
-                                <a href="tel:0787972075" class="inline-flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-pink-700 transition">
+                                <a href="tel:<?php echo str_replace(['.', ' '], '', $contact_phone); ?>" class="inline-flex items-center gap-2 bg-pink-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-pink-700 transition">
                                     <i class="fas fa-phone"></i>
-                                    078.797.2075
+                                    <?php echo htmlspecialchars($contact_phone); ?>
                                 </a>
                                 <a href="contact.php" class="inline-flex items-center gap-2 bg-white text-pink-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition border border-pink-200">
                                     <i class="fas fa-envelope"></i>

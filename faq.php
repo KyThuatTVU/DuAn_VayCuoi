@@ -1,6 +1,16 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+
+// Load settings helper
+if (!function_exists('getSetting')) {
+    require_once 'includes/settings-helper.php';
+}
+
+// Lấy thông tin liên hệ từ database
+$contact_phone = getSetting($conn, 'contact_phone', '078.797.2075');
+$social_zalo = getSetting($conn, 'social_zalo', 'https://zalo.me/0787972075');
+
 $page_title = 'Câu Hỏi Thường Gặp';
 require_once 'includes/header.php';
 ?>
@@ -254,9 +264,9 @@ require_once 'includes/header.php';
                                 <i class="fas fa-envelope"></i>
                                 Liên Hệ Ngay
                             </a>
-                            <a href="tel:0787972075" class="inline-flex items-center gap-2 bg-white text-pink-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition border border-pink-200">
+                            <a href="tel:<?php echo str_replace(['.', ' '], '', $contact_phone); ?>" class="inline-flex items-center gap-2 bg-white text-pink-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition border border-pink-200">
                                 <i class="fas fa-phone"></i>
-                                078.797.2075
+                                <?php echo htmlspecialchars($contact_phone); ?>
                             </a>
                         </div>
                     </div>

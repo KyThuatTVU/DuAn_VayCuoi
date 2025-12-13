@@ -10,6 +10,18 @@ session_start();
 require_once __DIR__ . '/../includes/env.php';
 require_once __DIR__ . '/../includes/config.php';
 
+// Load settings helper
+if (!function_exists('getSetting')) {
+    require_once __DIR__ . '/../includes/settings-helper.php';
+}
+
+// Lấy thông tin cửa hàng từ database
+$store_name = getSetting($conn, 'site_name', 'Váy Cưới Thiên Thần - Garden Home');
+$store_address = getSetting($conn, 'contact_address', '123 Đường ABC, Quận XYZ, TP.HCM');
+$store_phone = getSetting($conn, 'contact_phone', '078.797.2075');
+$store_zalo = getSetting($conn, 'social_zalo', '0787972075');
+$store_hours = getSetting($conn, 'working_hours', '8h00 - 21h00 (Thứ 2 - Chủ nhật)');
+
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
@@ -101,15 +113,15 @@ THÔNG TIN KHÁCH HÀNG ĐANG CHAT:
 
 // System prompt - Định hình chatbot
 $systemPrompt = <<<PROMPT
-Bạn là Trà My, tư vấn viên xinh đẹp và thân thiện của cửa hàng "Váy Cưới Thiên Thần" (Garden Home). 
+Bạn là Trà My, tư vấn viên xinh đẹp và thân thiện của cửa hàng "{$store_name}". 
 {$customerInfo}
 THÔNG TIN CỬA HÀNG:
-- Tên: Váy Cưới Thiên Thần - Garden Home
-- Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM
-- Hotline: 078.797.2075
-- Zalo: 0787972075
+- Tên: {$store_name}
+- Địa chỉ: {$store_address}
+- Hotline: {$store_phone}
+- Zalo: {$store_zalo}
 - Website: vaycuoithienthan.com
-- Giờ mở cửa: 8h00 - 21h00 (Thứ 2 - Chủ nhật)
+- Giờ mở cửa: {$store_hours}
 
 DỊCH VỤ:
 1. Cho thuê váy cưới (2.000.000đ - 15.000.000đ/bộ)

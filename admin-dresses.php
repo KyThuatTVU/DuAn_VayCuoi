@@ -334,8 +334,25 @@ include 'includes/admin-layout.php';
                 <td class="px-6 py-4 font-medium text-accent-500"><?php echo htmlspecialchars($dress['ma_vay']); ?></td>
                 <td class="px-6 py-4 font-bold text-green-600"><?php echo number_format($dress['gia_thue']); ?>đ</td>
                 <td class="px-6 py-4 text-navy-700">
-                    <?php if (!empty($dress['size'])): ?>
-                        <i class="fas fa-ruler-combined text-navy-400 mr-1"></i><?php echo htmlspecialchars($dress['size']); ?>
+                    <?php 
+                    $sizes_display = [];
+                    if (!empty($dress['size'])) {
+                        $decoded = json_decode($dress['size'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            foreach ($decoded as $s) {
+                                if (!empty($s['active'])) {
+                                    $sizes_display[] = htmlspecialchars($s['name']);
+                                }
+                            }
+                        } else {
+                            // Legacy format
+                            $sizes_display[] = htmlspecialchars($dress['size']);
+                        }
+                    }
+                    
+                    if (!empty($sizes_display)): 
+                    ?>
+                        <i class="fas fa-ruler-combined text-navy-400 mr-1"></i><?php echo implode(', ', $sizes_display); ?>
                     <?php else: ?>
                         <span class="text-gray-400 italic">-</span>
                     <?php endif; ?>
@@ -424,7 +441,21 @@ include 'includes/admin-layout.php';
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1"><i class="fas fa-ruler-combined mr-1"></i>Kích cỡ (Size)</label>
-                        <input type="text" name="size" id="size" placeholder="VD: S, M, L, XL hoặc số đo 85-65-90" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
+                        <div class="flex gap-2 mb-2">
+                             <button type="button" onclick="addStandardSizes()" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-2 py-1.5 rounded transition border border-blue-200">
+                                + Size Chuẩn (S, M, L, XL)
+                            </button>
+                             <button type="button" onclick="clearSizes()" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1.5 rounded transition border border-red-200">
+                                Xóa hết
+                            </button>
+                        </div>
+                        <div id="sizeContainer" class="space-y-2 mb-2 max-h-40 overflow-y-auto p-2 border border-gray-100 rounded-lg bg-gray-50">
+                            <!-- Size items will be here -->
+                        </div>
+                        <button type="button" onclick="addSizeItem()" class="text-sm text-accent-500 hover:text-accent-600 font-medium flex items-center gap-1">
+                            <i class="fas fa-plus-circle"></i> Thêm size tùy chỉnh
+                        </button>
+                        <input type="hidden" name="size" id="sizeInput">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1">Mô tả</label>
@@ -538,13 +569,83 @@ include 'includes/admin-layout.php';
             document.getElementById('mo_ta').value = data.mo_ta || '';
             document.getElementById('gia_thue').value = data.gia_thue;
             document.getElementById('so_luong_ton').value = data.so_luong_ton;
-            document.getElementById('size').value = data.size || '';
+            renderSizes(data.size);
         } else {
             currentDressData = null;
             document.getElementById('modalTitle').textContent = 'Thêm váy cưới';
             document.getElementById('dressForm').reset();
+            renderSizes(''); // Reset sizes
         }
     }
+
+    function renderSizes(sizeData) {
+        const container = document.getElementById('sizeContainer');
+        container.innerHTML = '';
+        
+        let sizes = [];
+        try {
+            sizes = JSON.parse(sizeData);
+        } catch (e) {
+            // Fallback for old format "S, M, L"
+            if (sizeData && typeof sizeData === 'string') {
+                sizes = sizeData.split(',').map(s => ({ name: s.trim(), active: true }));
+            }
+        }
+        
+        if (!Array.isArray(sizes)) sizes = [];
+        
+        sizes.forEach(s => addSizeItem(s.name, s.active));
+    }
+
+    function addStandardSizes() {
+        const standards = ['S', 'M', 'L', 'XL'];
+        // Check existing to avoid duplicates
+        const existing = Array.from(document.querySelectorAll('.size-name')).map(i => i.value);
+        standards.forEach(s => {
+            if (!existing.includes(s)) {
+                addSizeItem(s, true);
+            }
+        });
+    }
+
+    function clearSizes() {
+        if(confirm('Bạn có chắc muốn xóa hết các size?')) {
+            document.getElementById('sizeContainer').innerHTML = '';
+        }
+    }
+
+    function addSizeItem(name = '', active = true) {
+        const container = document.getElementById('sizeContainer');
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2 size-item mb-2';
+        div.innerHTML = `
+            <input type="text" class="size-name border border-gray-200 rounded px-2 py-1.5 text-sm w-24 focus:ring-2 focus:ring-accent-500" placeholder="Tên size" value="${name}">
+            <label class="flex items-center gap-1 text-sm text-gray-600 cursor-pointer select-none bg-white border border-gray-200 rounded px-2 py-1.5 hover:bg-gray-50">
+                <input type="checkbox" class="size-active rounded text-accent-500 focus:ring-accent-500" ${active ? 'checked' : ''}>
+                <span>Hiện</span>
+            </label>
+            <button type="button" onclick="this.closest('.size-item').remove()" class="text-red-400 hover:text-red-600 p-1.5 rounded hover:bg-red-50 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(div);
+    }
+
+    // On submit
+    document.getElementById('dressForm').addEventListener('submit', function(e) {
+        const items = document.querySelectorAll('.size-item');
+        const sizes = [];
+        items.forEach(item => {
+            const name = item.querySelector('.size-name').value.trim();
+            if (name) {
+                sizes.push({
+                    name: name,
+                    active: item.querySelector('.size-active').checked
+                });
+            }
+        });
+        document.getElementById('sizeInput').value = JSON.stringify(sizes);
+    });
     
     function closeModal() {
         document.getElementById('dressModal').classList.add('hidden');
