@@ -1,6 +1,18 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+
+// Load settings helper
+if (!function_exists('getSetting')) {
+    require_once 'includes/settings-helper.php';
+}
+$contact_phone = getSetting($conn, 'contact_phone', '0901 234 567');
+$contact_email = getSetting($conn, 'contact_email', 'contact@vaycuoi.com');
+
+// Extract first line for display
+$contact_phone_display = strtok($contact_phone, "\n");
+$contact_email_display = strtok($contact_email, "\n");
+
 $page_title = 'Đặt Hàng Thành Công';
 
 // Kiểm tra đăng nhập
@@ -147,9 +159,9 @@ require_once 'includes/header.php';
             <div class="mt-8 text-center text-gray-600">
                 <p class="mb-2">Cần hỗ trợ? Liên hệ với chúng tôi:</p>
                 <p class="font-bold text-gray-800">
-                    <i class="fas fa-phone mr-2"></i>0901 234 567
+                    <i class="fas fa-phone mr-2"></i><?php echo htmlspecialchars($contact_phone_display); ?>
                     <span class="mx-3">|</span>
-                    <i class="fas fa-envelope mr-2"></i>contact@vaycuoi.com
+                    <i class="fas fa-envelope mr-2"></i><?php echo htmlspecialchars($contact_email_display); ?>
                 </p>
             </div>
         </div>

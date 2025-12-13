@@ -1,3 +1,22 @@
+<?php
+// Helper to extract phone number for link
+if (isset($footer_phone)) {
+    preg_match('/(\d[\d\s\.\-\(\)]{8,})/', $footer_phone, $matches);
+    $widget_phone_link = isset($matches[1]) ? preg_replace('/[^0-9]/', '', $matches[1]) : '';
+} else {
+    $widget_phone_link = '0901234567';
+}
+
+// Helper for Zalo link
+$widget_zalo_link = isset($footer_zalo) ? $footer_zalo : '#';
+if (isset($footer_zalo) && !filter_var($footer_zalo, FILTER_VALIDATE_URL)) {
+    // If not a URL, assume it's a phone number and create zalo.me link
+    $zalo_phone = preg_replace('/[^0-9]/', '', $footer_zalo);
+    if (!empty($zalo_phone)) {
+        $widget_zalo_link = 'https://zalo.me/' . $zalo_phone;
+    }
+}
+?>
 <!-- Chatbot Widget CSS -->
 <style>
     @keyframes bounce-slow {
@@ -121,14 +140,14 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
         </span>
         
-        <a href="tel:<?php echo str_replace(['.', ' '], '', $footer_phone); ?>" 
+        <a href="tel:<?php echo $widget_phone_link; ?>" 
            class="relative flex items-center justify-center w-16 h-16 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-10">
             <i class="fas fa-phone-alt text-2xl animate-pulse"></i>
         </a>
         
         <!-- Tooltip -->
         <div class="absolute left-full ml-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 shadow-xl z-50 min-w-max">
-            Gọi: <?php echo htmlspecialchars($footer_phone); ?>
+            Gọi: <?php echo nl2br(htmlspecialchars($footer_phone)); ?>
             <div class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-gray-900 rotate-45"></div>
         </div>
     </div>
@@ -140,7 +159,7 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
         </span>
         
-        <a href="<?php echo htmlspecialchars($footer_zalo); ?>" target="_blank" 
+        <a href="<?php echo htmlspecialchars($widget_zalo_link); ?>" target="_blank" 
            class="relative flex flex-col items-center justify-center w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 z-10">
             <span class="text-white text-xs font-bold tracking-wide animate-pulse">Zalo</span>
         </a>

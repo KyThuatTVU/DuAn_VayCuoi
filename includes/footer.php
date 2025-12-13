@@ -7,11 +7,11 @@
     }
     
     // Lấy cài đặt từ database
-    $footer_address = getSetting($conn, 'contact_address', '123 Đường Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh');
-    $footer_phone = getSetting($conn, 'contact_phone', '0901 234 567');
-    $footer_email = getSetting($conn, 'contact_email', 'contact@vaycuoi.com');
+    $footer_address = getSetting($conn, 'contact_address', "123 Đường Nguyễn Huệ\nQuận 1, TP. Hồ Chí Minh");
+    $footer_phone = getSetting($conn, 'contact_phone', "Hotline: 0901 234 567\nTel: (028) 3822 xxxx");
+    $footer_email = getSetting($conn, 'contact_email', "contact@vaycuoi.com\nsupport@vaycuoi.com");
     $footer_working_days = getSetting($conn, 'working_days', 'Thứ 2 - Chủ Nhật');
-    $footer_working_hours = getSetting($conn, 'working_hours', '8:00 - 20:00');
+    $footer_working_hours = getSetting($conn, 'working_hours', '8:00 AM - 8:00 PM');
     $footer_description = getSetting($conn, 'site_description', 'Địa chỉ uy tín cho thuê váy cưới cao cấp tại TP.HCM với hơn 10 năm kinh nghiệm.');
     $footer_facebook = getSetting($conn, 'social_facebook', '#');
     $footer_instagram = getSetting($conn, 'social_instagram', '#');
@@ -166,7 +166,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-gray-400"><?php echo htmlspecialchars($footer_phone); ?></p>
+                                <p class="text-gray-400"><?php echo nl2br(htmlspecialchars($footer_phone)); ?></p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3 group">
@@ -176,7 +176,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <p class="text-gray-400"><?php echo htmlspecialchars($footer_email); ?></p>
+                                <p class="text-gray-400"><?php echo nl2br(htmlspecialchars($footer_email)); ?></p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3 group">

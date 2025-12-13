@@ -61,13 +61,27 @@ if (!$is_admin_preview) {
     </div>
     <?php endif; ?>
     
+    <?php
+    // Load settings helper if not loaded
+    if (!function_exists('getSetting')) {
+        require_once __DIR__ . '/settings-helper.php';
+    }
+    
+    // Get settings
+    $header_phone = getSetting($conn, 'contact_phone', "Hotline: 0901 234 567");
+    $header_email = getSetting($conn, 'contact_email', "contact@vaycuoi.com");
+    
+    // Get first line only for header
+    $header_phone_display = strtok($header_phone, "\n");
+    $header_email_display = strtok($header_email, "\n");
+    ?>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container">
             <div class="top-bar-content">
                 <div class="top-bar-left">
-                    <span><i class="icon-phone"></i> Hotline: 0901 234 567</span>
-                    <span><i class="icon-email"></i> contact@vaycuoi.com</span>
+                    <span><i class="fas fa-phone-alt mr-2"></i> <?php echo htmlspecialchars($header_phone_display); ?></span>
+                    <span><i class="fas fa-envelope mr-2"></i> <?php echo htmlspecialchars($header_email_display); ?></span>
                 </div>
                 <div class="top-bar-right">
                     

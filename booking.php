@@ -2,6 +2,15 @@
 session_start();
 require_once 'includes/config.php';
 require_once 'includes/notification-helper.php';
+
+// Load settings helper
+if (!function_exists('getSetting')) {
+    require_once 'includes/settings-helper.php';
+}
+$contact_address = getSetting($conn, 'contact_address', '123 Đường Nguyễn Huệ, Quận 1, TP.HCM');
+$contact_phone = getSetting($conn, 'contact_phone', '0901 234 567');
+$working_hours = getSetting($conn, 'working_hours', '8:00 - 20:00');
+
 $page_title = 'Đặt Lịch Thử Váy';
 
 // Xử lý form submit
@@ -257,7 +266,7 @@ require_once 'includes/header.php';
                             </svg>
                             <div>
                                 <p class="font-semibold text-gray-900">Địa Chỉ</p>
-                                <p class="text-gray-600 text-sm">123 Đường Nguyễn Huệ, Quận 1, TP.HCM</p>
+                                <p class="text-gray-600 text-sm"><?php echo nl2br(htmlspecialchars($contact_address)); ?></p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -266,7 +275,7 @@ require_once 'includes/header.php';
                             </svg>
                             <div>
                                 <p class="font-semibold text-gray-900">Hotline</p>
-                                <p class="text-gray-600 text-sm">0901 234 567</p>
+                                <p class="text-gray-600 text-sm"><?php echo nl2br(htmlspecialchars($contact_phone)); ?></p>
                             </div>
                         </div>
                         <div class="flex items-start">
@@ -275,7 +284,7 @@ require_once 'includes/header.php';
                             </svg>
                             <div>
                                 <p class="font-semibold text-gray-900">Giờ Làm Việc</p>
-                                <p class="text-gray-600 text-sm">Thứ 2 - Chủ Nhật: 8:00 - 20:00</p>
+                                <p class="text-gray-600 text-sm"><?php echo nl2br(htmlspecialchars($working_hours)); ?></p>
                             </div>
                         </div>
                     </div>

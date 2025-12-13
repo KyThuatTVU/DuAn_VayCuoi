@@ -10,10 +10,20 @@ if (!function_exists('getSetting')) {
 }
 
 // Lấy thông tin liên hệ từ database
-$contact_phone = getSetting($conn, 'contact_phone', '078.797.2075');
-$contact_email = getSetting($conn, 'contact_email', 'duyphongtv123@gmail.com');
-$contact_address = getSetting($conn, 'contact_address', '123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh');
-$social_zalo = getSetting($conn, 'social_zalo', 'https://zalo.me/0787972075');
+$contact_phone = getSetting($conn, 'contact_phone', "Hotline: 0901 234 567\nTel: (028) 3822 xxxx");
+$contact_email = getSetting($conn, 'contact_email', "contact@vaycuoi.com\nsupport@vaycuoi.com");
+$contact_address = getSetting($conn, 'contact_address', "123 Đường Nguyễn Huệ\nQuận 1, TP. Hồ Chí Minh");
+$working_days = getSetting($conn, 'working_days', 'Thứ 2 - Chủ Nhật');
+$working_hours = getSetting($conn, 'working_hours', '8:00 AM - 8:00 PM');
+$social_zalo = getSetting($conn, 'social_zalo', 'https://zalo.me/0901234567');
+
+// Helper để lấy số điện thoại đầu tiên cho link tel:
+preg_match('/(\d[\d\s\.\-\(\)]{8,})/', $contact_phone, $matches);
+$phone_link = isset($matches[1]) ? preg_replace('/[^0-9]/', '', $matches[1]) : '';
+
+// Helper để lấy email đầu tiên cho link mailto:
+preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $contact_email, $matches);
+$email_link = isset($matches[0]) ? $matches[0] : '';
 
 $page_title = 'Liên Hệ';
 
@@ -147,7 +157,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-phone-alt text-3xl text-primary"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Hotline</h3>
-                <a href="tel:<?php echo str_replace(['.', ' '], '', $contact_phone); ?>" class="text-primary text-lg font-semibold hover:underline"><?php echo htmlspecialchars($contact_phone); ?></a>
+                <a href="tel:<?php echo $phone_link; ?>" class="text-primary text-lg font-semibold hover:underline block"><?php echo nl2br(htmlspecialchars($contact_phone)); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Hỗ trợ 24/7</p>
             </div>
             
@@ -157,7 +167,7 @@ require_once 'includes/header.php';
                     <i class="fab fa-whatsapp text-3xl text-accent"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Zalo</h3>
-                <a href="<?php echo htmlspecialchars($social_zalo); ?>" class="text-accent text-lg font-semibold hover:underline" target="_blank"><?php echo htmlspecialchars($contact_phone); ?></a>
+                <a href="<?php echo htmlspecialchars($social_zalo); ?>" class="text-accent text-lg font-semibold hover:underline block" target="_blank"><?php echo nl2br(htmlspecialchars($contact_phone)); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Chat nhanh</p>
             </div>
             
@@ -167,7 +177,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-envelope text-3xl text-secondary"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Email</h3>
-                <a href="mailto:<?php echo htmlspecialchars($contact_email); ?>" class="text-secondary text-lg font-semibold hover:underline break-all"><?php echo htmlspecialchars($contact_email); ?></a>
+                <a href="mailto:<?php echo $email_link; ?>" class="text-secondary text-lg font-semibold hover:underline break-all block"><?php echo nl2br(htmlspecialchars($contact_email)); ?></a>
                 <p class="text-gray-600 mt-2 text-sm">Hỗ trợ email</p>
             </div>
             
@@ -177,7 +187,7 @@ require_once 'includes/header.php';
                     <i class="fas fa-map-marker-alt text-3xl text-red-500"></i>
                 </div>
                 <h3 class="text-xl font-bold text-gray-800 mb-3">Địa chỉ</h3>
-                <p class="text-gray-700 text-sm leading-relaxed"><?php echo htmlspecialchars($contact_address); ?></p>
+                <p class="text-gray-700 text-sm leading-relaxed"><?php echo nl2br(htmlspecialchars($contact_address)); ?></p>
                 <p class="text-gray-600 mt-2 text-sm">Ghé thăm</p>
             </div>
         </div>
@@ -342,7 +352,7 @@ require_once 'includes/header.php';
                         </div>
                         <div class="ml-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Địa Chỉ Showroom</h3>
-                            <p class="text-gray-600 leading-relaxed">123 Đường Nguyễn Huệ<br>Quận 1, TP. Hồ Chí Minh</p>
+                            <p class="text-gray-600 leading-relaxed"><?php echo nl2br(htmlspecialchars($contact_address)); ?></p>
                         </div>
                     </div>
                 </div>
@@ -359,7 +369,7 @@ require_once 'includes/header.php';
                         </div>
                         <div class="ml-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Số Điện Thoại</h3>
-                            <p class="text-gray-600 leading-relaxed">Hotline: 0901 234 567<br>Tel: (028) 3822 xxxx</p>
+                            <p class="text-gray-600 leading-relaxed"><?php echo nl2br(htmlspecialchars($contact_phone)); ?></p>
                         </div>
                     </div>
                 </div>
@@ -376,7 +386,7 @@ require_once 'includes/header.php';
                         </div>
                         <div class="ml-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Email</h3>
-                            <p class="text-gray-600 leading-relaxed">contact@vaycuoi.com<br>support@vaycuoi.com</p>
+                            <p class="text-gray-600 leading-relaxed"><?php echo nl2br(htmlspecialchars($contact_email)); ?></p>
                         </div>
                     </div>
                 </div>
@@ -393,7 +403,7 @@ require_once 'includes/header.php';
                         </div>
                         <div class="ml-4">
                             <h3 class="text-lg font-semibold text-gray-800 mb-2">Giờ Làm Việc</h3>
-                            <p class="text-gray-600 leading-relaxed">Thứ 2 - Chủ Nhật<br>8:00 AM - 8:00 PM</p>
+                            <p class="text-gray-600 leading-relaxed"><?php echo htmlspecialchars($working_days); ?><br><?php echo htmlspecialchars($working_hours); ?></p>
                         </div>
                     </div>
                 </div>
