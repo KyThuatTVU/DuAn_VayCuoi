@@ -363,8 +363,10 @@ const addressPreviewText = document.getElementById('address-preview-text');
 // Load danh sách tỉnh/thành phố
 async function loadProvinces() {
     try {
+        console.log('Loading provinces...');
         const response = await fetch('api/vietnam-address.php?action=provinces');
         const data = await response.json();
+        console.log('Provinces response:', data);
         
         if (data.success) {
             provincesData = data.data;
@@ -384,6 +386,8 @@ async function loadProvinces() {
                 provinceSelect.value = savedProvince;
                 await loadDistricts(savedProvince);
             }
+        } else {
+            console.error('API returned error:', data.message);
         }
     } catch (error) {
         console.error('Error loading provinces:', error);
@@ -393,11 +397,13 @@ async function loadProvinces() {
 // Load danh sách quận/huyện
 async function loadDistricts(provinceCode) {
     try {
+        console.log('Loading districts for province:', provinceCode);
         districtSelect.innerHTML = '<option value="">Đang tải...</option>';
         wardSelect.innerHTML = '<option value="">-- Chọn Phường/Xã --</option>';
         
         const response = await fetch(`api/vietnam-address.php?action=districts&province_code=${provinceCode}`);
         const data = await response.json();
+        console.log('Districts response:', data);
         
         if (data.success) {
             districtsData = data.data;
@@ -422,6 +428,9 @@ async function loadDistricts(provinceCode) {
                 districtSelect.value = savedDistrict;
                 await loadWards(savedDistrict);
             }
+        } else {
+            console.error('API returned error:', data.message);
+            districtSelect.innerHTML = '<option value="">Lỗi: ' + data.message + '</option>';
         }
     } catch (error) {
         console.error('Error loading districts:', error);
@@ -432,10 +441,12 @@ async function loadDistricts(provinceCode) {
 // Load danh sách phường/xã
 async function loadWards(districtCode) {
     try {
+        console.log('Loading wards for district:', districtCode);
         wardSelect.innerHTML = '<option value="">Đang tải...</option>';
         
         const response = await fetch(`api/vietnam-address.php?action=wards&district_code=${districtCode}`);
         const data = await response.json();
+        console.log('Wards response:', data);
         
         if (data.success) {
             wardsData = data.data;
@@ -460,6 +471,9 @@ async function loadWards(districtCode) {
                 wardSelect.value = savedWard;
                 updateFullAddress();
             }
+        } else {
+            console.error('API returned error:', data.message);
+            wardSelect.innerHTML = '<option value="">Lỗi: ' + data.message + '</option>';
         }
     } catch (error) {
         console.error('Error loading wards:', error);
