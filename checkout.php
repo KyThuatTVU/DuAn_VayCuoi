@@ -173,6 +173,11 @@ require_once 'includes/header.php';
                             <div class="flex-1">
                                 <h3 class="font-bold text-gray-800"><?php echo htmlspecialchars($item['ten_vay']); ?></h3>
                                 <p class="text-sm text-gray-600">Mã: <?php echo htmlspecialchars($item['ma_vay']); ?></p>
+                                <?php if (!empty($item['ghi_chu']) && strpos($item['ghi_chu'], 'Size:') === 0): ?>
+                                <p class="text-sm text-blue-600 font-medium">
+                                    👕 Size: <?php echo htmlspecialchars(explode('.', $item['ghi_chu'])[0]); ?>
+                                </p>
+                                <?php endif; ?>
                                 <p class="text-sm text-gray-600">
                                     📅 <?php echo date('d/m/Y', strtotime($item['ngay_bat_dau_thue'])); ?> 
                                     → <?php echo date('d/m/Y', strtotime($item['ngay_tra_vay'])); ?>

@@ -492,6 +492,18 @@ function showRentalModal(productId, productName, pricePerDay) {
             
             <form id="rental-form" class="space-y-4">
                 <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Chọn Size *</label>
+                    <select id="size-select" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
+                        <option value="">-- Chọn Size --</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+                
+                <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Ngày bắt đầu thuê *</label>
                     <input type="date" id="start-date" min="${today}" value="${today}" required
                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all">
@@ -515,8 +527,8 @@ function showRentalModal(productId, productName, pricePerDay) {
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú (size, yêu cầu đặc biệt...)</label>
-                    <textarea id="note" rows="3" placeholder="VD: Size M, cần sửa ngắn váy..."
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú (yêu cầu đặc biệt...)</label>
+                    <textarea id="note" rows="3" placeholder="VD: Cần sửa ngắn váy, màu khác..."
                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"></textarea>
                 </div>
                 
@@ -564,6 +576,7 @@ function showRentalModal(productId, productName, pricePerDay) {
     modal.querySelector('#rental-form').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        const size = modal.querySelector('#size-select').value;
         const startDate = startInput.value;
         const endDate = endInput.value;
         const note = modal.querySelector('#note').value;
@@ -571,7 +584,7 @@ function showRentalModal(productId, productName, pricePerDay) {
         const end = new Date(endDate);
         const days = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
         
-        addToCart(productId, productName, startDate, endDate, days, note);
+        addToCart(productId, productName, startDate, endDate, days, note, size);
         modal.remove();
     });
     
@@ -583,7 +596,7 @@ function showRentalModal(productId, productName, pricePerDay) {
 }
 
 // Thêm váy vào giỏ hàng (cho thuê)
-function addToCart(productId, productName, startDate, endDate, days, note) {
+function addToCart(productId, productName, startDate, endDate, days, note, size) {
     fetch('api/cart.php', {
         method: 'POST',
         headers: {
@@ -596,7 +609,7 @@ function addToCart(productId, productName, startDate, endDate, days, note) {
             ngay_bat_dau_thue: startDate,
             ngay_tra_vay: endDate,
             so_ngay_thue: days,
-            ghi_chu: note
+            ghi_chu: `Size: ${size}. ${note}`
         })
     })
     .then(response => response.json())
