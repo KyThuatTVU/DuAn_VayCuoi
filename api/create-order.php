@@ -101,10 +101,16 @@ try {
     $discount_info = null;
     
     if (!empty($applied_coupon) && $discount_amount > 0) {
-        // Kiểm tra lại coupon để đảm bảo tính hợp lệ
-        $coupon_check = $conn->prepare("SELECT * FROM khuyen_mai 
-            WHERE code = ? AND start_at <= NOW() AND end_at >= NOW() 
-            AND (usage_limit IS NULL OR usage_limit > 0)");
+        // Kiểm tra lại coupon kèm số lần đã sử dụng
+        $coupon_check = $conn->prepare("SELECT km.*, 
+            COALESCE(usage_stats.used_count, 0) as used_count
+            FROM khuyen_mai km
+            LEFT JOIN (
+                SELECT coupon_code, COUNT(*) as used_count 
+                FROM user_coupon_usage 
+                GROUP BY coupon_code
+            ) usage_stats ON km.code = usage_stats.coupon_code
+            WHERE km.code = ? AND km.start_at <= NOW() AND km.end_at >= NOW()");
         $coupon_check->bind_param("s", $applied_coupon);
         $coupon_check->execute();
         $coupon_result = $coupon_check->get_result();
@@ -112,8 +118,11 @@ try {
         if ($coupon_result->num_rows > 0) {
             $coupon = $coupon_result->fetch_assoc();
             
+            // Kiểm tra giới hạn sử dụng (so sánh used_count với usage_limit)
+            $can_use_coupon = ($coupon['usage_limit'] === null || $coupon['used_count'] < $coupon['usage_limit']);
+            
             // Kiểm tra lại điều kiện áp dụng
-            if ($subtotal >= $coupon['min_order_amount']) {
+            if ($can_use_coupon && $subtotal >= $coupon['min_order_amount']) {
                 // Tính lại giảm giá để đảm bảo chính xác
                 if ($coupon['type'] === 'percent') {
                     $calculated_discount = $subtotal * ($coupon['value'] / 100);
@@ -130,12 +139,7 @@ try {
                         'amount' => $discount_amount
                     ];
                     
-                    // Giảm usage_limit nếu có
-                    if ($coupon['usage_limit'] !== null) {
-                        $update_limit = $conn->prepare("UPDATE khuyen_mai SET usage_limit = usage_limit - 1 WHERE id = ?");
-                        $update_limit->bind_param("i", $coupon['id']);
-                        $update_limit->execute();
-                    }
+                    // KHÔNG giảm usage_limit nữa - chỉ dựa vào bảng user_coupon_usage để đếm
                 }
             }
         }

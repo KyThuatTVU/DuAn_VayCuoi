@@ -18,10 +18,16 @@ if (empty($coupon_code)) {
     exit;
 }
 
-// Lấy thông tin coupon
-$stmt = $conn->prepare("SELECT * FROM khuyen_mai 
-    WHERE code = ? AND start_at <= NOW() AND end_at >= NOW() 
-    AND (usage_limit IS NULL OR usage_limit > 0)");
+// Lấy thông tin coupon kèm số lần đã sử dụng
+$stmt = $conn->prepare("SELECT km.*, 
+    COALESCE(usage_stats.used_count, 0) as used_count
+    FROM khuyen_mai km
+    LEFT JOIN (
+        SELECT coupon_code, COUNT(*) as used_count 
+        FROM user_coupon_usage 
+        GROUP BY coupon_code
+    ) usage_stats ON km.code = usage_stats.coupon_code
+    WHERE km.code = ? AND km.start_at <= NOW() AND km.end_at >= NOW()");
 $stmt->bind_param("s", $coupon_code);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -32,6 +38,12 @@ if ($result->num_rows === 0) {
 }
 
 $coupon = $result->fetch_assoc();
+
+// Kiểm tra giới hạn sử dụng (so sánh used_count với usage_limit)
+if ($coupon['usage_limit'] !== null && $coupon['used_count'] >= $coupon['usage_limit']) {
+    echo json_encode(['success' => false, 'message' => 'Mã khuyến mãi đã hết lượt sử dụng']);
+    exit;
+}
 
 // Kiểm tra user đã sử dụng coupon này chưa
 $user_usage_check = $conn->prepare("SELECT COUNT(*) as usage_count FROM user_coupon_usage WHERE user_id = ? AND coupon_code = ?");

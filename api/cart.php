@@ -238,11 +238,11 @@ function getCart($conn, $user_id) {
                 gh.vay_id,
                 vc.ten_vay,
                 vc.ma_vay,
-                vc.size,
+                vc.size as size_raw,
                 vc.gia_thue as gia_thue_moi_ngay,
                 gh.so_luong,
-                gh.ngay_bat_dau_thue,
-                gh.ngay_tra_vay,
+                DATE_FORMAT(gh.ngay_bat_dau_thue, '%Y-%m-%d') as ngay_bat_dau_thue,
+                DATE_FORMAT(gh.ngay_tra_vay, '%Y-%m-%d') as ngay_tra_vay,
                 gh.so_ngay_thue,
                 gh.ghi_chu,
                 (vc.gia_thue * gh.so_luong * gh.so_ngay_thue) as tong_tien_thue,
@@ -261,6 +261,42 @@ function getCart($conn, $user_id) {
     $total = 0;
     
     while ($row = $result->fetch_assoc()) {
+        // Đảm bảo ngày được format đúng (YYYY-MM-DD)
+        // Nếu ngày trong quá khứ, cập nhật thành ngày mai
+        $today = date('Y-m-d');
+        if ($row['ngay_bat_dau_thue'] < $today) {
+            $row['ngay_qua_han'] = true;
+            $row['thong_bao'] = 'Ngày thuê đã qua, vui lòng cập nhật lại';
+        }
+        
+        // Parse size từ JSON hoặc ghi chú
+        $size_display = '';
+        
+        // Kiểm tra ghi chú có chứa size không (format: "Size: XL. ...")
+        if (!empty($row['ghi_chu']) && preg_match('/Size:\s*([A-Z0-9]+)/i', $row['ghi_chu'], $matches)) {
+            $size_display = $matches[1];
+        }
+        // Nếu không có trong ghi chú, parse từ size_raw (JSON)
+        elseif (!empty($row['size_raw'])) {
+            $decoded = json_decode($row['size_raw'], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                // Lấy các size active
+                $active_sizes = [];
+                foreach ($decoded as $s) {
+                    if (!empty($s['active']) && !empty($s['name'])) {
+                        $active_sizes[] = $s['name'];
+                    }
+                }
+                $size_display = implode(', ', $active_sizes);
+            } else {
+                // Legacy format (chuỗi đơn giản)
+                $size_display = $row['size_raw'];
+            }
+        }
+        
+        $row['size'] = $size_display;
+        unset($row['size_raw']); // Xóa raw data
+        
         $items[] = $row;
         $total += $row['tong_tien_thue'];
     }

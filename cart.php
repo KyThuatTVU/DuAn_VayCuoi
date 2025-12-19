@@ -114,7 +114,15 @@ function displayCart(items, total) {
     }
     
     container.innerHTML = items.map(item => `
-        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow">
+        <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow ${item.ngay_qua_han ? 'border-2 border-red-300' : ''}">
+            ${item.ngay_qua_han ? `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                <p class="text-red-600 text-sm font-medium">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    ${item.thong_bao || 'Ngày thuê đã qua, vui lòng cập nhật lại'}
+                </p>
+            </div>
+            ` : ''}
             <div class="flex gap-6 items-start">
                 <img src="assets/images/dress-${item.vay_id}.jpg" alt="${item.ten_vay}" 
                      onerror="this.src='images/vay1.jpg'"
@@ -140,11 +148,11 @@ function displayCart(items, total) {
                         <div class="grid grid-cols-2 gap-3 text-sm">
                             <div>
                                 <span class="text-gray-600">📅 Ngày thuê:</span>
-                                <p class="font-bold text-gray-800">${formatDate(item.ngay_bat_dau_thue)}</p>
+                                <p class="font-bold ${item.ngay_qua_han ? 'text-red-600' : 'text-gray-800'}">${formatRentalDate(item.ngay_bat_dau_thue)}</p>
                             </div>
                             <div>
                                 <span class="text-gray-600">📅 Ngày trả:</span>
-                                <p class="font-bold text-gray-800">${formatDate(item.ngay_tra_vay)}</p>
+                                <p class="font-bold ${item.ngay_qua_han ? 'text-red-600' : 'text-gray-800'}">${formatRentalDate(item.ngay_tra_vay)}</p>
                             </div>
                             <div>
                                 <span class="text-gray-600">⏱️ Số ngày:</span>
@@ -175,10 +183,54 @@ function displayCart(items, total) {
     updateSummary(total);
 }
 
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+// Format ngày thuê/trả - KHÔNG dùng relative time
+function formatRentalDate(dateStr) {
+    if (!dateStr) return 'Chưa chọn';
+    
+    // Nếu dateStr là chuỗi
+    if (typeof dateStr === 'string') {
+        // Kiểm tra nếu là format "YYYY-MM-DD" (10 ký tự)
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            const parts = dateStr.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        
+        // Kiểm tra nếu là format "YYYY-MM-DD HH:MM:SS"
+        if (/^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}$/.test(dateStr)) {
+            const datePart = dateStr.split(' ')[0];
+            const parts = datePart.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        
+        // Kiểm tra nếu là format ISO "YYYY-MM-DDTHH:MM:SS"
+        if (dateStr.includes('T')) {
+            const datePart = dateStr.split('T')[0];
+            const parts = datePart.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+        }
+        
+        // Kiểm tra nếu là format "DD/MM/YYYY" - đã đúng format rồi
+        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+            return dateStr;
+        }
+    }
+    
+    // Fallback: thử parse bằng Date object
+    try {
+        const date = new Date(dateStr);
+        if (!isNaN(date.getTime())) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+    } catch (e) {
+        console.error('Date parse error:', e);
+    }
+    
+    return 'Ngày không hợp lệ';
 }
 
 function updateSummary(total) {
