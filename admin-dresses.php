@@ -265,9 +265,26 @@ include 'includes/admin-layout.php';
             <div class="flex items-center justify-between gap-2 mb-3">
                 <div class="flex flex-col gap-1">
                     <span class="text-lg font-bold text-green-600"><?php echo number_format($dress['gia_thue']); ?>đ</span>
-                    <?php if (!empty($dress['size'])): ?>
-                    <span class="text-xs text-navy-600"><i class="fas fa-ruler-combined mr-1"></i><?php echo htmlspecialchars($dress['size']); ?></span>
-                    <?php endif; ?>
+                    <?php 
+                    if (!empty($dress['size'])):
+                        $mobile_sizes = [];
+                        $decoded_mobile = json_decode($dress['size'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_mobile)) {
+                            foreach ($decoded_mobile as $s) {
+                                if (!empty($s['active'])) {
+                                    $mobile_sizes[] = htmlspecialchars($s['name']);
+                                }
+                            }
+                        } else {
+                            $mobile_sizes[] = htmlspecialchars($dress['size']);
+                        }
+                        if (!empty($mobile_sizes)):
+                    ?>
+                    <span class="text-xs text-navy-600"><i class="fas fa-ruler-combined mr-1"></i><?php echo implode(', ', $mobile_sizes); ?></span>
+                    <?php 
+                        endif;
+                    endif; 
+                    ?>
                 </div>
                 <span class="px-2 py-0.5 rounded-full text-xs font-medium <?php echo $dress['so_luong_ton'] > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'; ?>">
                     Tồn: <?php echo $dress['so_luong_ton']; ?>

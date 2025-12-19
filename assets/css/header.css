@@ -420,11 +420,15 @@
 .user-avatar {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #7ec8e3;
     display: block;
     background: #f0f0f0;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
 }
 
 .user-avatar-default {
@@ -615,5 +619,41 @@
         width: 38px;
         height: 38px;
         padding: 8px;
+    }
+}
+
+
+/* ===================================
+   AVATAR FIX - Prevent stretching
+   =================================== */
+/* Header avatar - Tailwind w-9 h-9 */
+.header img.w-9.h-9,
+.header img[alt="Avatar"],
+button img.rounded-full,
+.relative.group button img {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
+    object-fit: cover !important;
+    aspect-ratio: 1 / 1 !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+}
+
+/* Mobile avatar fix */
+@media (max-width: 767.98px) {
+    .header img.w-9.h-9,
+    .header img[alt="Avatar"],
+    button img.rounded-full,
+    .relative.group button img {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
     }
 }

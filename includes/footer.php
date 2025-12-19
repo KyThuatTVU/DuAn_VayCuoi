@@ -271,16 +271,7 @@
                     }
                 }
                 
-                // Update mobile bottom nav cart badge
-                const mobileCartBadge = document.querySelector('.mobile-bottom-nav .cart-badge');
-                if (mobileCartBadge) {
-                    if (data.count > 0) {
-                        mobileCartBadge.textContent = data.count > 99 ? '99+' : data.count;
-                        mobileCartBadge.style.display = 'flex';
-                    } else {
-                        mobileCartBadge.style.display = 'none';
-                    }
-                }
+
             }
         })
         .catch(error => {
@@ -289,10 +280,7 @@
             if (cartBadge) {
                 cartBadge.style.display = 'none';
             }
-            const mobileCartBadge = document.querySelector('.mobile-bottom-nav .cart-badge');
-            if (mobileCartBadge) {
-                mobileCartBadge.style.display = 'none';
-            }
+
         });
     }
     

@@ -362,3 +362,192 @@
         justify-content: center;
     }
 }
+
+
+/* ===================================
+   MOBILE ENHANCEMENTS FOR ACCOUNT PAGE
+   =================================== */
+
+@media (max-width: 639.98px) {
+    .account-container {
+        padding: 30px 0;
+        min-height: calc(100vh - 70px); /* Account for mobile bottom nav */
+    }
+    
+    .account-content {
+        padding: 24px 20px;
+        border-radius: 20px;
+    }
+    
+    .content-header {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+    }
+    
+    .content-header h2 {
+        font-size: 22px;
+    }
+    
+    .content-header p {
+        font-size: 14px;
+    }
+    
+    /* User profile card mobile */
+    .user-profile-card {
+        padding: 24px 20px;
+        border-radius: 20px;
+    }
+    
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 16px;
+    }
+    
+    .user-profile-card h3 {
+        font-size: 18px;
+    }
+    
+    /* Account menu mobile - horizontal scroll */
+    .account-menu {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        border-radius: 16px;
+        padding: 8px;
+        gap: 8px;
+    }
+    
+    .account-menu::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .menu-item {
+        flex-shrink: 0;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border-left: none;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+        text-align: center;
+        min-width: 80px;
+    }
+    
+    .menu-item:hover,
+    .menu-item.active {
+        padding-left: 16px;
+        border-left: none;
+    }
+    
+    .menu-item svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .menu-item.logout {
+        border-top: none;
+    }
+    
+    /* Avatar upload mobile */
+    .avatar-upload-section {
+        padding: 20px;
+        gap: 20px;
+    }
+    
+    .current-avatar {
+        width: 90px;
+        height: 90px;
+    }
+    
+    .avatar-upload-info h4 {
+        font-size: 16px;
+    }
+    
+    .avatar-upload-info p {
+        font-size: 13px;
+    }
+    
+    .btn-upload {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    /* Form inputs mobile */
+    .form-group input,
+    .form-group textarea {
+        padding: 14px 16px;
+        font-size: 16px; /* Prevents iOS zoom */
+        border-radius: 12px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+    }
+    
+    /* Buttons mobile */
+    .btn {
+        padding: 14px 24px;
+        font-size: 14px;
+        border-radius: 12px;
+    }
+    
+    .form-actions {
+        gap: 12px;
+        padding-top: 20px;
+    }
+}
+
+@media (max-width: 479.98px) {
+    .account-container {
+        padding: 20px 0;
+    }
+    
+    .account-content {
+        padding: 20px 16px;
+    }
+    
+    .content-header h2 {
+        font-size: 20px;
+    }
+    
+    .avatar-upload-section {
+        padding: 16px;
+    }
+    
+    .current-avatar {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .menu-item,
+    .btn,
+    .btn-upload {
+        min-height: 48px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        min-height: 48px;
+    }
+    
+    /* Better tap feedback */
+    .menu-item:active,
+    .btn:active,
+    .btn-upload:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Safe area support */
+@supports (padding: max(0px)) {
+    @media (max-width: 767.98px) {
+        .account-container {
+            padding-bottom: max(30px, calc(70px + env(safe-area-inset-bottom)));
+        }
+    }
+}
