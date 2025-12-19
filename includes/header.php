@@ -41,6 +41,9 @@ if (!$is_admin_preview) {
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
     <link rel="stylesheet" href="assets/css/background-colors.css">
+    <!-- Christmas Intro -->
+    <link rel="stylesheet" href="assets/css/christmas-intro.css">
+    <script src="assets/js/christmas-intro.js" defer></script>
     <!-- Mobile Enhancements -->
     <script src="assets/js/mobile-enhancements.js" defer></script>
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>
