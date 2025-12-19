@@ -44,6 +44,9 @@ if (!$is_admin_preview) {
     <!-- Christmas Intro -->
     <link rel="stylesheet" href="assets/css/christmas-intro.css">
     <script src="assets/js/christmas-intro.js" defer></script>
+    <!-- Voucher Popup -->
+    <link rel="stylesheet" href="assets/css/voucher-popup.css">
+    <script src="assets/js/voucher-popup.js" defer></script>
     <!-- Mobile Enhancements -->
     <script src="assets/js/mobile-enhancements.js" defer></script>
     <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] && !$is_admin_preview): ?>

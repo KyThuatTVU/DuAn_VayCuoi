@@ -1,5 +1,11 @@
 // Christmas Intro Animation
 document.addEventListener('DOMContentLoaded', function() {
+    // Only show on index page
+    const currentPage = window.location.pathname.split('/').pop();
+    if (currentPage !== 'index.php' && currentPage !== '') {
+        return;
+    }
+
     // Create intro HTML
     const introHTML = `
         <div class="christmas-intro" id="christmasIntro">
