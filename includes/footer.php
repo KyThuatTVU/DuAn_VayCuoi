@@ -250,6 +250,10 @@
     <!-- Chatbot Widget -->
     <?php include 'includes/chatbot-widget.php'; ?>
 
+    <!-- Snowfall Effect -->
+    <link rel="stylesheet" href="assets/css/snowfall.css">
+    <script src="assets/js/snowfall.js"></script>
+
     <script src="assets/js/main.js"></script>
     
     <!-- Cart Update Script -->
