@@ -1,0 +1,246 @@
+/* Background Colors & Gradients for All Pages */
+
+/* Gradient Backgrounds */
+.bg-gradient-soft-pink {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+}
+
+.bg-gradient-soft-purple {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+}
+
+.bg-gradient-soft-blue {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.bg-gradient-soft-rose {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+}
+
+.bg-gradient-warm {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+}
+
+.bg-gradient-cool {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+}
+
+.bg-gradient-sunset {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%);
+}
+
+.bg-gradient-ocean {
+    background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 50%, #5eead4 100%);
+}
+
+.bg-gradient-lavender {
+    background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 50%, #c084fc 100%);
+}
+
+.bg-gradient-peach {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);
+}
+
+/* Multi-color Gradients */
+.bg-gradient-rainbow-soft {
+    background: linear-gradient(135deg, 
+        #fce7f3 0%, 
+        #f3e8ff 25%, 
+        #dbeafe 50%, 
+        #d1fae5 75%, 
+        #fef3c7 100%
+    );
+}
+
+.bg-gradient-pink-purple {
+    background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 100%);
+}
+
+.bg-gradient-blue-purple {
+    background: linear-gradient(135deg, #dbeafe 0%, #e9d5ff 100%);
+}
+
+.bg-gradient-pink-blue {
+    background: linear-gradient(135deg, #fce7f3 0%, #dbeafe 100%);
+}
+
+.bg-gradient-rose-amber {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fef3c7 100%);
+}
+
+/* Pattern Backgrounds */
+.bg-pattern-dots {
+    background-color: #fce7f3;
+    background-image: radial-gradient(#ec4899 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+}
+
+.bg-pattern-grid {
+    background-color: #f3e8ff;
+    background-image: 
+        linear-gradient(#c084fc 1px, transparent 1px),
+        linear-gradient(90deg, #c084fc 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.1;
+}
+
+/* Card Backgrounds */
+.card-bg-white {
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card-bg-gradient-pink {
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+}
+
+.card-bg-gradient-purple {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.card-bg-gradient-blue {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+}
+
+/* Section Backgrounds */
+.section-bg-light {
+    background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
+}
+
+.section-bg-pink-light {
+    background: linear-gradient(to bottom, #fdf2f8 0%, #fce7f3 100%);
+}
+
+.section-bg-purple-light {
+    background: linear-gradient(to bottom, #faf5ff 0%, #f3e8ff 100%);
+}
+
+.section-bg-blue-light {
+    background: linear-gradient(to bottom, #eff6ff 0%, #dbeafe 100%);
+}
+
+/* Overlay Backgrounds */
+.overlay-gradient-dark {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+}
+
+.overlay-gradient-pink {
+    background: linear-gradient(to top, rgba(236, 72, 153, 0.8) 0%, rgba(236, 72, 153, 0.4) 50%, transparent 100%);
+}
+
+.overlay-gradient-purple {
+    background: linear-gradient(to top, rgba(168, 85, 247, 0.8) 0%, rgba(168, 85, 247, 0.4) 50%, transparent 100%);
+}
+
+/* Animated Backgrounds */
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.bg-animated-gradient {
+    background: linear-gradient(
+        -45deg,
+        #fce7f3,
+        #f3e8ff,
+        #dbeafe,
+        #d1fae5
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+}
+
+/* Glass Morphism */
+.bg-glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bg-glass-pink {
+    background: rgba(252, 231, 243, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(252, 231, 243, 0.5);
+}
+
+.bg-glass-purple {
+    background: rgba(243, 232, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(243, 232, 255, 0.5);
+}
+
+/* Mesh Gradients */
+.bg-mesh-pink {
+    background: 
+        radial-gradient(at 40% 20%, #fce7f3 0px, transparent 50%),
+        radial-gradient(at 80% 0%, #f3e8ff 0px, transparent 50%),
+        radial-gradient(at 0% 50%, #dbeafe 0px, transparent 50%),
+        radial-gradient(at 80% 50%, #fce7f3 0px, transparent 50%),
+        radial-gradient(at 0% 100%, #f3e8ff 0px, transparent 50%),
+        radial-gradient(at 80% 100%, #dbeafe 0px, transparent 50%),
+        radial-gradient(at 0% 0%, #fce7f3 0px, transparent 50%);
+    background-color: #ffffff;
+}
+
+/* Utility Classes */
+.bg-white-soft {
+    background-color: #fafafa;
+}
+
+.bg-gray-soft {
+    background-color: #f5f5f5;
+}
+
+.bg-pink-soft {
+    background-color: #fdf2f8;
+}
+
+.bg-purple-soft {
+    background-color: #faf5ff;
+}
+
+.bg-blue-soft {
+    background-color: #eff6ff;
+}
+
+.bg-rose-soft {
+    background-color: #fff1f2;
+}
+
+.bg-amber-soft {
+    background-color: #fffbeb;
+}
+
+.bg-emerald-soft {
+    background-color: #ecfdf5;
+}
+
+.bg-cyan-soft {
+    background-color: #ecfeff;
+}
+
+/* Hover Effects */
+.hover-bg-gradient-pink:hover {
+    background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+    transition: background 0.3s ease;
+}
+
+.hover-bg-gradient-purple:hover {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+    transition: background 0.3s ease;
+}
+
+.hover-bg-gradient-blue:hover {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    transition: background 0.3s ease;
+}
