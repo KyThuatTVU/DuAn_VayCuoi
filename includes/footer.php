@@ -204,17 +204,41 @@
                     <div class="flex items-center gap-4">
                         <span class="text-gray-500 text-sm">Thanh toán:</span>
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-8 bg-white rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
-                                <span class="text-blue-600 font-bold text-xs">VISA</span>
+                            <!-- Visa Logo -->
+                            <div class="w-12 h-8 bg-white rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow p-1">
+                                <svg viewBox="0 0 780 500" class="w-full h-full">
+                                    <path fill="#1434CB" d="M293.2 348.7l33.4-195.8h53.4l-33.4 195.8zM540.7 157.3c-10.5-4-27.1-8.3-47.7-8.3-52.6 0-89.7 26.5-90 64.5-.3 28.1 26.5 43.8 46.7 53.1 20.8 9.6 27.8 15.7 27.7 24.3-.1 13.1-16.6 19.1-32 19.1-21.4 0-32.7-3-50.3-10.2l-6.9-3.1-7.5 43.8c12.5 5.5 35.6 10.2 59.6 10.5 56 0 92.3-26.2 92.7-66.8.2-22.3-14-39.2-44.8-53.2-18.6-9.1-30.1-15.1-30-24.3 0-8.1 9.7-16.8 30.6-16.8 17.4-.3 30.1 3.5 40 7.5l4.8 2.3 7.1-42.4zM676.3 152.9h-41.2c-12.8 0-22.3 3.5-27.9 16.2l-79.2 179.6h56l11.2-29.4h68.4c1.6 6.9 6.5 29.4 6.5 29.4h49.5l-43.3-195.8zm-65.8 126.5c4.4-11.3 21.3-54.8 21.3-54.8-.3.5 4.4-11.4 7.1-18.8l3.6 17s10.2 46.9 12.4 56.6h-44.4zM247.1 152.9l-52.1 133.5-5.6-27.1c-9.7-31.2-39.8-65-73.5-81.9l47.7 171h56.4l83.9-195.5h-56.8z"/>
+                                    <path fill="#F9A533" d="M146.9 152.9H60.9l-.7 4c66.9 16.2 111.2 55.3 129.6 102.3l-18.7-90c-3.2-12.3-12.5-16-24.2-16.3z"/>
+                                </svg>
                             </div>
-                            <div class="w-12 h-8 bg-white rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
-                                <span class="text-red-600 font-bold text-xs">MC</span>
+                            <!-- Mastercard Logo -->
+                            <div class="w-12 h-8 bg-white rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow p-1">
+                                <svg viewBox="0 0 780 500" class="w-full h-full">
+                                    <rect fill="#FF5F00" x="301.1" y="57.1" width="177.8" height="385.8"/>
+                                    <path fill="#EB001B" d="M317.7 250c0-78.3 36.6-148 93.7-193-41.9-33-94.7-52.9-152.2-52.9C116 4.1 4.1 116 4.1 259.2s111.9 255.1 255.1 255.1c57.5 0 110.3-19.9 152.2-52.9-57.1-45-93.7-114.7-93.7-193z"/>
+                                    <path fill="#F79E1B" d="M775.9 250c0 143.2-111.9 255.1-255.1 255.1-57.5 0-110.3-19.9-152.2-52.9 57.1-45 93.7-114.7 93.7-193s-36.6-148-93.7-193c41.9-33 94.7-52.9 152.2-52.9 143.2 0 255.1 111.9 255.1 255.1z"/>
+                                </svg>
                             </div>
-                            <div class="w-12 h-8 bg-gradient-to-br from-pink-500 to-rose-500 rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
-                                <span class="text-white font-bold text-xs">MoMo</span>
+                            <!-- MoMo Logo -->
+                            <div class="w-12 h-8 bg-[#A50064] rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow p-1">
+                                <svg viewBox="0 0 96 40" class="w-full h-full">
+                                    <path fill="#fff" d="M20 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S26.6 8 20 8zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                    <path fill="#fff" d="M48 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S54.6 8 48 8zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                    <path fill="#fff" d="M76 8c-6.6 0-12 5.4-12 12s5.4 12 12 12 12-5.4 12-12S82.6 8 76 8zm0 18c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z"/>
+                                    <circle fill="#fff" cx="20" cy="20" r="3"/>
+                                    <circle fill="#fff" cx="48" cy="20" r="3"/>
+                                    <circle fill="#fff" cx="76" cy="20" r="3"/>
+                                </svg>
                             </div>
-                            <div class="w-12 h-8 bg-blue-600 rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow">
-                                <span class="text-white font-bold text-xs">VNPay</span>
+                            <!-- VNPay Logo -->
+                            <div class="w-12 h-8 bg-white rounded flex items-center justify-center shadow-md hover:shadow-lg transition-shadow p-1">
+                                <svg viewBox="0 0 120 40" class="w-full h-full">
+                                    <path fill="#004A9C" d="M10 8l8 24h4l8-24h-5l-5 16-5-16z"/>
+                                    <path fill="#E31837" d="M35 8v24h4V20l10 12h5L42 17l11-9h-5l-9 8V8z"/>
+                                    <path fill="#004A9C" d="M60 8h-5v24h5V8z"/>
+                                    <path fill="#E31837" d="M70 8v24h4V18l12 14h4V8h-4v14L74 8z"/>
+                                    <path fill="#004A9C" d="M100 8l-8 12-8-12h-5l11 16v8h4v-8l11-16z"/>
+                                </svg>
                             </div>
                         </div>
                     </div>

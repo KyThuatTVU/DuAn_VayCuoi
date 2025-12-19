@@ -513,8 +513,13 @@ require_once 'includes/header.php';
                                 <!-- MoMo -->
                                 <label class="payment-method <?php echo !$momo_limit_exceeded ? 'selected' : 'opacity-50'; ?>" data-method="momo">
                                     <input type="radio" name="payment_method" value="momo" <?php echo !$momo_limit_exceeded ? 'checked' : 'disabled'; ?> class="hidden">
-                                    <div class="payment-icon bg-gradient-to-br from-pink-500 to-pink-600">
-                                        <i class="fas fa-wallet text-white text-xl"></i>
+                                    <div class="payment-icon bg-[#A50064] p-2">
+                                        <svg viewBox="0 0 50 50" class="w-full h-full">
+                                            <circle cx="15" cy="25" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+                                            <circle cx="15" cy="25" r="3" fill="#fff"/>
+                                            <circle cx="35" cy="25" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+                                            <circle cx="35" cy="25" r="3" fill="#fff"/>
+                                        </svg>
                                     </div>
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2">
@@ -528,11 +533,14 @@ require_once 'includes/header.php';
                                     <div class="payment-radio"></div>
                                 </label>
                                 
-                                <!-- QR Code -->
+                                <!-- QR Code / VNPay -->
                                 <label class="payment-method <?php echo $momo_limit_exceeded ? 'selected' : ''; ?>" data-method="qr_code">
                                     <input type="radio" name="payment_method" value="qr_code" <?php echo $momo_limit_exceeded ? 'checked' : ''; ?> class="hidden">
-                                    <div class="payment-icon bg-gradient-to-br from-blue-500 to-blue-600">
-                                        <i class="fas fa-qrcode text-white text-xl"></i>
+                                    <div class="payment-icon bg-white border-2 border-gray-200 p-1">
+                                        <svg viewBox="0 0 120 50" class="w-full h-full">
+                                            <text x="5" y="35" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#004A9C">VN</text>
+                                            <text x="55" y="35" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#E31837">PAY</text>
+                                        </svg>
                                     </div>
                                     <div class="flex-1">
                                         <span class="font-bold text-gray-800">Quét mã QR</span>

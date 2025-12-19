@@ -46,8 +46,13 @@ $phone_link = isset($matches[1]) ? preg_replace('/[^0-9]/', '', $matches[1]) : '
                 <!-- MoMo -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition">
                     <div class="flex items-center mb-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl flex items-center justify-center mr-4">
-                            <span class="text-white font-bold text-xl">MoMo</span>
+                        <div class="w-16 h-16 bg-[#A50064] rounded-xl flex items-center justify-center mr-4 p-2">
+                            <svg viewBox="0 0 50 50" class="w-full h-full">
+                                <circle cx="15" cy="25" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+                                <circle cx="15" cy="25" r="3" fill="#fff"/>
+                                <circle cx="35" cy="25" r="10" fill="none" stroke="#fff" stroke-width="3"/>
+                                <circle cx="35" cy="25" r="3" fill="#fff"/>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">Ví MoMo</h3>
@@ -82,8 +87,11 @@ $phone_link = isset($matches[1]) ? preg_replace('/[^0-9]/', '', $matches[1]) : '
                 <!-- VNPay -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition">
                     <div class="flex items-center mb-4">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
-                            <span class="text-white font-bold text-lg">VNPay</span>
+                        <div class="w-16 h-16 bg-white border-2 border-gray-100 rounded-xl flex items-center justify-center mr-4 p-2">
+                            <svg viewBox="0 0 120 50" class="w-full h-full">
+                                <text x="5" y="35" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#004A9C">VN</text>
+                                <text x="55" y="35" font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#E31837">PAY</text>
+                            </svg>
                         </div>
                         <div>
                             <h3 class="text-xl font-bold text-gray-800">VNPay QR</h3>
