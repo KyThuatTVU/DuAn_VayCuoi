@@ -352,9 +352,6 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 <a href="admin-promotions.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-gift w-5"></i> Khuyến mãi
                 </a>
-                <a href="admin-banners.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
-                    <i class="fas fa-bullhorn w-5"></i> Banner Quảng Cáo
-                </a>
                 <a href="admin-contacts.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-envelope w-5"></i> Liên hệ
                     <?php if($new_contacts > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $new_contacts; ?></span><?php endif; ?>
@@ -368,6 +365,9 @@ $growth_percent = $last_month_revenue > 0 ? round((($month_revenue - $last_month
                 <a href="admin-payments.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if(isset($payment_stats['total_pending']) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
+                </a>
+                <a href="admin-confirm-payment.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-money-check-alt w-5"></i> Xác nhận TT
                 </a>
                 <a href="admin-notifications.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-bell w-5"></i> Thông báo

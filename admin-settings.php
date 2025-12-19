@@ -114,6 +114,9 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                     <i class="fas fa-calendar w-5"></i> Lịch hẹn
                     <?php if($pending_bookings > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $pending_bookings; ?></span><?php endif; ?>
                 </a>
+                <a href="admin-promotions.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-gift w-5"></i> Khuyến mãi
+                </a>
                 <a href="admin-contacts.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-envelope w-5"></i> Liên hệ
                     <?php if($new_contacts > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $new_contacts; ?></span><?php endif; ?>
@@ -126,6 +129,9 @@ $current_tab = isset($_GET['tab']) ? $_GET['tab'] : 'contact';
                 </a>
                 <a href="admin-payments.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
+                </a>
+                <a href="admin-confirm-payment.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-money-check-alt w-5"></i> Xác nhận TT
                 </a>
                 <a href="admin-notifications.php" class="sidebar-link flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-bell w-5"></i> Thông báo

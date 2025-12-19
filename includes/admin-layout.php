@@ -108,7 +108,7 @@ $current_file = basename($_SERVER['PHP_SELF']);
                 <a href="admin-dresses.php" class="sidebar-link <?php echo $current_file == 'admin-dresses.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-tshirt w-5"></i> Váy cưới
                 </a>
-                <a href="admin-users.php" class="sidebar-link <?php echo $current_file == 'admin-users.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                <a href="admin-users.php" class="sidebar-link <?php echo $current_file == 'admin-users.php' || $current_file == 'admin-user-detail.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-users w-5"></i> Khách hàng
                 </a>
                 <a href="admin-bookings.php" class="sidebar-link <?php echo $current_file == 'admin-bookings.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
@@ -131,6 +131,9 @@ $current_file = basename($_SERVER['PHP_SELF']);
                 <a href="admin-payments.php" class="sidebar-link <?php echo $current_file == 'admin-payments.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-credit-card w-5"></i> Thanh toán
                     <?php if (isset($payment_stats) && $payment_stats['total_pending'] > 0): ?><span class="ml-auto bg-accent-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $payment_stats['total_pending']; ?></span><?php endif; ?>
+                </a>
+                <a href="admin-confirm-payment.php" class="sidebar-link <?php echo $current_file == 'admin-confirm-payment.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
+                    <i class="fas fa-money-check-alt w-5"></i> Xác nhận TT
                 </a>
                 <a href="admin-notifications.php" class="sidebar-link <?php echo $current_file == 'admin-notifications.php' ? 'active' : ''; ?> flex items-center gap-3 px-4 py-3 text-navy-200 rounded mt-1">
                     <i class="fas fa-bell w-5"></i> Thông báo
