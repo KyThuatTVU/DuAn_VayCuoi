@@ -2,7 +2,7 @@
 
 ## Cấu Trúc Dự Án
 
-```
+``
 wedding-dress/
 ├── assets/
 │   ├── css/
