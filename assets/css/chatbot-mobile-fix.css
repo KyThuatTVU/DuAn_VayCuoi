@@ -1,0 +1,253 @@
+/* ===================================
+   CHATBOT MOBILE RESPONSIVE FIX
+   =================================== */
+
+/* Contact Buttons - Mobile Optimization */
+@media (max-width: 767.98px) {
+    #contact-buttons {
+        bottom: 20px !important;
+        left: 16px !important;
+        gap: 12px !important;
+        z-index: 9999 !important;
+    }
+    
+    #contact-buttons a,
+    #contact-buttons button {
+        width: 52px !important;
+        height: 52px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+    
+    #contact-buttons i {
+        font-size: 20px !important;
+    }
+    
+    /* Tooltip positioning for mobile */
+    #contact-buttons .group .absolute.left-full {
+        left: auto !important;
+        right: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 12px !important;
+    }
+    
+    #contact-buttons .group .absolute.left-full .absolute.left-0 {
+        left: auto !important;
+        right: -4px !important;
+        transform: translateY(-50%) rotate(45deg) !important;
+    }
+}
+
+/* Chatbot Button - Mobile Optimization */
+@media (max-width: 767.98px) {
+    #chatbot-button {
+        bottom: 20px !important;
+        right: 16px !important;
+        z-index: 9999 !important;
+    }
+    
+    #chatbot-toggle {
+        width: 56px !important;
+        height: 56px !important;
+        box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3) !important;
+    }
+    
+    /* Tooltip positioning for mobile */
+    #chatbot-button .group .absolute.right-full {
+        right: auto !important;
+        left: 100% !important;
+        margin-right: 0 !important;
+        margin-left: 12px !important;
+    }
+    
+    #chatbot-button .group .absolute.right-full .absolute.right-0 {
+        right: auto !important;
+        left: -4px !important;
+        transform: translateY(-50%) rotate(45deg) !important;
+    }
+}
+
+/* Chatbot Window - Mobile Optimization */
+@media (max-width: 767.98px) {
+    #chatbot-window {
+        position: fixed !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        border-radius: 24px 24px 0 0 !important;
+        margin: 0 !important;
+    }
+    
+    #chatbot-window .p-4 {
+        padding: 16px !important;
+    }
+    
+    #chatbot-window .p-3 {
+        padding: 12px !important;
+    }
+    
+    #chat-messages {
+        padding: 12px !important;
+    }
+    
+    /* Chatbot header mobile */
+    #chatbot-window > div:first-child {
+        padding: 14px 16px !important;
+    }
+    
+    #chatbot-window h3 {
+        font-size: 15px !important;
+    }
+    
+    #chatbot-window .text-xs {
+        font-size: 11px !important;
+    }
+    
+    /* Chat input mobile */
+    #chat-input {
+        font-size: 14px !important;
+        padding: 10px 14px !important;
+    }
+    
+    #send-message {
+        padding: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    /* Quick action buttons mobile */
+    .quick-action {
+        padding: 10px 12px !important;
+        font-size: 11px !important;
+    }
+    
+    .quick-action i {
+        font-size: 12px !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 479.98px) {
+    #contact-buttons {
+        bottom: 16px !important;
+        left: 12px !important;
+        gap: 10px !important;
+    }
+    
+    #contact-buttons a,
+    #contact-buttons button {
+        width: 48px !important;
+        height: 48px !important;
+    }
+    
+    #contact-buttons i {
+        font-size: 18px !important;
+    }
+    
+    #chatbot-button {
+        bottom: 16px !important;
+        right: 12px !important;
+    }
+    
+    #chatbot-toggle {
+        width: 52px !important;
+        height: 52px !important;
+    }
+    
+    #chatbot-window {
+        height: 90vh !important;
+        max-height: 90vh !important;
+    }
+    
+    /* Hide tooltips on very small screens */
+    #contact-buttons .group .absolute,
+    #chatbot-button .group .absolute {
+        display: none !important;
+    }
+}
+
+/* Chatbot image fallback */
+#chatbot-toggle img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* If image fails to load, show icon */
+#chatbot-toggle img[src=""],
+#chatbot-toggle img:not([src]) {
+    display: none;
+}
+
+#chatbot-toggle::before {
+    content: '\f4ad';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 28px;
+    color: #ec4899;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#chatbot-toggle img[src]:not([src=""]) ~ ::before {
+    display: none;
+}
+
+/* Landscape mode adjustments */
+@media (max-width: 896px) and (orientation: landscape) {
+    #chatbot-window {
+        height: 95vh !important;
+        max-height: 95vh !important;
+    }
+    
+    #contact-buttons {
+        gap: 8px !important;
+    }
+    
+    #contact-buttons a,
+    #contact-buttons button {
+        width: 44px !important;
+        height: 44px !important;
+    }
+}
+
+/* Prevent chatbot from blocking content */
+@media (max-width: 767.98px) {
+    body {
+        padding-bottom: 0 !important;
+    }
+    
+    /* Ensure floating elements don't overlap */
+    #contact-buttons,
+    #chatbot-button {
+        pointer-events: auto;
+    }
+    
+    #contact-buttons > *,
+    #chatbot-button > * {
+        pointer-events: auto;
+    }
+}
+
+/* Safe area support for notched devices */
+@supports (padding: max(0px)) {
+    @media (max-width: 767.98px) {
+        #contact-buttons {
+            bottom: max(20px, env(safe-area-inset-bottom)) !important;
+            left: max(16px, env(safe-area-inset-left)) !important;
+        }
+        
+        #chatbot-button {
+            bottom: max(20px, env(safe-area-inset-bottom)) !important;
+            right: max(16px, env(safe-area-inset-right)) !important;
+        }
+        
+        #chatbot-window {
+            padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+    }
+}

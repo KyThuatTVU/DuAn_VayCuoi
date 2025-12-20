@@ -29,11 +29,15 @@ try {
     if ($result->num_rows > 0) {
         $promotion = $result->fetch_assoc();
         
+        // Debug: Add raw type and value to response
+        $promotion['debug_type'] = $promotion['type'];
+        $promotion['debug_value'] = $promotion['value'];
+        
         // Format discount value for display
-        if ($promotion['type'] === 'percentage') {
-            $promotion['discount_value'] = $promotion['value'] . '% OFF';
+        if ($promotion['type'] === 'percentage' || $promotion['type'] === 'percent') {
+            $promotion['discount_value'] = 'GIẢM ' . $promotion['value'] . '%';
         } else {
-            $promotion['discount_value'] = number_format($promotion['value'], 0, ',', '.') . 'đ OFF';
+            $promotion['discount_value'] = 'GIẢM ' . number_format($promotion['value'], 0, ',', '.') . 'đ';
         }
         
         // Add subtitle if min order amount exists

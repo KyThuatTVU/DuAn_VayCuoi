@@ -1,0 +1,275 @@
+/* ===================================
+   OVERFLOW & LAYOUT FIX
+   Sửa các vấn đề tràn màn hình trên mobile
+   =================================== */
+
+/* Global overflow prevention */
+html {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+}
+
+body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    position: relative;
+}
+
+/* Prevent all elements from causing horizontal scroll */
+* {
+    box-sizing: border-box !important;
+}
+
+*:not(html):not(body) {
+    max-width: 100%;
+}
+
+/* Container fixes */
+.container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+@media (min-width: 640px) {
+    .container {
+        max-width: 640px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1280px !important;
+    }
+}
+
+@media (min-width: 1536px) {
+    .container {
+        max-width: 1536px !important;
+    }
+}
+
+/* Grid fixes */
+.grid {
+    width: 100% !important;
+}
+
+/* Image fixes */
+img, video, iframe, embed, object {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Table fixes */
+table {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Pre and code fixes */
+pre, code {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    word-wrap: break-word !important;
+}
+
+/* Flex fixes */
+.flex {
+    max-width: 100% !important;
+}
+
+/* Prevent negative margins from causing overflow */
+[class*="mx-"], [class*="ml-"], [class*="mr-"] {
+    margin-left: max(var(--tw-space-x-reverse, 0), 0) !important;
+    margin-right: max(var(--tw-space-x-reverse, 0), 0) !important;
+}
+
+/* Mobile specific fixes */
+@media (max-width: 767.98px) {
+    /* Remove negative margins on mobile */
+    .-mx-4, .-mx-6, .-mx-8 {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Ensure sections don't overflow */
+    section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix for promotional banners */
+    .relative.overflow-hidden {
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix for gradient backgrounds */
+    .bg-gradient-to-br,
+    .bg-gradient-to-r,
+    .bg-gradient-to-l {
+        overflow-x: hidden !important;
+    }
+    
+    /* Padding adjustments */
+    .px-4 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .px-6 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .px-8 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Gap adjustments */
+    .gap-8 {
+        gap: 1rem !important;
+    }
+    
+    .gap-6 {
+        gap: 0.75rem !important;
+    }
+    
+    /* Width constraints */
+    .w-full {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Rounded corners that might cause overflow */
+    .rounded-2xl,
+    .rounded-3xl {
+        border-radius: 1rem !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 479.98px) {
+    .container {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    .px-4, .px-6, .px-8 {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+    
+    /* Smaller gaps */
+    .gap-4 {
+        gap: 0.5rem !important;
+    }
+    
+    .gap-6, .gap-8 {
+        gap: 0.75rem !important;
+    }
+}
+
+/* Fix for specific components that might overflow */
+@media (max-width: 767.98px) {
+    /* Header */
+    header .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Footer */
+    footer .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Product cards */
+    .product-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Category cards */
+    .category-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Banner sections */
+    .banner-section,
+    .hero-section {
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Grid items */
+    .grid > * {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/* Scrollbar styling for overflow containers */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Prevent text from causing overflow */
+p, h1, h2, h3, h4, h5, h6, span, div {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+/* Long URLs or text */
+a {
+    word-break: break-word !important;
+}
+
+/* Ensure modals don't overflow */
+.modal-content,
+[role="dialog"] {
+    max-width: calc(100vw - 2rem) !important;
+    max-height: calc(100vh - 2rem) !important;
+}
+
+@media (max-width: 767.98px) {
+    .modal-content,
+    [role="dialog"] {
+        max-width: calc(100vw - 1rem) !important;
+        max-height: calc(100vh - 1rem) !important;
+    }
+}
