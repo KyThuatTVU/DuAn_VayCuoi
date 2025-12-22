@@ -504,12 +504,14 @@ if (!$is_admin_preview) {
             function openMobileMenu() {
                 mobileMenu.classList.remove('translate-x-full');
                 mobileMenuOverlay.classList.remove('invisible', 'opacity-0');
+                mobileMenuToggle.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
 
             function closeMobileMenu() {
                 mobileMenu.classList.add('translate-x-full');
                 mobileMenuOverlay.classList.add('invisible', 'opacity-0');
+                mobileMenuToggle.classList.remove('active');
                 document.body.style.overflow = '';
             }
 
@@ -518,6 +520,13 @@ if (!$is_admin_preview) {
                 e.stopPropagation();
                 openMobileMenu();
             });
+
+            // Add touch support for mobile devices
+            mobileMenuToggle.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openMobileMenu();
+            }, { passive: false });
 
             if (mobileMenuClose) {
                 mobileMenuClose.addEventListener('click', function(e) {
@@ -544,6 +553,20 @@ if (!$is_admin_preview) {
                         }
                     }
                 });
+
+                // Add touch support
+                toggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    const submenu = this.nextElementSibling;
+                    const icon = this.querySelector('svg:last-child');
+                    
+                    if (submenu) {
+                        submenu.classList.toggle('hidden');
+                        if (icon) {
+                            icon.classList.toggle('rotate-180');
+                        }
+                    }
+                }, { passive: false });
             });
         }
 
