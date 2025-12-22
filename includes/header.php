@@ -17,7 +17,7 @@ if (!$is_admin_preview) {
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?><?php echo SITE_NAME; ?></title>
     <meta name="description" content="Cửa hàng váy cưới cao cấp - Cho thuê váy cưới đẹp, giá tốt tại TP.HCM">
     <!-- Allow loading images from Google -->
@@ -35,13 +35,14 @@ if (!$is_admin_preview) {
             }
         }
     </script>
+    <script>
+        window.siteUrl = '<?php echo SITE_URL; ?>';
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/header.css">
-    <link rel="stylesheet" href="assets/css/overflow-fix.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
-    <link rel="stylesheet" href="assets/css/chatbot-mobile-fix.css">
     <link rel="stylesheet" href="assets/css/background-colors.css">
     <!-- Christmas Intro -->
     <link rel="stylesheet" href="assets/css/christmas-intro.css">
@@ -57,24 +58,8 @@ if (!$is_admin_preview) {
     <?php endif; ?>
     <!-- Mobile viewport fix for iOS -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#7ec8e3">
-    <meta name="format-detection" content="telephone=no">
-    <style>
-        /* Critical CSS for preventing layout shift */
-        html, body {
-            overflow-x: hidden !important;
-            max-width: 100vw !important;
-            width: 100% !important;
-        }
-        * {
-            box-sizing: border-box;
-        }
-        img, video, iframe {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
 </head>
 <body class="antialiased">
     <?php if ($is_admin_preview): ?>

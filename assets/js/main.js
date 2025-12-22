@@ -11,16 +11,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mobileMenu) {
             mobileMenu.classList.remove('translate-x-full');
             mobileMenu.classList.add('active');
-            // Force reflow
-            void mobileMenu.offsetWidth;
         }
         if (mobileMenuOverlay) {
             mobileMenuOverlay.classList.remove('invisible', 'opacity-0');
             mobileMenuOverlay.classList.add('active');
         }
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
         
         // Toggle button animation
         if (mobileMenuToggle) {
@@ -38,8 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
             mobileMenuOverlay.classList.remove('active');
         }
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
         
         // Toggle button animation
         if (mobileMenuToggle) {

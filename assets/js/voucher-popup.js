@@ -21,7 +21,7 @@ function showVoucherPopup() {
     console.log('Fetching latest promotion...');
     
     // Fetch latest active promotion
-    fetch('api/get-latest-promotion.php')
+    fetch(window.siteUrl + '/api/get-latest-promotion.php')
         .then(response => {
             console.log('API response status:', response.status);
             return response.json();

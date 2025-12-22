@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/number-to-words.php';
 
 // Kiểm tra đăng nhập admin
 if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_logged_in'])) {
@@ -455,6 +456,7 @@ include 'includes/admin-layout.php';
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1">Giá thuê (VNĐ)</label>
                         <input type="number" name="gia_thue" id="gia_thue" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-accent-500 text-base">
+                        <div id="price_in_words" class="mt-1 text-sm text-gray-600 italic"></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-navy-700 mb-1"><i class="fas fa-ruler-combined mr-1"></i>Kích cỡ (Size)</label>
@@ -587,6 +589,7 @@ include 'includes/admin-layout.php';
             document.getElementById('gia_thue').value = data.gia_thue;
             document.getElementById('so_luong_ton').value = data.so_luong_ton;
             renderSizes(data.size);
+            updatePriceWords(data.gia_thue); // Cập nhật giá bằng chữ
         } else {
             currentDressData = null;
             document.getElementById('modalTitle').textContent = 'Thêm váy cưới';
@@ -754,6 +757,40 @@ include 'includes/admin-layout.php';
             document.getElementById('deleteForm').submit();
         }
     }
+
+    // Cập nhật giá bằng chữ
+    function updatePriceWords(price) {
+        const wordsDiv = document.getElementById('price_in_words');
+        
+        if (price && price > 0) {
+            fetch('api/price-to-words.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'price=' + encodeURIComponent(price)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.words) {
+                    wordsDiv.textContent = 'Bằng chữ: ' + data.words;
+                } else {
+                    wordsDiv.textContent = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                wordsDiv.textContent = '';
+            });
+        } else {
+            wordsDiv.textContent = '';
+        }
+    }
+
+    // Cập nhật giá bằng chữ khi nhập
+    document.getElementById('gia_thue').addEventListener('input', function() {
+        updatePriceWords(this.value);
+    });
 </script>
 
 <?php include 'includes/admin-footer.php'; ?>

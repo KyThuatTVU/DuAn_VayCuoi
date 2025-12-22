@@ -78,6 +78,12 @@
                 }
             });
         });
+
+        // Close menu when clicking links
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
     }
 
     function toggleMobileMenu() {

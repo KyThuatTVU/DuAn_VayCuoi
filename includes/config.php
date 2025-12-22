@@ -10,7 +10,7 @@ define('DB_NAME', getenv('DB_NAME') ?: 'cua_hang_vay_cuoi_db');
 
 // Site configuration
 if (!defined('SITE_NAME')) define('SITE_NAME', getenv('SITE_NAME') ?: 'Váy Cưới Thiên Thần');
-if (!defined('SITE_URL')) define('SITE_URL', getenv('SITE_URL') ?: 'http://localhost/wedding-dress');
+if (!defined('SITE_URL')) define('SITE_URL', getenv('SITE_URL') ?: 'https://cuahangvaycuoi.byethost22.com');
 if (!defined('ADMIN_EMAIL')) define('ADMIN_EMAIL', getenv('ADMIN_EMAIL') ?: 'admin@vaycuoi.com');
 
 // Connect to database
