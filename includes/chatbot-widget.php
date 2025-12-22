@@ -128,6 +128,21 @@ if (isset($footer_zalo) && !filter_var($footer_zalo, FILTER_VALIDATE_URL)) {
         background-size: 200% 200%;
         animation: gradient 3s ease infinite;
     }
+
+    /* Disable animations when chatbot is open */
+    .chatbot-open .animate-bounce,
+    .chatbot-open .animate-pulse,
+    .chatbot-open .animate-ping,
+    .chatbot-open .animate-gradient,
+    .chatbot-open .animate-bounce-slow,
+    .chatbot-open .animate-pulse-ring,
+    .chatbot-open .animate-shake,
+    .chatbot-open .animate-slide-in,
+    .chatbot-open .animate-scale-in,
+    .chatbot-open .animate-slide-up {
+        animation: none !important;
+    }
+    
 </style>
 
 <!-- Contact Buttons (Left Side) -->
@@ -600,12 +615,14 @@ if (isset($footer_zalo) && !filter_var($footer_zalo, FILTER_VALIDATE_URL)) {
         chatbotWindow.classList.toggle('flex');
         
         if (!chatbotWindow.classList.contains('hidden')) {
+            document.body.classList.add('chatbot-open');
             chatbotButton.classList.add('opacity-0', 'pointer-events-none');
             chatInput.focus();
             
             // Load lịch sử chat khi mở
             loadChatHistory();
         } else {
+            document.body.classList.remove('chatbot-open');
             chatbotButton.classList.remove('opacity-0', 'pointer-events-none');
         }
     });
@@ -613,6 +630,7 @@ if (isset($footer_zalo) && !filter_var($footer_zalo, FILTER_VALIDATE_URL)) {
     chatbotClose.addEventListener('click', () => {
         chatbotWindow.classList.add('hidden');
         chatbotWindow.classList.remove('flex');
+        document.body.classList.remove('chatbot-open');
         chatbotButton.classList.remove('opacity-0', 'pointer-events-none');
     });
 

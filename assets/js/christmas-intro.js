@@ -1,5 +1,10 @@
 // Christmas Intro Animation
 document.addEventListener('DOMContentLoaded', function() {
+    // Check if intro has been shown before
+    if (localStorage.getItem('christmasIntroShown') === 'true') {
+        return;
+    }
+
     // Only show on index page
     const currentPage = window.location.pathname.split('/').pop();
     if (currentPage !== 'index.php' && currentPage !== '') {
@@ -57,6 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Insert intro into body
     document.body.insertAdjacentHTML('afterbegin', introHTML);
+
+    // Mark as shown immediately
+    localStorage.setItem('christmasIntroShown', 'true');
 
     // Remove intro after animation
     setTimeout(function() {
