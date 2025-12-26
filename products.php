@@ -128,19 +128,23 @@ require_once 'includes/header.php';
                     </h3>
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="style" value="công chúa" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="radio" name="style" value="" class="style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                            <span class="text-gray-700 group-hover:text-blue-600 transition-colors font-medium">Tất cả</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="radio" name="style" value="công chúa" class="style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Công Chúa</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="style" value="đuôi cá" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="radio" name="style" value="đuôi cá" class="style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Đuôi Cá</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="style" value="chữ a" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="radio" name="style" value="chữ a" class="style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Chữ A</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="style" value="hiện đại" class="style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            <input type="radio" name="style" value="hiện đại" class="style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="text-gray-700 group-hover:text-blue-600 transition-colors">Váy Hiện Đại</span>
                         </label>
                     </div>
@@ -155,20 +159,24 @@ require_once 'includes/header.php';
                         Kích Thước
                     </h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" value="S" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="size" value="" class="size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                            <span class="font-semibold text-gray-700">Tất cả</span>
+                        </label>
+                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="size" value="S" class="size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">S</span>
                         </label>
-                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" value="M" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="size" value="M" class="size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">M</span>
                         </label>
-                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" value="L" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="size" value="L" class="size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">L</span>
                         </label>
-                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
-                            <input type="checkbox" value="XL" class="size-filter w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="size" value="XL" class="size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                             <span class="font-semibold text-gray-700">XL</span>
                         </label>
                     </div>
@@ -419,19 +427,23 @@ require_once 'includes/header.php';
                 </h4>
                 <div class="space-y-3">
                     <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" value="công chúa" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="radio" name="mobile-style" value="" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                        <span class="text-gray-700 font-medium">Tất cả</span>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="radio" name="mobile-style" value="công chúa" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="text-gray-700">Váy Công Chúa</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" value="đuôi cá" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="radio" name="mobile-style" value="đuôi cá" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="text-gray-700">Váy Đuôi Cá</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" value="chữ a" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="radio" name="mobile-style" value="chữ a" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="text-gray-700">Váy Chữ A</span>
                     </label>
                     <label class="flex items-center gap-3 cursor-pointer">
-                        <input type="checkbox" value="hiện đại" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <input type="radio" name="mobile-style" value="hiện đại" class="mobile-style-filter w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="text-gray-700">Váy Hiện Đại</span>
                     </label>
                 </div>
@@ -445,21 +457,25 @@ require_once 'includes/header.php';
                     </svg>
                     Kích Thước
                 </h4>
-                <div class="grid grid-cols-4 gap-2">
-                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                        <input type="checkbox" value="S" class="mobile-size-filter hidden">
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="mobile-size" value="" class="mobile-size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" checked>
+                        <span class="font-semibold text-gray-700 text-sm">Tất cả</span>
+                    </label>
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="mobile-size" value="S" class="mobile-size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="font-semibold text-gray-700">S</span>
                     </label>
-                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                        <input type="checkbox" value="M" class="mobile-size-filter hidden">
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="mobile-size" value="M" class="mobile-size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="font-semibold text-gray-700">M</span>
                     </label>
-                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                        <input type="checkbox" value="L" class="mobile-size-filter hidden">
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="mobile-size" value="L" class="mobile-size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="font-semibold text-gray-700">L</span>
                     </label>
-                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
-                        <input type="checkbox" value="XL" class="mobile-size-filter hidden">
+                    <label class="flex items-center justify-center px-3 py-2 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="mobile-size" value="XL" class="mobile-size-filter w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                         <span class="font-semibold text-gray-700">XL</span>
                     </label>
                 </div>
@@ -779,62 +795,74 @@ if (priceFilter && priceDisplay) {
 function filterProducts() {
     const maxPrice = priceFilter ? parseInt(priceFilter.value) : 10000000;
     
-    // Lấy các phong cách được chọn
-    const selectedStyles = [];
-    document.querySelectorAll('.style-filter:checked').forEach(cb => {
-        selectedStyles.push(cb.value.toLowerCase());
-    });
+    // Lấy phong cách được chọn (radio button - chỉ 1 giá trị)
+    const selectedStyleRadio = document.querySelector('.style-filter:checked');
+    const selectedStyle = selectedStyleRadio ? selectedStyleRadio.value.toLowerCase() : '';
     
-    // Lấy các size được chọn
-    const selectedSizes = [];
-    document.querySelectorAll('.size-filter:checked').forEach(cb => {
-        selectedSizes.push(cb.value.toUpperCase());
-    });
+    // Lấy size được chọn (radio button - chỉ 1 giá trị)
+    const selectedSizeRadio = document.querySelector('.size-filter:checked');
+    const selectedSize = selectedSizeRadio ? selectedSizeRadio.value.toUpperCase() : '';
     
     // Lọc sản phẩm
     filteredProducts = allProducts.filter(product => {
         // Lọc theo giá
         if (parseFloat(product.gia_thue) > maxPrice) return false;
         
-        // Lọc theo phong cách
-        if (selectedStyles.length > 0) {
+        // Lọc theo phong cách (chỉ khi có chọn, không phải "Tất cả")
+        if (selectedStyle && selectedStyle !== '') {
             // Ưu tiên dùng cột phong_cach từ DB nếu có
             const productStyle = (product.phong_cach || '').toLowerCase();
             const searchText = ((product.ten_vay || '') + ' ' + (product.mo_ta || '')).toLowerCase();
             
-            const hasStyle = selectedStyles.some(style => {
-                // Kiểm tra cột phong_cach trước
-                if (productStyle && productStyle === style) return true;
+            // Kiểm tra cột phong_cach trước
+            if (productStyle && productStyle === selectedStyle) {
+                // Match - tiếp tục
+            } else if (searchText.includes(selectedStyle)) {
                 // Fallback: tìm trong tên và mô tả
-                return searchText.includes(style);
-            });
-            if (!hasStyle) return false;
+            } else {
+                return false;
+            }
         }
         
-        // Lọc theo size
-        if (selectedSizes.length > 0) {
+        // Lọc theo size (chỉ khi có chọn, không phải "Tất cả")
+        if (selectedSize && selectedSize !== '') {
             // Ưu tiên dùng cột sizes từ DB nếu có (format: "S,M,L")
             const productSizes = (product.sizes || '').toUpperCase();
             const searchText = ((product.ten_vay || '') + ' ' + (product.mo_ta || '')).toUpperCase();
             
-            const hasSize = selectedSizes.some(size => {
-                // Kiểm tra cột sizes trước (từ bảng vay_cuoi_size)
-                if (productSizes) {
-                    const sizesArray = productSizes.split(',').map(s => s.trim());
-                    if (sizesArray.includes(size)) return true;
+            // Kiểm tra cột sizes trước (từ bảng vay_cuoi_size)
+            if (productSizes) {
+                const sizesArray = productSizes.split(',').map(s => s.trim());
+                if (sizesArray.includes(selectedSize)) {
+                    // Match - tiếp tục
+                } else {
+                    // Fallback: tìm trong tên và mô tả
+                    const patterns = [
+                        `SIZE ${selectedSize}`,
+                        `SIZE: ${selectedSize}`,
+                        ` ${selectedSize} `,
+                        `-${selectedSize}-`,
+                        `-${selectedSize}`,
+                        `${selectedSize}-`
+                    ];
+                    if (!patterns.some(p => searchText.includes(p))) {
+                        return false;
+                    }
                 }
+            } else {
                 // Fallback: tìm trong tên và mô tả
                 const patterns = [
-                    `SIZE ${size}`,
-                    `SIZE: ${size}`,
-                    ` ${size} `,
-                    `-${size}-`,
-                    `-${size}`,
-                    `${size}-`
+                    `SIZE ${selectedSize}`,
+                    `SIZE: ${selectedSize}`,
+                    ` ${selectedSize} `,
+                    `-${selectedSize}-`,
+                    `-${selectedSize}`,
+                    `${selectedSize}-`
                 ];
-                return patterns.some(p => searchText.includes(p));
-            });
-            if (!hasSize) return false;
+                if (!patterns.some(p => searchText.includes(p))) {
+                    return false;
+                }
+            }
         }
         
         return true;
@@ -980,10 +1008,17 @@ function resetFilters() {
         priceDisplay.textContent = '10.000.000đ';
     }
     
-    // Reset checkboxes
-    document.querySelectorAll('.style-filter, .size-filter').forEach(cb => {
-        cb.checked = false;
-    });
+    // Reset radio button về "Tất cả" cho phong cách
+    const allStyleRadio = document.querySelector('.style-filter[value=""]');
+    if (allStyleRadio) {
+        allStyleRadio.checked = true;
+    }
+    
+    // Reset radio button về "Tất cả" cho size
+    const allSizeRadio = document.querySelector('.size-filter[value=""]');
+    if (allSizeRadio) {
+        allSizeRadio.checked = true;
+    }
     
     // Reset filtered products
     filteredProducts = [...allProducts];
@@ -1006,9 +1041,9 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFilterBtn.addEventListener('click', filterProducts);
     }
     
-    // Lọc realtime khi thay đổi checkbox
-    document.querySelectorAll('.style-filter, .size-filter').forEach(cb => {
-        cb.addEventListener('change', filterProducts);
+    // Lọc realtime khi thay đổi radio button
+    document.querySelectorAll('.style-filter, .size-filter').forEach(input => {
+        input.addEventListener('change', filterProducts);
     });
     
     // Lọc realtime khi thay đổi giá (debounce)
@@ -1074,17 +1109,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 priceDisplay.textContent = mobilePriceDisplay.textContent;
             }
             
-            // Sync style checkboxes
-            document.querySelectorAll('.mobile-style-filter').forEach((mobileCb, index) => {
-                const desktopCb = document.querySelectorAll('.style-filter')[index];
-                if (desktopCb) desktopCb.checked = mobileCb.checked;
-            });
+            // Sync style radio buttons
+            const selectedMobileStyle = document.querySelector('.mobile-style-filter:checked');
+            if (selectedMobileStyle) {
+                const desktopStyleRadio = document.querySelector(`.style-filter[value="${selectedMobileStyle.value}"]`);
+                if (desktopStyleRadio) desktopStyleRadio.checked = true;
+            }
             
-            // Sync size checkboxes
-            document.querySelectorAll('.mobile-size-filter').forEach((mobileCb, index) => {
-                const desktopCb = document.querySelectorAll('.size-filter')[index];
-                if (desktopCb) desktopCb.checked = mobileCb.checked;
-            });
+            // Sync size radio buttons
+            const selectedMobileSize = document.querySelector('.mobile-size-filter:checked');
+            if (selectedMobileSize) {
+                const desktopSizeRadio = document.querySelector(`.size-filter[value="${selectedMobileSize.value}"]`);
+                if (desktopSizeRadio) desktopSizeRadio.checked = true;
+            }
             
             filterProducts();
             closeMobileFilterModal();
@@ -1098,25 +1135,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 mobilePriceFilter.value = 10000000;
                 mobilePriceDisplay.textContent = '10.000.000đ';
             }
-            document.querySelectorAll('.mobile-style-filter, .mobile-size-filter').forEach(cb => {
-                cb.checked = false;
-            });
+            // Reset mobile style radio về "Tất cả"
+            const allMobileStyleRadio = document.querySelector('.mobile-style-filter[value=""]');
+            if (allMobileStyleRadio) {
+                allMobileStyleRadio.checked = true;
+            }
+            // Reset mobile size radio về "Tất cả"
+            const allMobileSizeRadio = document.querySelector('.mobile-size-filter[value=""]');
+            if (allMobileSizeRadio) {
+                allMobileSizeRadio.checked = true;
+            }
             resetFilters();
             closeMobileFilterModal();
         });
     }
-    
-    // Toggle style cho size buttons trên mobile
-    document.querySelectorAll('.mobile-size-filter').forEach(cb => {
-        cb.addEventListener('change', function() {
-            const label = this.closest('label');
-            if (this.checked) {
-                label.classList.add('border-blue-500', 'bg-blue-50');
-            } else {
-                label.classList.remove('border-blue-500', 'bg-blue-50');
-            }
-        });
-    });
 });
 </script>
 
