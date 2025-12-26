@@ -62,9 +62,28 @@ wedding-dress/
 - Danh sách bài viết
 - Phân trang
 
-## Cài Đặt
+## Cài Đặt Với Docker
 
-### 1. Cấu Hình Database
+### Yêu Cầu
+- Docker
+- Docker Compose
+
+### Chạy Dự Án
+1. Clone repository
+2. Chạy lệnh:
+   ```bash
+   docker-compose up --build
+   ```
+3. Truy cập:
+   - Website: http://localhost:8000
+   - phpMyAdmin: http://localhost:8080 (user: root, password: rootpassword)
+
+### Cấu Hình Database
+Database sẽ được tự động tạo với file `init.sql`. Tài khoản admin mặc định:
+- Email: admin@vaycuoi.com
+- Password: password
+
+## Cài Đặt Thủ Công (Không Khuyến Nghị)
 - Import file SQL vào MySQL
 - Cập nhật thông tin database trong `includes/config.php`:
 ```php

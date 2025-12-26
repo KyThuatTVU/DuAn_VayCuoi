@@ -52,7 +52,7 @@ $stmt->close();
                         </svg>
                         Thông tin cá nhân
                     </a>
-                    <a href="orders.php" class="menu-item">
+                    <a href="my-orders.php" class="menu-item">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
                             <line x1="3" y1="6" x2="21" y2="6"/>

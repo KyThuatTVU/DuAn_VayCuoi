@@ -64,7 +64,7 @@ try {
     $requestId = $orderId;
     $amount = (string)(int)$order['tong_tien']; // Phải là integer, không có dấu thập phân
     $orderInfo = 'Thanh toan don hang #' . $order['ma_don_hang']; // Không dấu để tránh encoding issue
-    $requestType = 'payWithATM'; // Cho phép thanh toán bằng thẻ ATM/Credit/Ví MoMo
+    $requestType = 'payWithMoMo'; // Thanh toán bằng ví MoMo
     $extraData = '';
     
     // Tạo chữ ký
