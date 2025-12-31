@@ -44,9 +44,9 @@ if (!$is_admin_preview) {
     <link rel="stylesheet" href="assets/css/responsive.css">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css">
     <link rel="stylesheet" href="assets/css/background-colors.css">
-    <!-- Christmas Intro -->
-    <link rel="stylesheet" href="assets/css/christmas-intro.css">
-    <script src="assets/js/christmas-intro.js" defer></script>
+    <!-- Tết 2026 Bính Ngọ Intro -->
+    <link rel="stylesheet" href="assets/css/tet-intro.css">
+    <script src="assets/js/tet-intro.js" defer></script>
     <!-- Voucher Popup -->
     <link rel="stylesheet" href="assets/css/voucher-popup.css">
     <script src="assets/js/voucher-popup.js" defer></script>

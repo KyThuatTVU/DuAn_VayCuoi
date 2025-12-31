@@ -1,4 +1,4 @@
-// Voucher Popup - Show after Christmas intro
+// Voucher Popup - Show after Tết intro
 document.addEventListener('DOMContentLoaded', function() {
     // Only show on index page
     const currentPage = window.location.pathname.split('/').pop();
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('On index page, will show voucher popup after 6 seconds');
     
-    // Wait for Christmas intro to finish (5.5 seconds) + 0.5 second delay
+    // Wait for Tết intro to finish (5.5 seconds) + 0.5 second delay
     setTimeout(function() {
         showVoucherPopup();
     }, 6000);

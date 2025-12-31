@@ -1,0 +1,431 @@
+/* Tết 2026 Bính Ngọ Intro Styles */
+.tet-intro {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #8B0000 0%, #DC143C 30%, #FF4500 60%, #FFD700 100%);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: fadeOut 1s ease-in-out 4.5s forwards;
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Hoa mai rơi - Beautiful SVG flowers */
+.falling-flower {
+    position: absolute;
+    top: -60px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.falling-flower svg {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
+}
+
+/* Animation cho hoa mai rơi */
+.falling-flower {
+    animation: flowerFall linear infinite, flowerSway ease-in-out infinite, flowerSpin ease-in-out infinite;
+}
+
+@keyframes flowerFall {
+    0% {
+        transform: translateY(-60px);
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes flowerSway {
+    0%, 100% {
+        margin-left: 0;
+    }
+    25% {
+        margin-left: 40px;
+    }
+    75% {
+        margin-left: -40px;
+    }
+}
+
+@keyframes flowerSpin {
+    0% {
+        rotate: 0deg;
+    }
+    100% {
+        rotate: 360deg;
+    }
+}
+
+/* Hiệu ứng lấp lánh cho hoa mai */
+.falling-flower.sparkle svg {
+    animation: sparkleGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes sparkleGlow {
+    0% {
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)) drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+    100% {
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)) drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+    }
+}
+
+/* Cánh hoa mai rơi riêng lẻ */
+.falling-petal {
+    position: absolute;
+    top: -30px;
+    pointer-events: none;
+    z-index: 8;
+    animation: petalFall linear infinite, petalDrift ease-in-out infinite;
+}
+
+@keyframes petalFall {
+    0% {
+        transform: translateY(-30px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.9;
+    }
+    85% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@keyframes petalDrift {
+    0%, 100% {
+        margin-left: 0;
+    }
+    33% {
+        margin-left: 25px;
+    }
+    66% {
+        margin-left: -25px;
+    }
+}
+
+/* Pháo hoa */
+.fireworks-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.firework {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.firework-1 {
+    top: 15%;
+    left: 20%;
+    animation: fireworkExplode 2s ease-out infinite;
+}
+
+.firework-2 {
+    top: 20%;
+    right: 25%;
+    animation: fireworkExplode 2s ease-out 0.7s infinite;
+}
+
+.firework-3 {
+    top: 10%;
+    left: 50%;
+    animation: fireworkExplode 2s ease-out 1.4s infinite;
+}
+
+@keyframes fireworkExplode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+        box-shadow: 
+            0 0 0 0 #FFD700,
+            30px -30px 0 0 #FF6347,
+            -30px -30px 0 0 #FF69B4,
+            30px 30px 0 0 #00FF7F,
+            -30px 30px 0 0 #87CEEB,
+            0 -40px 0 0 #FFD700,
+            0 40px 0 0 #FF6347,
+            40px 0 0 0 #FF69B4,
+            -40px 0 0 0 #00FF7F;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 1;
+        box-shadow: 
+            0 0 0 0 #FFD700,
+            60px -60px 0 0 #FF6347,
+            -60px -60px 0 0 #FF69B4,
+            60px 60px 0 0 #00FF7F,
+            -60px 60px 0 0 #87CEEB,
+            0 -80px 0 0 #FFD700,
+            0 80px 0 0 #FF6347,
+            80px 0 0 0 #FF69B4,
+            -80px 0 0 0 #00FF7F;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+        box-shadow: 
+            0 0 0 0 transparent,
+            90px -90px 0 0 transparent,
+            -90px -90px 0 0 transparent,
+            90px 90px 0 0 transparent,
+            -90px 90px 0 0 transparent,
+            0 -120px 0 0 transparent,
+            0 120px 0 0 transparent,
+            120px 0 0 0 transparent,
+            -120px 0 0 0 transparent;
+    }
+}
+
+/* Tết Scene Container */
+.tet-scene {
+    position: relative;
+    text-align: center;
+    animation: sceneZoom 1s ease-out;
+}
+
+@keyframes sceneZoom {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Con Ngựa - Bính Ngọ */
+.horse-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.horse {
+    font-size: 100px;
+    animation: horseGallop 1s ease-in-out infinite;
+    filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.4));
+}
+
+@keyframes horseGallop {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+.horse-shadow {
+    width: 80px;
+    height: 15px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    margin: 0 auto;
+    animation: shadowPulse 1s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+    0%, 100% { transform: scaleX(1); opacity: 0.3; }
+    50% { transform: scaleX(0.7); opacity: 0.5; }
+}
+
+/* Cành mai trang trí */
+.mai-branch {
+    position: absolute;
+    top: -50px;
+    right: -120px;
+}
+
+.mai-branch-left {
+    position: absolute;
+    top: -50px;
+    left: -120px;
+}
+
+.mai-flower {
+    position: absolute;
+    animation: flowerBloom 2s ease-in-out infinite, flowerGlow 1.5s ease-in-out infinite alternate;
+}
+
+.mai-flower svg {
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+}
+
+.mai-1 { top: 0; left: 0; animation-delay: 0s; }
+.mai-2 { top: 25px; left: 35px; animation-delay: 0.2s; }
+.mai-3 { top: -15px; left: 55px; animation-delay: 0.4s; }
+.mai-4 { top: 50px; left: 25px; animation-delay: 0.6s; }
+.mai-5 { top: 35px; left: 70px; animation-delay: 0.8s; }
+.mai-6 { top: 10px; left: 90px; animation-delay: 1s; }
+.mai-7 { top: 60px; left: 55px; animation-delay: 1.2s; }
+
+@keyframes flowerBloom {
+    0%, 100% { 
+        transform: scale(1) rotate(0deg); 
+    }
+    50% { 
+        transform: scale(1.3) rotate(15deg); 
+    }
+}
+
+@keyframes flowerGlow {
+    from {
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.4));
+    }
+    to {
+        filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.9));
+    }
+}
+
+/* Đèn lồng */
+.lantern {
+    position: absolute;
+    font-size: 60px;
+    animation: lanternSwing 3s ease-in-out infinite;
+}
+
+.lantern-left {
+    left: -80px;
+    top: -50px;
+    animation-delay: 0s;
+}
+
+.lantern-right {
+    right: -80px;
+    top: -50px;
+    animation-delay: 1.5s;
+}
+
+@keyframes lanternSwing {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+}
+
+/* Tết Message */
+.tet-message {
+    color: #fff;
+    font-family: 'Georgia', serif;
+    margin-top: 20px;
+    animation: messageSlide 1s ease-out 0.5s backwards;
+}
+
+@keyframes messageSlide {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.tet-year {
+    font-size: 72px;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.5);
+    animation: yearGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes yearGlow {
+    from { text-shadow: 3px 3px 6px rgba(0,0,0,0.5), 0 0 30px rgba(255,215,0,0.3); }
+    to { text-shadow: 3px 3px 6px rgba(0,0,0,0.5), 0 0 50px rgba(255,215,0,0.8); }
+}
+
+.tet-message h1 {
+    font-size: 42px;
+    margin: 10px 0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #FFD700;
+}
+
+.tet-zodiac {
+    font-size: 24px;
+    margin: 5px 0;
+    color: #FFF8DC;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    font-style: italic;
+}
+
+.tet-wish {
+    font-size: 18px;
+    margin: 10px 0 0;
+    color: #FFFACD;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Loading spinner */
+.loading-spinner {
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.spinner-dot {
+    width: 14px;
+    height: 14px;
+    background: #FFD700;
+    border-radius: 50%;
+    animation: bounce 1.4s ease-in-out infinite;
+}
+
+.spinner-dot:nth-child(1) { animation-delay: -0.32s; background: #FF6347; }
+.spinner-dot:nth-child(2) { animation-delay: -0.16s; background: #FFD700; }
+.spinner-dot:nth-child(3) { background: #FF6347; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* Bánh chưng decoration */
+.banh-chung {
+    position: absolute;
+    font-size: 40px;
+    bottom: 30px;
+    opacity: 0.7;
+}
+
+.banh-left { left: 30px; }
+.banh-right { right: 30px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tet-year { font-size: 48px; }
+    .tet-message h1 { font-size: 28px; }
+    .tet-zodiac { font-size: 18px; }
+    .tet-wish { font-size: 14px; }
+    .horse { font-size: 70px; }
+    .lantern { font-size: 40px; }
+    .lantern-left { left: -50px; }
+    .lantern-right { right: -50px; }
+    .mai-branch { display: none; }
+}

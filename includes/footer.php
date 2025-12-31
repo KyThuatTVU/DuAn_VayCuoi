@@ -250,9 +250,9 @@
     <!-- Chatbot Widget -->
     <?php include 'includes/chatbot-widget.php'; ?>
 
-    <!-- Snowfall Effect -->
-    <link rel="stylesheet" href="assets/css/snowfall.css">
-    <script src="assets/js/snowfall.js"></script>
+    <!-- Hiệu ứng hoa mai rơi -->
+    <link rel="stylesheet" href="assets/css/mai-fall.css">
+    <script src="assets/js/mai-fall.js"></script>
 
     <script src="assets/js/main.js"></script>
     

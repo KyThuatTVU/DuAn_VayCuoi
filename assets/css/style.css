@@ -1517,11 +1517,6 @@ section {
     background: #f8fbff;
 }
 
-.btn-facebook:hover {
-    border-color: #1877F2;
-    background: #f0f7ff;
-}
-
 .auth-footer {
     text-align: center;
     padding-top: 20px;

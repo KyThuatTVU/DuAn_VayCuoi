@@ -1,0 +1,100 @@
+/* Hiệu ứng hoa mai rơi */
+#mai-fall-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+.mai-flower-fall {
+    position: absolute;
+    top: -60px;
+    pointer-events: none;
+    animation: maiFall linear infinite, maiSway ease-in-out infinite;
+}
+
+.mai-flower-fall svg {
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+}
+
+.mai-flower-fall.sparkle svg {
+    animation: maiSparkle 1.5s ease-in-out infinite alternate;
+}
+
+.mai-petal-fall {
+    position: absolute;
+    top: -30px;
+    pointer-events: none;
+    animation: petalFallDown linear infinite, petalDrift ease-in-out infinite;
+}
+
+@keyframes maiFall {
+    0% {
+        transform: translateY(-60px) rotate(0deg);
+        opacity: 0;
+    }
+    5% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes maiSway {
+    0%, 100% {
+        margin-left: 0;
+    }
+    25% {
+        margin-left: 35px;
+    }
+    75% {
+        margin-left: -35px;
+    }
+}
+
+@keyframes maiSparkle {
+    0% {
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2)) drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+    100% {
+        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2)) drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+    }
+}
+
+@keyframes petalFallDown {
+    0% {
+        transform: translateY(-30px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.85;
+    }
+    85% {
+        opacity: 0.85;
+    }
+    100% {
+        transform: translateY(100vh) rotate(540deg);
+        opacity: 0;
+    }
+}
+
+@keyframes petalDrift {
+    0%, 100% {
+        margin-left: 0;
+    }
+    33% {
+        margin-left: 20px;
+    }
+    66% {
+        margin-left: -20px;
+    }
+}
