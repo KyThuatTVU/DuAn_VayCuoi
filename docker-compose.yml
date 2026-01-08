@@ -9,14 +9,8 @@ services:
       - /var/www/html/node_modules
     depends_on:
       - db
-    environment:
-      - DB_HOST=db
-      - DB_USER=root
-      - DB_PASS=rootpassword
-      - DB_NAME=cua_hang_vay_cuoi_db
-      - SITE_NAME=Váy Cưới Thiên Thần
-      - SITE_URL=http://localhost:8000
-      - ADMIN_EMAIL=admin@vaycuoi.com
+    env_file:
+      - .env.docker
 
   db:
     image: mysql:8.0
@@ -27,7 +21,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql

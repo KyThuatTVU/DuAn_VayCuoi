@@ -1,5 +1,6 @@
 <?php
 // Load environment variables from .env file
+// Ưu tiên: Docker environment variables > .env file
 $envFile = __DIR__ . '/../.env';
 
 if (file_exists($envFile)) {
@@ -17,10 +18,16 @@ if (file_exists($envFile)) {
             $name = trim($name);
             $value = trim($value);
             
-            // Set environment variable
-            putenv("$name=$value");
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
+            // Chỉ set nếu chưa có từ Docker environment
+            if (!getenv($name) || getenv($name) === '') {
+                putenv("$name=$value");
+                $_ENV[$name] = $value;
+                $_SERVER[$name] = $value;
+            } else {
+                // Đồng bộ từ Docker env vào $_ENV và $_SERVER
+                $_ENV[$name] = getenv($name);
+                $_SERVER[$name] = getenv($name);
+            }
         }
     }
 }
