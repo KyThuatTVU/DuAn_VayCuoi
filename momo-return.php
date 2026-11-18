@@ -20,9 +20,12 @@ $responseTime = $_GET['responseTime'] ?? '';
 $extraData = $_GET['extraData'] ?? '';
 $signature = $_GET['signature'] ?? '';
 
-// Xác thực chữ ký
-$secretKey = $_ENV['MOMO_SECRET_KEY'];
-$rawHash = "accessKey=" . $_ENV['MOMO_ACCESS_KEY'] . 
+// Lấy cấu hình MoMo từ env (hỗ trợ cả $_ENV và getenv)
+$secretKey = $_ENV['MOMO_SECRET_KEY'] ?? getenv('MOMO_SECRET_KEY');
+$accessKey = $_ENV['MOMO_ACCESS_KEY'] ?? getenv('MOMO_ACCESS_KEY');
+
+// Xác thực chữ ký - theo đúng format MoMo API v2
+$rawHash = "accessKey=" . $accessKey . 
            "&amount=" . $amount . 
            "&extraData=" . $extraData . 
            "&message=" . $message . 
@@ -37,6 +40,11 @@ $rawHash = "accessKey=" . $_ENV['MOMO_ACCESS_KEY'] .
            "&transId=" . $transId;
 
 $checkSignature = hash_hmac("sha256", $rawHash, $secretKey);
+
+// Log để debug
+file_put_contents($logFile, "Raw Hash: " . $rawHash . "\n", FILE_APPEND);
+file_put_contents($logFile, "Expected Signature: " . $checkSignature . "\n", FILE_APPEND);
+file_put_contents($logFile, "Received Signature: " . $signature . "\n\n", FILE_APPEND);
 
 // Lấy order_id từ orderId
 preg_match('/MOMO_(\d+)_/', $orderId, $matches);

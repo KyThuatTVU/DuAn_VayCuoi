@@ -22,18 +22,37 @@ $phone_link = isset($matches[1]) ? preg_replace('/[^0-9]/', '', $matches[1]) : '
 preg_match('/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/', $contact_email, $matches);
 $email_link = isset($matches[0]) ? $matches[0] : '';
 
-// Lấy banner khuyến mãi active
+// Lấy banner khuyến mãi active - kết hợp với bảng khuyen_mai
 $active_banner = null;
-$banner_query = $conn->prepare("SELECT * FROM banner_promotions 
-    WHERE is_active = 1 
-    AND (start_date IS NULL OR start_date <= NOW()) 
-    AND (end_date IS NULL OR end_date >= NOW())
-    ORDER BY display_order ASC, created_at DESC 
+$banner_query = $conn->prepare("SELECT bp.*, 
+    km.title as km_title, 
+    km.description as km_description,
+    km.type as km_type,
+    km.value as km_value,
+    km.min_order_amount,
+    km.usage_limit,
+    km.start_at as km_start,
+    km.end_at as km_end
+    FROM banner_promotions bp
+    LEFT JOIN khuyen_mai km ON bp.promo_code = km.code
+    WHERE bp.is_active = 1 
+    AND (bp.start_date IS NULL OR bp.start_date <= NOW()) 
+    AND (bp.end_date IS NULL OR bp.end_date >= NOW())
+    ORDER BY bp.display_order ASC, bp.created_at DESC 
     LIMIT 1");
 $banner_query->execute();
 $banner_result = $banner_query->get_result();
 if ($banner_result->num_rows > 0) {
     $active_banner = $banner_result->fetch_assoc();
+    
+    // Nếu có thông tin từ khuyen_mai, cập nhật discount_value
+    if ($active_banner['km_type'] && $active_banner['km_value']) {
+        if ($active_banner['km_type'] === 'percent') {
+            $active_banner['discount_value'] = number_format($active_banner['km_value'], 0) . '%';
+        } else {
+            $active_banner['discount_value'] = number_format($active_banner['km_value'], 0, ',', '.') . 'đ';
+        }
+    }
 }
 
 // Pagination

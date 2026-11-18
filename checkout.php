@@ -885,7 +885,14 @@ document.getElementById('checkout-form').addEventListener('submit', function(e) 
             .then(response => response.json())
             .then(momoData => {
                 if (momoData.success && momoData.payUrl) {
-                    window.location.href = momoData.payUrl;
+                    // Mở trang thanh toán MoMo trong tab mới
+                    const momoWindow = window.open(momoData.payUrl, '_blank');
+                    
+                    // Hiển thị thông báo và redirect về trang kiểm tra
+                    alert('Vui lòng hoàn tất thanh toán trên trang MoMo.\nSau khi thanh toán xong, nhấn OK để kiểm tra kết quả.');
+                    
+                    // Redirect về trang kiểm tra trạng thái
+                    window.location.href = 'momo-success.php?order_id=' + orderId;
                 } else {
                     throw new Error(momoData.message || 'Không thể tạo thanh toán MoMo');
                 }

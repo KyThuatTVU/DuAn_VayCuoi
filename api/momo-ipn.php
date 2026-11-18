@@ -1,30 +1,42 @@
 <?php
 require_once '../includes/config.php';
 
-// Log IPN request
+// Log IPN request - hỗ trợ cả POST và JSON body
 $logFile = '../debug-momo-ipn.txt';
-file_put_contents($logFile, date('Y-m-d H:i:s') . " - IPN Request:\n" . print_r($_POST, true) . "\n\n", FILE_APPEND);
+$rawInput = file_get_contents('php://input');
+file_put_contents($logFile, date('Y-m-d H:i:s') . " - IPN Request:\n", FILE_APPEND);
+file_put_contents($logFile, "POST: " . print_r($_POST, true) . "\n", FILE_APPEND);
+file_put_contents($logFile, "RAW: " . $rawInput . "\n\n", FILE_APPEND);
 
 header('Content-Type: application/json');
 
 try {
-    $partnerCode = $_POST['partnerCode'] ?? '';
-    $orderId = $_POST['orderId'] ?? '';
-    $requestId = $_POST['requestId'] ?? '';
-    $amount = $_POST['amount'] ?? '';
-    $orderInfo = $_POST['orderInfo'] ?? '';
-    $orderType = $_POST['orderType'] ?? '';
-    $transId = $_POST['transId'] ?? '';
-    $resultCode = $_POST['resultCode'] ?? '';
-    $message = $_POST['message'] ?? '';
-    $payType = $_POST['payType'] ?? '';
-    $responseTime = $_POST['responseTime'] ?? '';
-    $extraData = $_POST['extraData'] ?? '';
-    $signature = $_POST['signature'] ?? '';
+    // MoMo có thể gửi dữ liệu qua POST hoặc JSON body
+    $data = $_POST;
+    if (empty($data) && !empty($rawInput)) {
+        $data = json_decode($rawInput, true) ?? [];
+    }
     
-    // Xác thực chữ ký
-    $secretKey = $_ENV['MOMO_SECRET_KEY'];
-    $rawHash = "accessKey=" . $_ENV['MOMO_ACCESS_KEY'] . 
+    $partnerCode = $data['partnerCode'] ?? '';
+    $orderId = $data['orderId'] ?? '';
+    $requestId = $data['requestId'] ?? '';
+    $amount = $data['amount'] ?? '';
+    $orderInfo = $data['orderInfo'] ?? '';
+    $orderType = $data['orderType'] ?? '';
+    $transId = $data['transId'] ?? '';
+    $resultCode = $data['resultCode'] ?? '';
+    $message = $data['message'] ?? '';
+    $payType = $data['payType'] ?? '';
+    $responseTime = $data['responseTime'] ?? '';
+    $extraData = $data['extraData'] ?? '';
+    $signature = $data['signature'] ?? '';
+    
+    // Lấy cấu hình MoMo từ env (hỗ trợ cả $_ENV và getenv)
+    $secretKey = $_ENV['MOMO_SECRET_KEY'] ?? getenv('MOMO_SECRET_KEY');
+    $accessKey = $_ENV['MOMO_ACCESS_KEY'] ?? getenv('MOMO_ACCESS_KEY');
+    
+    // Xác thực chữ ký - theo đúng format MoMo API v2
+    $rawHash = "accessKey=" . $accessKey . 
                "&amount=" . $amount . 
                "&extraData=" . $extraData . 
                "&message=" . $message . 
@@ -39,6 +51,11 @@ try {
                "&transId=" . $transId;
     
     $checkSignature = hash_hmac("sha256", $rawHash, $secretKey);
+    
+    // Log để debug
+    file_put_contents($logFile, "Raw Hash: " . $rawHash . "\n", FILE_APPEND);
+    file_put_contents($logFile, "Expected: " . $checkSignature . "\n", FILE_APPEND);
+    file_put_contents($logFile, "Received: " . $signature . "\n\n", FILE_APPEND);
     
     if ($signature !== $checkSignature) {
         file_put_contents($logFile, "Invalid signature\n\n", FILE_APPEND);
